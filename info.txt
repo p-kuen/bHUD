@@ -1,0 +1,15 @@
+"AddonInfo"
+{
+	"name" "Beautiful HUD (bHUD)"
+	"author_name" "Author Name"
+	"info" "
+{
+	"description": "Description",
+	"type": "tool",
+	"tags": 
+	[
+		"build",
+		"fun"
+	]
+}"
+}
