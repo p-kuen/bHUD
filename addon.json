@@ -1,0 +1,12 @@
+{
+	"title"		:	"Beautiful HUD (bHUD)",
+	"type"		:	"tool",
+	"tags"		:	[ "build" ],
+	"ignore"	:
+	[
+		"*.git*",
+		"*.bat",
+		"*.jpg",
+		"*.md"
+	]
+}

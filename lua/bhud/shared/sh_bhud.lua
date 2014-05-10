@@ -1,7 +1,4 @@
-AddCSLuaFile("autorun/sh_bhud.lua")
-AddCSLuaFile("autorun/cl_bhud.lua")
-
---module("bHUD", package.seeall )
+--[[
 
 local meta = FindMetaTable("Player")
 if not meta then return end
@@ -83,3 +80,5 @@ function menuBar(pnl)
 	print("MENU BAR!")
 end
 hook.Add("ContextMenuOpen", "MenuBar", menuBar)
+
+]]
