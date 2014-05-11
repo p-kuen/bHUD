@@ -2,10 +2,18 @@
 --  FONTS  --
 -------------
 
-surface.CreateFont( "bHUD_s", {
- 	font = "coolvetica",
- 	size = 20,
- 	weight = 500,
+surface.CreateFont( "bHUD_name", {
+	font = "Roboto",
+	size = 20,
+	weight = 500,
+	antialias = true,
+	outline = false
+} )
+
+surface.CreateFont( "bHUD_nums", {
+	font = "Roboto",
+	size = 18,
+	weight = 500,
 	antialias = true,
 	outline = false
 } )
@@ -58,7 +66,8 @@ end
 hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 
 
---local bigtimemenu = false
+bhud_hp_bar = 0
+bhud_ar_bar = 0
 
 function cl_bHUD.showHUD()
 
@@ -66,7 +75,8 @@ function cl_bHUD.showHUD()
 	if !drawHUD then return end
 
 	local ply = LocalPlayer()
-	if !ply:Alive() or !ply:IsValid() then return end
+	if !ply:Alive() or !ply:IsValid() or !ply:GetActiveWeapon():IsValid() then return end
+	if ply:GetActiveWeapon():GetPrintName() == "Camera" then return end
 
 	local player = {
 
@@ -84,104 +94,121 @@ function cl_bHUD.showHUD()
 		wep_ammo_2_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetSecondaryAmmoType() )
 
 	}
-
-	-- If the Weapon is not here or the camera
-	if player["weapon"] == nil or player["weapon"] == "Camera" then return end
-
+	
 	-- Check the player's Team
 	if player["team"] != "" and player["team"] != "Unassigned" then
 		player["name"] = "[" .. player["team"] .. "] " .. ply:Nick()
 	end
-
+--[[
 	-- Check length of the name
 	if string.len( player["name"] ) > 22 then
 		player["name"] = string.Left( player["name"], 19 ) .. "..."
 	end
+]]
 
-
-	-- PANEL
-
+	-- PLAYER PANEL SIZES
 	local width = 195
 	local height
-
-	if player["armor"] > 0 then
-		height = 88
-	else
-		height = 63
-	end
-
+	if player["armor"] > 0 then height = 90 else height = 65 end
 	local left = 20
-	local bottom = ScrH() - height - 20
+	local top = ScrH() - height - 20
 
-	-- Background
-	draw.RoundedBox( 4, left, bottom, width, height, Color( 80, 160, 222, 150 ) )
+	-- BACKGROUND
+	draw.RoundedBox( 4, left, top, width, height, Color( 50, 50, 50, 230 ) )
 
-	-- Name
+	-- PLAYER NAME
 	surface.SetMaterial( Material( "icon16/user.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
-	surface.DrawTexturedRect( left + 10, bottom + 10, 16, 16 )
-	draw.SimpleTextOutlined( player["name"], "bHUD_s", left + 38, bottom + 10, team.GetColor( ply:Team() ), 0, 0, 1, Color( 50, 50, 50 ) )
+	surface.DrawTexturedRect( left + 10, top + 12, 16, 16 )
 
-	surface.SetFont( "bHUD_s" )
+	draw.SimpleTextOutlined( player["name"], "bHUD_name", left + 38, top + 10, team.GetColor( ply:Team() ), 0, 0, 1, Color( 0, 0, 0 ) )
 
-	-- Health
+	-- PLAYER HEALTH
+	surface.SetFont( "bHUD_nums" )
+
+	if bhud_hp_bar < player["health"] then
+		bhud_hp_bar = bhud_hp_bar + 0.5
+	elseif bhud_hp_bar > player["health"] then
+		bhud_hp_bar = bhud_hp_bar - 0.5
+	end
+
 	surface.SetMaterial( Material( "icon16/heart.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
-	surface.DrawTexturedRect( left + 10, bottom + 35, 16, 16 )
-	draw.RoundedBox( 1, left + 35, bottom + 33, player["health"] * 1.5, 20, Color( 255, 50, 0, 220 ) )
-	draw.SimpleText( tostring( player["health"] ) .. "%", "bHUD_s", left + 35 + ( ( player["health"] * 1.5 ) / 2 ) - ( surface.GetTextSize( tostring( player["health"] ) .. "%" ) / 2 ), bottom + 35, Color( 255, 255, 255 ), 0 , 0 )
+	surface.DrawTexturedRect( left + 10, top + 37, 16, 16 )
 
+	draw.RoundedBox( 1, left + 35, top + 35, bhud_hp_bar * 1.5, 20, Color( 255, 50, 0, 230 ) )
+
+	if 10 + surface.GetTextSize( tostring( player["health"] ) ) < bhud_hp_bar * 1.5 then
+		draw.SimpleText( tostring( math.Round( bhud_hp_bar, 0 ) ), "bHUD_nums", left + 30 + ( bhud_hp_bar * 1.5 ) - ( surface.GetTextSize( tostring( player["health"] ) ) ), top + 36, Color( 255, 255, 255 ), 0 , 0 )
+	else
+		draw.SimpleText( tostring( math.Round( bhud_hp_bar, 0 ) ), "bHUD_nums", left + 40 + ( bhud_hp_bar * 1.5 ), top + 36, Color( 255, 255, 255 ), 0 , 0 )
+	end
+
+	-- PLAYER ARMOR
 	if player["armor"] > 0 then
 
-		-- Armor
+		if bhud_ar_bar < player["armor"] then
+			bhud_ar_bar = bhud_ar_bar + 0.5
+		elseif bhud_ar_bar > player["armor"] then
+			bhud_ar_bar = bhud_ar_bar - 0.5
+		end
+
 		surface.SetMaterial( Material( "icon16/shield.png" ) )
 		surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
-		surface.DrawTexturedRect( left + 10, bottom + 60, 16, 16 )
-		draw.RoundedBox( 1, left + 35, bottom + 58, player["armor"] * 1.5, 20, Color( 200, 200, 200, 220 ) )
-		draw.SimpleText( tostring( player["armor"] ) .. "%", "bHUD_s", left + 35 + ( ( player["armor"] * 1.5 ) / 2 ) - ( surface.GetTextSize( tostring( player["armor"] ) .. "%" ) / 2 ), bottom + 60, Color( 255, 255, 255 ), 0 , 0 )
+		surface.DrawTexturedRect( left + 10, top + 62, 16, 16 )
+
+		draw.RoundedBox( 1, left + 35, top + 60, bhud_ar_bar * 1.5, 20, Color( 0, 161, 222, 230 ) )
+
+		if 10 + surface.GetTextSize( tostring( player["armor"] ) ) < bhud_ar_bar * 1.5 then
+			draw.SimpleText( tostring( math.Round( bhud_ar_bar, 0 ) ), "bHUD_nums", left + 30 + ( bhud_ar_bar * 1.5 ) - ( surface.GetTextSize( tostring( player["armor"] ) ) ), top + 61, Color( 255, 255, 255 ), 0 , 0 )
+		else
+			draw.SimpleText( tostring( math.Round( bhud_ar_bar, 0 ) ), "bHUD_nums", left + 40 + ( bhud_ar_bar * 1.5 ), top + 61, Color( 255, 255, 255 ), 0 , 0 )
+		end
 
 	end
+
+--[[
+
 
 	-- WEAPONS
 
 	if player["wep_ammo_1"] == -1 and player["wep_ammo_1_max"] == 0 then return end
 
-	local wep_width = 200
-	local wep_height = 100
-	local wep_left = ScrW() - wep_width - 20
-	local wep_bottom = ScrH() - wep_height - 20
+	local wep_width = 185
+	local wep_height = 63
+	local wep_left = 30 + width
+	local wep_bottom = ScrH() - 83
 
-	draw.RoundedBox( 4, wep_left, wep_bottom, wep_width, wep_height, Color( 50, 50, 50, 150 ) )
+	draw.RoundedBox( 4, wep_left, wep_bottom, wep_width, wep_height, Color( 50, 50, 50, 230 ) )
 
 	if player["wep_ammo_1"] == -1 and player["wep_ammo_1_max"] == 0 then return end
-	if player["wep_ammo_1"] == -1 then
-		player["wep_ammo_1"] = 1
-		
-	end
+	if player["wep_ammo_1"] == -1 then player["wep_ammo_1"] = 1 end
 
+	-- AMMO 1
 	if player["wep_ammo_1"] < 10 then
 		player["wep_ammo_1"] = "00" .. tostring( player["wep_ammo_1"] )
 	elseif player["wep_ammo_1"] < 100 then
 		player["wep_ammo_1"] = "0" .. tostring( player["wep_ammo_1"] )
 	end
 
-	surface.SetFont( "bHUD_w_ammo" )
-	local w_1_w, w_1_h = surface.GetTextSize( player["wep_ammo_1"] )
+	if tonumber( player["wep_ammo_1"] ) <= 5 then
+		draw.SimpleText( player["wep_ammo_1"], "bHUD_w_ammo", wep_left + 10, wep_bottom + 10, Color( 255, 150, 0 ), 0 , 0 )
+	else
+		draw.SimpleText( player["wep_ammo_1"], "bHUD_w_ammo", wep_left + 10, wep_bottom + 10,  Color( 255, 255, 255 ), 0 , 0 )
+	end
 
-	--if string.match( player["wep_ammo_1"], "005" ) then
-		draw.SimpleText( player["wep_ammo_1"], "bHUD_w_ammo", wep_left + 10, wep_bottom + 10, Color( 255, 50, 0 ), 0 , 0 )
-	--else
-		--draw.SimpleText( player["wep_ammo_1"], "bHUD_w_ammo", wep_left + 10, wep_bottom + 10, Color( 255, 255, 255 ), 0 , 0 )
-	--end
+	-- MIDDLE LINE
+	draw.SimpleText( "|", "bHUD_w_ammo", wep_left + 97, wep_bottom + 10,  Color( 255, 255, 255, 100 ), 0 , 0 )
 
-	draw.SimpleText( "/ " .. player["wep_ammo_1_max"], "bHUD_w_ammo_small", wep_left + w_1_w + 20, wep_bottom + 10, Color( 255, 255, 255 ), 0 , 0 )
-	--if player["wep_ammo_2_max"] <= 0 then return end
-	if player["wep_ammo_2_max"] < 10 then player["wep_ammo_2_max"] = "0" .. tostring( player["wep_ammo_2_max"] ) end
-	draw.SimpleText( "   " .. player["wep_ammo_2_max"], "bHUD_w_ammo_small", wep_left + w_1_w + 20, wep_bottom + 33, Color( 220, 220, 220 ), 0 , 0 )
+	-- MAX AMMO 1
+	draw.SimpleText( player["wep_ammo_1_max"], "bHUD_w_ammo_small", wep_left + 125, wep_bottom + 12, Color( 255, 255, 255 ), 0 , 0 )
+
+	-- AMMO 2
+	draw.SimpleText( player["wep_ammo_2_max"], "bHUD_w_ammo_small", wep_left + 125, wep_bottom + 35, Color( 220, 220, 220 ), 0 , 0 )
 
 	--if player["wep_ammo_2"] == -1 and player["wep_ammo_2_max"] == 0 then return end
 	--draw.SimpleText( player["wep_ammo_2"] .. " | " .. player["wep_ammo_2_max"], "bHUD_w_ammo_small", wep_left + wep_width - 60, wep_bottom + 10, Color( 255, 255, 0 ), 0 , 0 )
-
+]]
 end
 hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )
 
