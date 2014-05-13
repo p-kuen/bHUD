@@ -2,52 +2,29 @@
 --  FONTS  --
 -------------
 
-surface.CreateFont( "bHUD_name", {
+surface.CreateFont( "bhud_roboto_20", {
 	font = "Roboto",
 	size = 20,
 	weight = 500,
 	antialias = true,
-	outline = false
+	outline = false,
+	shadow = true
 } )
 
-surface.CreateFont( "bHUD_nums", {
+surface.CreateFont( "bhud_roboto_18", {
 	font = "Roboto",
 	size = 18,
 	weight = 500,
 	antialias = true,
-	outline = false
+	outline = false,
+	shadow = true
 } )
 
-surface.CreateFont( "bHUD_w", {
- 	font = "coolvetica",
- 	size = 50,
-	weight = 500,
- 	antialias = true,
-} )
 
-surface.CreateFont( "bHUD_w_name", {
- 	font = "coolvetica",
- 	size = 25,
- 	weight = 300,
-	antialias = true,
-	outline = false
-} )
 
-surface.CreateFont( "bHUD_w_ammo", {
- 	font = "Lucida Console",
- 	size = 50,
- 	weight = 300,
-	antialias = true,
-	outline = false
-} )
-
-surface.CreateFont( "bHUD_w_ammo_small", {
-	font = "Lucida Console",
-	size = 20,
-	weight = 300,
-	antialias = true,
-	outline = false
-} )
+--------------------------
+--  DRAW HUD FUNCTIONS  --
+--------------------------
 
 local drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
 function cl_bHUD.setDrawHUD( ply, cmd, args )
@@ -65,6 +42,11 @@ function cl_bHUD.drawHUD( HUDName )
 end
 hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 
+
+
+-----------------------
+--  DRAWING THE HUD  --
+-----------------------
 
 bhud_hp_bar = 0
 bhud_ar_bar = 0
@@ -99,12 +81,6 @@ function cl_bHUD.showHUD()
 	if player["team"] != "" and player["team"] != "Unassigned" then
 		player["name"] = "[" .. player["team"] .. "] " .. ply:Nick()
 	end
---[[
-	-- Check length of the name
-	if string.len( player["name"] ) > 22 then
-		player["name"] = string.Left( player["name"], 19 ) .. "..."
-	end
-]]
 
 	-- PLAYER PANEL SIZES
 	local width = 195
@@ -117,14 +93,22 @@ function cl_bHUD.showHUD()
 	draw.RoundedBox( 4, left, top, width, height, Color( 50, 50, 50, 230 ) )
 
 	-- PLAYER NAME
-	surface.SetMaterial( Material( "icon16/user.png" ) )
+	surface.SetFont( "bhud_roboto_18" )
+	if surface.GetTextSize( player["name"] ) > ( width - 38 - 10 ) then
+		while surface.GetTextSize( player["name"] ) > ( width - 38 - 15 ) do
+			player["name"] = string.Left( player["name"], string.len( player["name"] ) -1 )
+		end
+		player["name"] = player["name"] .. "..."
+	end
+
+	surface.SetMaterial( Material( "img/player.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( left + 10, top + 12, 16, 16 )
 
-	draw.SimpleTextOutlined( player["name"], "bHUD_name", left + 38, top + 10, team.GetColor( ply:Team() ), 0, 0, 1, Color( 0, 0, 0 ) )
+	draw.SimpleText( player["name"], "bhud_roboto_20", left + 38, top + 10, team.GetColor( ply:Team() ), 0, 0 )
 
 	-- PLAYER HEALTH
-	surface.SetFont( "bHUD_nums" )
+	surface.SetFont( "bhud_roboto_18" )
 
 	if bhud_hp_bar < player["health"] then
 		bhud_hp_bar = bhud_hp_bar + 0.5
@@ -132,16 +116,17 @@ function cl_bHUD.showHUD()
 		bhud_hp_bar = bhud_hp_bar - 0.5
 	end
 
-	surface.SetMaterial( Material( "icon16/heart.png" ) )
+	--surface.SetMaterial( Material( "icon16/heart.png" ) )
+	surface.SetMaterial( Material( "img/heart.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( left + 10, top + 37, 16, 16 )
 
 	draw.RoundedBox( 1, left + 35, top + 35, bhud_hp_bar * 1.5, 20, Color( 255, 50, 0, 230 ) )
 
 	if 10 + surface.GetTextSize( tostring( player["health"] ) ) < bhud_hp_bar * 1.5 then
-		draw.SimpleText( tostring( math.Round( bhud_hp_bar, 0 ) ), "bHUD_nums", left + 30 + ( bhud_hp_bar * 1.5 ) - ( surface.GetTextSize( tostring( player["health"] ) ) ), top + 36, Color( 255, 255, 255 ), 0 , 0 )
+		draw.SimpleText( tostring( math.Round( bhud_hp_bar, 0 ) ), "bhud_roboto_18", left + 30 + ( bhud_hp_bar * 1.5 ) - surface.GetTextSize( tostring( player["health"] ) ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
 	else
-		draw.SimpleText( tostring( math.Round( bhud_hp_bar, 0 ) ), "bHUD_nums", left + 40 + ( bhud_hp_bar * 1.5 ), top + 36, Color( 255, 255, 255 ), 0 , 0 )
+		draw.SimpleText( tostring( math.Round( bhud_hp_bar, 0 ) ), "bhud_roboto_18", left + 40 + ( bhud_hp_bar * 1.5 ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
 	end
 
 	-- PLAYER ARMOR
@@ -153,16 +138,16 @@ function cl_bHUD.showHUD()
 			bhud_ar_bar = bhud_ar_bar - 0.5
 		end
 
-		surface.SetMaterial( Material( "icon16/shield.png" ) )
+		surface.SetMaterial( Material( "img/shield.png" ) )
 		surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 		surface.DrawTexturedRect( left + 10, top + 62, 16, 16 )
 
 		draw.RoundedBox( 1, left + 35, top + 60, bhud_ar_bar * 1.5, 20, Color( 0, 161, 222, 230 ) )
 
 		if 10 + surface.GetTextSize( tostring( player["armor"] ) ) < bhud_ar_bar * 1.5 then
-			draw.SimpleText( tostring( math.Round( bhud_ar_bar, 0 ) ), "bHUD_nums", left + 30 + ( bhud_ar_bar * 1.5 ) - ( surface.GetTextSize( tostring( player["armor"] ) ) ), top + 61, Color( 255, 255, 255 ), 0 , 0 )
+			draw.SimpleText( tostring( math.Round( bhud_ar_bar, 0 ) ), "bhud_roboto_18", left + 30 + ( bhud_ar_bar * 1.5 ) - surface.GetTextSize( tostring( player["armor"] ) ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
 		else
-			draw.SimpleText( tostring( math.Round( bhud_ar_bar, 0 ) ), "bHUD_nums", left + 40 + ( bhud_ar_bar * 1.5 ), top + 61, Color( 255, 255, 255 ), 0 , 0 )
+			draw.SimpleText( tostring( math.Round( bhud_ar_bar, 0 ) ), "bhud_roboto_18", left + 40 + ( bhud_ar_bar * 1.5 ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
 		end
 
 	end
