@@ -1,10 +1,6 @@
 resource.AddFile( "img/player.png" )
 resource.AddFile( "img/heart.png" )
 resource.AddFile( "img/shield.png" )
-
---[[
-function setJoinTime(ply)
-	ply:SetbHUDJoinTime( CurTime() )
-end	
-hook.Add("PlayerInitialSpawn", "SetJoinTime", setJoinTime)
-]]
+resource.AddFile( "img/pistol.png" )
+resource.AddFile( "img/ammo_1.png" )
+resource.AddFile( "img/ammo_2.png" )

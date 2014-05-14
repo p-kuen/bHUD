@@ -20,11 +20,106 @@ surface.CreateFont( "bhud_roboto_18", {
 	shadow = true
 } )
 
+surface.CreateFont( "bhud_roboto_15", {
+	font = "Roboto",
+	size = 15,
+	weight = 500,
+	antialias = true,
+	outline = false,
+	shadow = true
+} )
+
+surface.CreateFont( "bhud_roboto_16", {
+	font = "Roboto",
+	size = 16,
+	weight = 500,
+	antialias = true,
+	outline = false,
+	shadow = true
+} )
 
 
---------------------------
---  DRAW HUD FUNCTIONS  --
---------------------------
+
+---------------------
+--  BHUD SETTINGS  --
+---------------------
+
+local sqldata = {}
+
+-- Check if there is a table. If there is no table, bhud will create one
+sql.Query( "CREATE TABLE IF NOT EXISTS bhud_settings( 'setting' TEXT, value INTEGER );" )
+
+-- LOAD SQL SETTINGS
+if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = 'drawHUD'" ) then
+	sql.Query( "INSERT INTO bhud_settings ( setting, value ) VALUES( 'drawHUD', 1 )" )
+else
+	sqldata["drawHUD"] = tobool( sql.QueryRow( "SELECT value FROM bhud_settings WHERE setting = 'drawHUD'" )["value"] )
+end
+if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = 'drawTimeHUD'" ) then
+	sql.Query( "INSERT INTO bhud_settings ( setting, value ) VALUES( 'drawTimeHUD', 1 )" )
+else
+	sqldata["drawTimeHUD"] = tobool( sql.QueryRow( "SELECT value FROM bhud_settings WHERE setting = 'drawTimeHUD'" )["value"] )
+end
+
+-- CHANGE SQL SETTINGS
+function cl_bHUD.chat( ply, text, team, dead )
+
+	if string.match( text, "^!bhud_" ) then
+
+		local ccmd = string.Explode( " ", string.Replace( text, "!bhud_", "" ) )
+		local cmd = {}
+
+		-- If everything is correct
+		if ccmd[2] == "0" or ccmd[2] == "1" then
+			cmd = {
+				command = ccmd[1],
+				value = ccmd[2]
+			}
+
+		-- If there is a wrong value
+		elseif ccmd[2] != "0" and ccmd[2] != "1" and ccmd[2] != nil then
+			chat.AddText( Color( 255, 50, 0), "[bHUD - Settings ERROR] ", Color( 255, 255, 255 ), "Invalid ", Color( 0, 161, 222 ), "value (" .. ccmd[2] .. ")", Color( 255, 255, 255 ), "! Use ", Color( 0, 161, 222 ), "1 or 0", Color( 255, 255, 255 ), " to change the settings!" )
+			return true
+
+		-- If there is no value
+		elseif ccmd[2] == nil then
+			if ccmd[1] == "drawHUD" or ccmd[1] == "drawTimeHUD" then
+				cmd = {
+					command = ccmd[1],
+					value = "1"
+				}
+			else
+				-- If the player failed completely ;)
+				cmd = {
+					command = "help",
+					value = ""
+				}
+			end
+		end
+
+		if sql.Query( "SELECT value FROM bhud_settings WHERE setting = '" .. cmd["command"] .. "'" ) then
+
+			sql.Query( "UPDATE bhud_settings SET value = " .. cmd["value"] .. " WHERE setting = '" .. cmd["command"] .. "'" )
+			sqldata[cmd["command"]] = tobool( cmd["value"] )
+
+			chat.AddText( Color( 255, 50, 0), "[bHUD - Settings] ", Color( 255, 255, 255 ), "Changed ", Color( 0, 161, 222 ), cmd["command"], Color( 255, 255, 255 ), " to ", Color( 0, 161, 222 ), cmd["value"], Color( 255, 255, 255 ), "!" )
+		
+		else
+
+			if cmd["command"] == "help" then
+				chat.AddText( Color( 255, 50, 0), "[bHUD - HELP] ", Color( 255, 255, 255 ), "Use ", Color( 0, 161, 222 ), "!bhud_drawHUD 1/0 or !bhud_drawTimeHUD 1/0", Color( 255, 255, 255 ), " to change the bhud-settings!" )
+			else
+				chat.AddText( Color( 255, 50, 0), "[bHUD - Settings ERROR] ", Color( 255, 255, 255 ), "Couldn't find ", Color( 0, 161, 222 ), cmd["command"], Color( 255, 255, 255 ), "! Use ", Color( 0, 161, 222 ), "!bhud_drawHUD 1/0 or !bhud_drawTimeHUD 1/0", Color( 255, 255, 255 ), " to change the settings!" )
+			end
+
+		end
+
+		return true
+
+	end
+
+end
+hook.Add( "OnPlayerChat", "cl_bHUD_OnPlayerChat", cl_bHUD.chat )
 
 local drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
 function cl_bHUD.setDrawHUD( ply, cmd, args )
@@ -55,6 +150,8 @@ function cl_bHUD.showHUD()
 
 	-- Don't draw the HUD if the cvar cl_drawhud is set to 0
 	if !drawHUD then return end
+	-- If BHUD was deactivated with the sql-settings
+	if sqldata["drawHUD"] == false then return end
 
 	local ply = LocalPlayer()
 	if !ply:Alive() or !ply:IsValid() or !ply:GetActiveWeapon():IsValid() then return end
@@ -89,6 +186,12 @@ function cl_bHUD.showHUD()
 	local left = 20
 	local top = ScrH() - height - 20
 
+	local wep_width = 200
+	local wep_height
+	if player["wep_ammo_2_max"] != 0 then wep_height = 90 else wep_height = 65 end
+	local wep_top = ScrH() - wep_height - 20
+	local wep_left = left + width + 10
+
 	-- BACKGROUND
 	draw.RoundedBox( 4, left, top, width, height, Color( 50, 50, 50, 230 ) )
 
@@ -116,7 +219,6 @@ function cl_bHUD.showHUD()
 		bhud_hp_bar = bhud_hp_bar - 0.5
 	end
 
-	--surface.SetMaterial( Material( "icon16/heart.png" ) )
 	surface.SetMaterial( Material( "img/heart.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( left + 10, top + 37, 16, 16 )
@@ -152,125 +254,143 @@ function cl_bHUD.showHUD()
 
 	end
 
---[[
 
 
 	-- WEAPONS
 
-	if player["wep_ammo_1"] == -1 and player["wep_ammo_1_max"] == 0 then return end
+	if player["wep_ammo_1"] == -1 and player["wep_ammo_1_max"] <= 0 then return end
+	if player["wep_ammo_1"] == -1 then player["wep_ammo_1"] = "1" end
 
-	local wep_width = 185
-	local wep_height = 63
-	local wep_left = 30 + width
-	local wep_bottom = ScrH() - 83
+	-- BACKGROUND
+	draw.RoundedBox( 4, wep_left, wep_top, wep_width, wep_height, Color( 50, 50, 50, 230 ) )
 
-	draw.RoundedBox( 4, wep_left, wep_bottom, wep_width, wep_height, Color( 50, 50, 50, 230 ) )
+	-- WEAPON NAME
+	surface.SetMaterial( Material( "img/pistol.png" ) )
+	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
+	surface.DrawTexturedRect( wep_left + 10, wep_top + 12, 16, 16 )
 
-	if player["wep_ammo_1"] == -1 and player["wep_ammo_1_max"] == 0 then return end
-	if player["wep_ammo_1"] == -1 then player["wep_ammo_1"] = 1 end
+	draw.SimpleText( player["wep_name"], "bhud_roboto_20", wep_left + 38, wep_top + 10, Color( 255, 255, 255 ), 0 , 0 )
 
 	-- AMMO 1
-	if player["wep_ammo_1"] < 10 then
-		player["wep_ammo_1"] = "00" .. tostring( player["wep_ammo_1"] )
-	elseif player["wep_ammo_1"] < 100 then
-		player["wep_ammo_1"] = "0" .. tostring( player["wep_ammo_1"] )
-	end
+	surface.SetMaterial( Material( "img/ammo_1.png" ) )
+	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
+	surface.DrawTexturedRect( wep_left + 10, wep_top + 37, 16, 16 )
 
-	if tonumber( player["wep_ammo_1"] ) <= 5 then
-		draw.SimpleText( player["wep_ammo_1"], "bHUD_w_ammo", wep_left + 10, wep_bottom + 10, Color( 255, 150, 0 ), 0 , 0 )
-	else
-		draw.SimpleText( player["wep_ammo_1"], "bHUD_w_ammo", wep_left + 10, wep_bottom + 10,  Color( 255, 255, 255 ), 0 , 0 )
-	end
+	surface.SetFont( "bhud_roboto_20" )
 
-	-- MIDDLE LINE
-	draw.SimpleText( "|", "bHUD_w_ammo", wep_left + 97, wep_bottom + 10,  Color( 255, 255, 255, 100 ), 0 , 0 )
+	draw.SimpleText( player["wep_ammo_1"], "bhud_roboto_20", wep_left + 38, wep_top + 35, Color( 255, 255, 255 ), 0 , 0 )
+	draw.SimpleText( "/ " .. player["wep_ammo_1_max"], "bhud_roboto_20", wep_left + 38 + surface.GetTextSize( player["wep_ammo_1"] ) + 6, wep_top + 35, Color( 200, 200, 200 ), 0 , 0 )
 
-	-- MAX AMMO 1
-	draw.SimpleText( player["wep_ammo_1_max"], "bHUD_w_ammo_small", wep_left + 125, wep_bottom + 12, Color( 255, 255, 255 ), 0 , 0 )
+	if wep_height != 90 then return end
 
 	-- AMMO 2
-	draw.SimpleText( player["wep_ammo_2_max"], "bHUD_w_ammo_small", wep_left + 125, wep_bottom + 35, Color( 220, 220, 220 ), 0 , 0 )
+	surface.SetMaterial( Material( "img/ammo_2.png" ) )
+	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
+	surface.DrawTexturedRect( wep_left + 10, wep_top + 62, 16, 16 )
 
-	--if player["wep_ammo_2"] == -1 and player["wep_ammo_2_max"] == 0 then return end
-	--draw.SimpleText( player["wep_ammo_2"] .. " | " .. player["wep_ammo_2_max"], "bHUD_w_ammo_small", wep_left + wep_width - 60, wep_bottom + 10, Color( 255, 255, 0 ), 0 , 0 )
-]]
+	draw.SimpleText( player["wep_ammo_2_max"], "bhud_roboto_20", wep_left + 38, wep_top + 60, Color( 255, 255, 255 ), 0 , 0 )
+
 end
 hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )
 
---[[
-
-local function ShowTimeHUD()
-	local w_w = 150
-	local w_h = 70
-	local w_x = ScrW() - w_w - 15
-	local w_y
-
-	local totaltime = 0
-	local addon
-
-	if exsto then
-		totaltime = LocalPlayer():GetNetworkedInt("Time_Fixed") + LocalPlayer():GetbHUDSessionTime()
-		addon = "EXSTO"
-	elseif sql.TableExists("utime") then
-		totaltime = LocalPlayer():GetNWInt( "TotalUTime" ) + CurTime() - LocalPlayer():GetNWInt( "UTimeStart" )
-		addon = "UTIME"
-	elseif evolve then
-		totaltime = evolve:Time() - LocalPlayer:GetNWInt( "EV_JoinTime" ) + LocalPlayer():GetNWInt( "EV_PlayTime" )
-		addon = "EVOLVE"
-	else
-		totaltime = 0
-		addon = "NONE"
-	end
-
-	if bigtimemenu then
-		w_y = 45
-		addon = "(" .. addon .. ")"
-	else
-		w_y = 15
-		addon = ""
-	end
-
-	--Background
-	--Header
-	draw.RoundedBoxEx(4, w_x, w_y, w_w, 25, Color(0,102,204,180), true, true, false, false)
-	draw.SimpleText("Time" .. " " .. addon, "bHUD_t", w_x + 5, w_y + 5, Color(220, 220, 220 ,255), 0 , 0)
-	draw.SimpleText(os.date("%H:%M"), "bHUD_t", w_x + w_w - 5, w_y + 5, Color(220, 220, 220 ,255), TEXT_ALIGN_RIGHT)
-
-	if bigtimemenu then
-		--Box
-		draw.RoundedBoxEx(4, w_x, w_y + 25, w_w, w_h, Color(81,144,222,180), false, false, true, true)
-		--Lines
-		surface.SetDrawColor( 220, 220, 220, 180 )
-		surface.DrawLine( w_x + (w_w/2), w_y + 25 + 5, w_x + (w_w/2), w_y + 25 + w_h - 5)
-
-		--TotalTime
-		draw.SimpleText("Total", "bHUD_t", w_x + (w_w/4), w_y + 25 + 5, Color(220, 220, 220 ,255), TEXT_ALIGN_CENTER)
-
-		
-		--draw.SimpleText(toSingleTimeString(totaltime, "w"), "bHUD_t_small", w_x + (w_w/4), w_y + 55, Color(220, 220, 220 ,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		--draw.SimpleText(toSingleTimeString(totaltime, "d"), "bHUD_t_small", w_x + (w_w/4), w_y + 55 + 16*1, Color(220, 220, 220 ,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		--draw.SimpleText(toSingleTimeString(totaltime, "h"), "bHUD_t_small", w_x + (w_w/4), w_y + 55 + 16*2, Color(220, 220, 220 ,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		--draw.SimpleText(toSingleTimeString(totaltime, "m"), "bHUD_t_small", w_x + (w_w/4), w_y + 55 + 16*3, Color(220, 220, 220 ,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		
-
-		draw.SimpleText(toDayString(totaltime), "bHUD_t_small", w_x + (w_w/4), w_y + 25 + w_h - 20 - 10 - 5, Color(220, 220, 220 ,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText(toTimeString(totaltime), "bHUD_t_big", w_x + w_w/4, w_y + 25 + w_h - 20, Color(220, 220, 220 ,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 
-		draw.SimpleText("Session", "bHUD_t", w_x + w_w - (w_w/4), w_y + 25 + 5, Color(220, 220, 220 ,255), TEXT_ALIGN_CENTER)
-		draw.SimpleText(toTimeString(LocalPlayer():GetbHUDSessionTime()), "bHUD_t_big", w_x + w_w - (w_w/4), w_y + 25 + w_h - 20, Color(220, 220, 220 ,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	end
-end
-hook.Add("HUDPaint", "ShowTimeHUD", ShowTimeHUD)
+----------------------------
+--  DRAWING THE TIME HUD  --
+----------------------------
 
-local tohide = {
-	["CHudHealth"] = true,
-	["CHudBattery"] = true,
-	["CHudAmmo"] = true,
-	["CHudSecondaryAmmo"] = true
+local bigtimemenu = false
+local jointime = os.time()
+local td = {
+	time = 0,
+	addon = ""
 }
 
-hook.Add( "OnContextMenuOpen", "ContextOpen", bigtimemenu = true )
-hook.Add( "OnContextMenuClose", "ContextClose", bigtimemenu = false )
+function cl_bHUD.showTimeHUD()
 
-]]
+	-- Don't draw the HUD if the cvar cl_drawhud is set to 0
+	if !drawHUD then return end
+	-- If BHUD was deactivated by sql-settings
+	if sqldata["drawHUD"] == false then return end
+	-- If BHUD-Time was deactivated by sql-settings
+	if sqldata["drawTimeHUD"] == false then return end
+
+	local width
+
+	if bigtimemenu then
+		width = 150
+	else
+		surface.SetFont( "bhud_roboto_15" )
+		width = 11 + surface.GetTextSize( os.date( "%H:%M" ) )
+	end
+
+	local height = 67
+	local left = ScrW() - width - 15
+	local top
+
+	if bigtimemenu then
+
+		top = 45
+
+		draw.RoundedBoxEx( 4, left, top, width, 25, Color( 50, 50, 50, 230 ), true, true, false, false )
+		draw.SimpleText( "Time:", "bhud_roboto_15", left + 5, top + 5, Color( 255, 255, 255 ), 0 , 0 )
+		draw.SimpleText( os.date( "%H:%M" ), "bhud_roboto_15", left + width - 6, top + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
+
+		draw.RoundedBoxEx( 4, left, top + 25, width, height, Color( 100, 100, 100, 230 ), false, false, true, true )
+
+		-- Session
+		surface.SetFont( "bhud_roboto_16" )
+		draw.SimpleText( "Session:", "bhud_roboto_16", left + 6, top + 30, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( string.NiceTime( os.time() - jointime ), "bhud_roboto_16", left + 11 + surface.GetTextSize( "Session:" ), top + 30, Color( 255, 255, 255 ), 0, 0 )
+
+		-- Total
+		draw.SimpleText( "Total:", "bhud_roboto_16", left + 6, top + 50, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( string.NiceTime( td.time + ( os.time() - jointime ) ), "bhud_roboto_16", left + 11 + surface.GetTextSize( "Total:" ), top + 50, Color( 255, 255, 255 ), 0, 0 )
+		
+		-- Addon
+		draw.SimpleText( "Addon:", "bhud_roboto_16", left + 6, top + 70, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( td.addon, "bhud_roboto_16", left + 11 + surface.GetTextSize( "Addon:" ), top + 70, Color( 255, 255, 255 ), 0, 0 )
+
+	else
+
+		top = 15
+
+		draw.RoundedBoxEx( 4, left, top, width, 25, Color( 50, 50, 50, 230 ), true, true, true, true )
+		draw.SimpleText( os.date( "%H:%M" ), "bhud_roboto_15", left + width - 6, top + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
+
+	end
+
+end
+hook.Add( "HUDPaint", "bhud_showTimeHUD", cl_bHUD.showTimeHUD )
+
+local function getTimes()
+
+	if exsto then
+		time = LocalPlayer():GetNWInt( "Time_Fixed" )
+		td.addon = "Exsto"
+	elseif sql.TableExists( "utime" ) then
+		time = LocalPlayer():GetNWInt( "TotalUTime" )
+		td.addon = "UTime"
+	elseif evolve then
+		time = LocalPlayer():GetNWInt( "EV_PlayTime" )
+		td.addon = "Evolve"
+	else
+		time = 0
+		td.addon = "Not found ..."
+	end
+
+end
+
+hook.Add( "OnContextMenuOpen", "bhud_openedContextMenu", function()
+
+	bigtimemenu = true
+	getTimes()
+
+end )
+
+hook.Add( "OnContextMenuClose", "bhud_closedContextMenu", function()
+
+	bigtimemenu = false
+	getTimes()
+
+end )
