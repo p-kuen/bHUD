@@ -4,6 +4,7 @@ sh_bHUD = {}
 
 AddCSLuaFile()
 AddCSLuaFile( "bhud/client/cl_bhud.lua" )
+AddCSLuaFile( "bhud/client/cl_fonts.lua" )
 
 if SERVER then
 
@@ -12,7 +13,6 @@ if SERVER then
 else
 
 	include( "bhud/client/cl_bhud.lua" )
+	include( "bhud/client/cl_fonts.lua" )
 
 end
-
-print("bhud geladen")

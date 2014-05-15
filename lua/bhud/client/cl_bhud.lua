@@ -1,65 +1,47 @@
--------------
---  FONTS  --
--------------
+------------------------------------------
+--  CHECK CONV AND DISABLE DEFAULT HUD  --
+------------------------------------------
 
-surface.CreateFont( "bhud_roboto_20", {
-	font = "Roboto",
-	size = 20,
-	weight = 500,
-	antialias = true,
-	outline = false,
-	shadow = true
-} )
+-- Check Convars
+local drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
+function cl_bHUD.setDrawHUD( ply, cmd, args )
 
-surface.CreateFont( "bhud_roboto_18", {
-	font = "Roboto",
-	size = 18,
-	weight = 500,
-	antialias = true,
-	outline = false,
-	shadow = true
-} )
+	drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
 
-surface.CreateFont( "bhud_roboto_15", {
-	font = "Roboto",
-	size = 15,
-	weight = 500,
-	antialias = true,
-	outline = false,
-	shadow = true
-} )
+end
+concommand.Add( "cl_drawhud", cl_bHUD.setDrawHUD )
 
-surface.CreateFont( "bhud_roboto_16", {
-	font = "Roboto",
-	size = 16,
-	weight = 500,
-	antialias = true,
-	outline = false,
-	shadow = true
-} )
+-- Disable Default-HUD
+function cl_bHUD.drawHUD( HUDName )
+
+	if HUDName == "CHudHealth" or HUDName == "CHudBattery" or HUDName == "CHudAmmo" or HUDName == "CHudSecondaryAmmo" then return false end
+	
+end
+hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 
 
 
----------------------
---  BHUD SETTINGS  --
----------------------
+----------------------
+--  SQL - SETTINGS  --
+----------------------
 
 local sqldata = {}
 
 -- Check if there is a table. If there is no table, bhud will create one
 sql.Query( "CREATE TABLE IF NOT EXISTS bhud_settings( 'setting' TEXT, value INTEGER );" )
 
+local check_sql = { "drawHUD", "drawTimeHUD" }
+
 -- LOAD SQL SETTINGS
-if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = 'drawHUD'" ) then
-	sql.Query( "INSERT INTO bhud_settings ( setting, value ) VALUES( 'drawHUD', 1 )" )
-else
-	sqldata["drawHUD"] = tobool( sql.QueryRow( "SELECT value FROM bhud_settings WHERE setting = 'drawHUD'" )["value"] )
-end
-if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = 'drawTimeHUD'" ) then
-	sql.Query( "INSERT INTO bhud_settings ( setting, value ) VALUES( 'drawTimeHUD', 1 )" )
-else
-	sqldata["drawTimeHUD"] = tobool( sql.QueryRow( "SELECT value FROM bhud_settings WHERE setting = 'drawTimeHUD'" )["value"] )
-end
+table.foreach( check_sql, function( index, setting )
+
+	if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) then
+		sql.Query( "INSERT INTO bhud_settings ( setting, value ) VALUES( '" .. setting .. "', 1 )" )
+	else
+		sqldata[setting] = tobool( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) )
+	end
+
+end )
 
 -- CHANGE SQL SETTINGS
 function cl_bHUD.chat( ply, text, team, dead )
@@ -121,26 +103,10 @@ function cl_bHUD.chat( ply, text, team, dead )
 end
 hook.Add( "OnPlayerChat", "cl_bHUD_OnPlayerChat", cl_bHUD.chat )
 
-local drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
-function cl_bHUD.setDrawHUD( ply, cmd, args )
-
-	drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
-
-end
-concommand.Add( "cl_drawhud", cl_bHUD.setDrawHUD )
-
-function cl_bHUD.drawHUD( HUDName )
-
-	-- Disable Defualt HUD
-	if HUDName == "CHudHealth" or HUDName == "CHudBattery" or HUDName == "CHudAmmo" or HUDName == "CHudSecondaryAmmo" then return false end
-	
-end
-hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
-
 
 
 -----------------------
---  DRAWING THE HUD  --
+--  PLAYER INFO HUD  --
 -----------------------
 
 bhud_hp_bar = 0
@@ -295,9 +261,9 @@ hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )
 
 
 
-----------------------------
---  DRAWING THE TIME HUD  --
-----------------------------
+----------------
+--  TIME HUD  --
+----------------
 
 local bigtimemenu = false
 local jointime = os.time()
