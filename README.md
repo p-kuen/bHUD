@@ -29,6 +29,7 @@ We have programed a completely new Minimap, as one Guy suggested in the comments
 <b>Planned Features for the Minimap:</b>
 - Some little improvements with the distance
 - More abilities to change some values for the minimap ( position, scale, ... )
+- Top View Picture or Camera of the map
 
 <h3>Custom Images:</h3>
 - We have added some little custom images for the new bHUD
@@ -39,6 +40,9 @@ We have programed a completely new Minimap, as one Guy suggested in the comments
 - You can enable/disable every part of this HUD or the complete one ( if you restart the game or the server, this settings will stay )
 - You can change the size of the Minimap ( at the moment this setting doesn't stay after a restart, but will be added soon! )
 - As I mentioned, it is not fully completed, so some new settings and changes will come
+
+<b>How to open the settings panel:</b>
+Write in the chatbox: "!bhud_settings" and press enter
 
 <h3>Fixes:</h3>
 - You can now use bHUD in the SinglePlayer!
