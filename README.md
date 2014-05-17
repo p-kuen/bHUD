@@ -29,7 +29,7 @@ We have programed a completely new Minimap, as one Guy suggested in the comments
 <b>Planned Features for the Minimap:</b>
 - Some little improvements with the distance
 - More abilities to change some values for the minimap ( position, scale, ... )
-- Top View Picture or Camera of the map
+- Top-View of the Map or a top-view camera
 
 <h3>Custom Images:</h3>
 - We have added some little custom images for the new bHUD
