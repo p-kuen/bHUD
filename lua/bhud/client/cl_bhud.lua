@@ -5,17 +5,13 @@
 -- Check Convars
 local drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
 function cl_bHUD.setDrawHUD( ply, cmd, args )
-
 	drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
-
 end
 concommand.Add( "cl_drawhud", cl_bHUD.setDrawHUD )
 
 -- Disable Default-HUD
 function cl_bHUD.drawHUD( HUDName )
-
 	if HUDName == "CHudHealth" or HUDName == "CHudBattery" or HUDName == "CHudAmmo" or HUDName == "CHudSecondaryAmmo" then return false end
-	
 end
 hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 
@@ -25,79 +21,52 @@ hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 --  SQL - SETTINGS  --
 ----------------------
 
-local sqldata = {}
+cl_bHUD_sqldata = {}
 
--- Check if there is a table. If there is no table, bhud will create one
 sql.Query( "CREATE TABLE IF NOT EXISTS bhud_settings( 'setting' TEXT, value INTEGER );" )
 
-local check_sql = { "drawHUD", "drawTimeHUD" }
-
--- LOAD SQL SETTINGS
+local check_sql = { "drawHUD", "drawPlayerHUD", "drawTimeHUD", "drawMapHUD" }
 table.foreach( check_sql, function( index, setting )
 
 	if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) then
 		sql.Query( "INSERT INTO bhud_settings ( setting, value ) VALUES( '" .. setting .. "', 1 )" )
+		cl_bHUD_sqldata[setting] = tobool( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) )
 	else
-		sqldata[setting] = tobool( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) )
+		cl_bHUD_sqldata[setting] = tobool( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) )
 	end
 
 end )
 
+function cl_bHUD_SettingsPanel()
+
+	local pw = ScrW() / 4
+	local ph = ScrH() / 4
+	local px = ScrW() / 2 - ( pw / 2 )
+	local py = ScrH() / 2 - ( ph / 2 )
+
+	local frm = cl_bHUD.addfrm( px, py, pw, ph )
+	cl_bHUD.addlbl( frm, "Enable/Disable Features:", 10, 35 )
+
+	local ch = 61
+	table.foreach( cl_bHUD_sqldata, function( setting, value )
+
+		cl_bHUD.addchk( frm, setting, 10, ch, setting )
+		ch = ch + 20
+
+	end )
+
+	cl_bHUD.addlbl( frm, "Minimap Settings:", 10, ch + 7 )
+	cl_bHUD.addsld( frm, "Minimap-Radius", 10, ch + 20, 300, 50, 150, bhud_map_radius, "radius" )
+
+end
+
 -- CHANGE SQL SETTINGS
 function cl_bHUD.chat( ply, text, team, dead )
 
-	if string.match( text, "^!bhud_" ) then
-
-		local ccmd = string.Explode( " ", string.Replace( text, "!bhud_", "" ) )
-		local cmd = {}
-
-		-- If everything is correct
-		if ccmd[2] == "0" or ccmd[2] == "1" then
-			cmd = {
-				command = ccmd[1],
-				value = ccmd[2]
-			}
-
-		-- If there is a wrong value
-		elseif ccmd[2] != "0" and ccmd[2] != "1" and ccmd[2] != nil then
-			chat.AddText( Color( 255, 50, 0), "[bHUD - Settings ERROR] ", Color( 255, 255, 255 ), "Invalid ", Color( 0, 161, 222 ), "value (" .. ccmd[2] .. ")", Color( 255, 255, 255 ), "! Use ", Color( 0, 161, 222 ), "1 or 0", Color( 255, 255, 255 ), " to change the settings!" )
-			return true
-
-		-- If there is no value
-		elseif ccmd[2] == nil then
-			if ccmd[1] == "drawHUD" or ccmd[1] == "drawTimeHUD" then
-				cmd = {
-					command = ccmd[1],
-					value = "1"
-				}
-			else
-				-- If the player failed completely ;)
-				cmd = {
-					command = "help",
-					value = ""
-				}
-			end
-		end
-
-		if sql.Query( "SELECT value FROM bhud_settings WHERE setting = '" .. cmd["command"] .. "'" ) then
-
-			sql.Query( "UPDATE bhud_settings SET value = " .. cmd["value"] .. " WHERE setting = '" .. cmd["command"] .. "'" )
-			sqldata[cmd["command"]] = tobool( cmd["value"] )
-
-			chat.AddText( Color( 255, 50, 0), "[bHUD - Settings] ", Color( 255, 255, 255 ), "Changed ", Color( 0, 161, 222 ), cmd["command"], Color( 255, 255, 255 ), " to ", Color( 0, 161, 222 ), cmd["value"], Color( 255, 255, 255 ), "!" )
-		
-		else
-
-			if cmd["command"] == "help" then
-				chat.AddText( Color( 255, 50, 0), "[bHUD - HELP] ", Color( 255, 255, 255 ), "Use ", Color( 0, 161, 222 ), "!bhud_drawHUD 1/0 or !bhud_drawTimeHUD 1/0", Color( 255, 255, 255 ), " to change the bhud-settings!" )
-			else
-				chat.AddText( Color( 255, 50, 0), "[bHUD - Settings ERROR] ", Color( 255, 255, 255 ), "Couldn't find ", Color( 0, 161, 222 ), cmd["command"], Color( 255, 255, 255 ), "! Use ", Color( 0, 161, 222 ), "!bhud_drawHUD 1/0 or !bhud_drawTimeHUD 1/0", Color( 255, 255, 255 ), " to change the settings!" )
-			end
-
-		end
-
+	-- Open the Panel if requested
+	if text == "!bhud_settings" then
+		cl_bHUD_SettingsPanel()
 		return true
-
 	end
 
 end
@@ -117,7 +86,9 @@ function cl_bHUD.showHUD()
 	-- Don't draw the HUD if the cvar cl_drawhud is set to 0
 	if !drawHUD then return end
 	-- If BHUD was deactivated with the sql-settings
-	if sqldata["drawHUD"] == false then return end
+	if cl_bHUD_sqldata["drawHUD"] == false then return end
+	-- If BHUD was deactivated with the sql-settings
+	if cl_bHUD_sqldata["drawPlayerHUD"] == false then return end
 
 	local ply = LocalPlayer()
 	if !ply:Alive() or !ply:IsValid() or !ply:GetActiveWeapon():IsValid() then return end
@@ -277,9 +248,9 @@ function cl_bHUD.showTimeHUD()
 	-- Don't draw the HUD if the cvar cl_drawhud is set to 0
 	if !drawHUD then return end
 	-- If BHUD was deactivated by sql-settings
-	if sqldata["drawHUD"] == false then return end
+	if cl_bHUD_sqldata["drawHUD"] == false then return end
 	-- If BHUD-Time was deactivated by sql-settings
-	if sqldata["drawTimeHUD"] == false then return end
+	if cl_bHUD_sqldata["drawTimeHUD"] == false then return end
 
 	local width
 
@@ -360,3 +331,94 @@ hook.Add( "OnContextMenuClose", "bhud_closedContextMenu", function()
 	getTimes()
 
 end )
+
+
+
+-------------------
+--  MINIMAP HUD  --
+-------------------
+
+bhud_map_radius = 100
+local map_qual = 60
+local map_border = 5
+local map_tolerance = 200
+
+bhud_map_left = ScrW() - bhud_map_radius - 10 - map_border
+bhud_map_top = ScrH() - bhud_map_radius - 10 - map_border
+
+function cl_bHUD.showMinimapHUD()
+
+	-- Don't draw the HUD if the cvar cl_drawhud is set to 0
+	if !drawHUD then return end
+	-- If BHUD was deactivated by sql-settings
+	if cl_bHUD_sqldata["drawHUD"] == false then return end
+	-- If BHUD-Time was deactivated by sql-settings
+	if cl_bHUD_sqldata["drawMapHUD"] == false then return end
+
+	local circle = {}
+	local bcircle = {}
+	
+	local deg = 0
+	local sin, cos, rad = math.sin, math.cos, math.rad
+
+	for i = 1, map_qual do
+		deg = rad( i * 360 ) / map_qual
+		circle[i] = {
+			x = bhud_map_left + cos( deg ) * bhud_map_radius,
+			y = bhud_map_top + sin( deg ) * bhud_map_radius
+		}
+		bcircle[i] = {
+			x = bhud_map_left + cos( deg ) * ( bhud_map_radius + map_border ),
+			y = bhud_map_top + sin( deg ) * ( bhud_map_radius + map_border )
+		}
+	end
+
+	surface.SetDrawColor( Color( 255, 150, 0 ) )
+	draw.NoTexture()
+	surface.DrawPoly( bcircle )
+
+	surface.SetDrawColor( Color( 50, 50, 50 ) )
+	draw.NoTexture()
+	surface.DrawPoly( circle )
+
+	surface.SetMaterial( Material( "img/cursor.png" ) )
+	surface.SetDrawColor( team.GetColor( LocalPlayer():Team() ) )
+	surface.DrawTexturedRect( bhud_map_left - 8, bhud_map_top - 8, 16, 16 )
+
+	table.foreach( player.GetAll(), function( id, pl )
+
+		if pl == LocalPlayer() then return end
+
+		local e = LocalPlayer():EyeAngles().y
+		local a1 = LocalPlayer():GetPos() - pl:GetPos()
+		local a2 = a1:Angle().y
+		local lx, ly, px, py = LocalPlayer():GetPos().x, LocalPlayer():GetPos().y, pl:GetPos().x, pl:GetPos().y
+		local dist = Vector( lx, ly, 0 ):Distance( Vector( px, py, 0 ) )
+		local ang = math.AngleDifference( e - 180, a2 )
+
+		local d = rad( ang + 180 )
+		local posx = -sin( d ) * ( math.Clamp( dist, 0, 1000 ) / 10 )
+		local posy = cos( d ) * ( math.Clamp( dist, 0, 1000 ) / 10 )
+
+		if LocalPlayer():GetPos().z + map_tolerance < pl:GetPos().z then
+			surface.SetMaterial( Material( "img/cursor_up.png" ) )
+		elseif LocalPlayer():GetPos().z - map_tolerance > pl:GetPos().z then
+			surface.SetMaterial( Material( "img/cursor_down.png" ) )
+		else
+			surface.SetMaterial( Material( "img/cursor.png" ) )
+		end
+
+		surface.SetDrawColor( team.GetColor( pl:Team() ) )
+		surface.DrawTexturedRectRotated( bhud_map_left + posx, bhud_map_top + posy, 16, 16, -math.AngleDifference( e, pl:EyeAngles().y ) )
+
+		surface.SetFont( "bhud_roboto_14" )
+		surface.SetTextColor( 255, 255, 255, 255 )
+		surface.SetTextPos( bhud_map_left + posx - 8, bhud_map_top + posy + 10 )
+		surface.DrawText( pl:Nick() )
+		surface.SetTextPos( bhud_map_left + posx - 8, bhud_map_top + posy + 20 )
+		surface.DrawText( math.floor( LocalPlayer():GetPos():Distance( pl:GetPos() ) / 50 ) .. " m" )
+
+	end )
+
+end
+hook.Add( "HUDPaint", "bhud_showMinimapHUD", cl_bHUD.showMinimapHUD )
