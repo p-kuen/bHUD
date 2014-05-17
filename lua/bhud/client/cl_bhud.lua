@@ -141,7 +141,7 @@ function cl_bHUD.showHUD()
 		player["name"] = player["name"] .. "..."
 	end
 
-	surface.SetMaterial( Material( "img/player.png" ) )
+	surface.SetMaterial( Material( "materials/bhud/player.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( left + 10, top + 12, 16, 16 )
 
@@ -156,7 +156,7 @@ function cl_bHUD.showHUD()
 		bhud_hp_bar = bhud_hp_bar - 0.5
 	end
 
-	surface.SetMaterial( Material( "img/heart.png" ) )
+	surface.SetMaterial( Material( "materials/bhud/heart.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( left + 10, top + 37, 16, 16 )
 
@@ -177,7 +177,7 @@ function cl_bHUD.showHUD()
 			bhud_ar_bar = bhud_ar_bar - 0.5
 		end
 
-		surface.SetMaterial( Material( "img/shield.png" ) )
+		surface.SetMaterial( Material( "materials/bhud/shield.png" ) )
 		surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 		surface.DrawTexturedRect( left + 10, top + 62, 16, 16 )
 
@@ -202,14 +202,14 @@ function cl_bHUD.showHUD()
 	draw.RoundedBox( 4, wep_left, wep_top, wep_width, wep_height, Color( 50, 50, 50, 230 ) )
 
 	-- WEAPON NAME
-	surface.SetMaterial( Material( "img/pistol.png" ) )
+	surface.SetMaterial( Material( "materials/bhud/pistol.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( wep_left + 10, wep_top + 12, 16, 16 )
 
 	draw.SimpleText( player["wep_name"], "bhud_roboto_20", wep_left + 38, wep_top + 10, Color( 255, 255, 255 ), 0 , 0 )
 
 	-- AMMO 1
-	surface.SetMaterial( Material( "img/ammo_1.png" ) )
+	surface.SetMaterial( Material( "materials/bhud/ammo_1.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( wep_left + 10, wep_top + 37, 16, 16 )
 
@@ -221,7 +221,7 @@ function cl_bHUD.showHUD()
 	if wep_height != 90 then return end
 
 	-- AMMO 2
-	surface.SetMaterial( Material( "img/ammo_2.png" ) )
+	surface.SetMaterial( Material( "materials/bhud/ammo_2.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( wep_left + 10, wep_top + 62, 16, 16 )
 
@@ -381,7 +381,7 @@ function cl_bHUD.showMinimapHUD()
 	draw.NoTexture()
 	surface.DrawPoly( circle )
 
-	surface.SetMaterial( Material( "img/cursor.png" ) )
+	surface.SetMaterial( Material( "materials/bhud/cursor.png" ) )
 	surface.SetDrawColor( team.GetColor( LocalPlayer():Team() ) )
 	surface.DrawTexturedRect( bhud_map_left - 8, bhud_map_top - 8, 16, 16 )
 
@@ -401,11 +401,11 @@ function cl_bHUD.showMinimapHUD()
 		local posy = cos( d ) * ( math.Clamp( dist, 0, 1000 ) / 10 )
 
 		if LocalPlayer():GetPos().z + map_tolerance < pl:GetPos().z then
-			surface.SetMaterial( Material( "img/cursor_up.png" ) )
+			surface.SetMaterial( Material( "materials/bhud/cursor_up.png" ) )
 		elseif LocalPlayer():GetPos().z - map_tolerance > pl:GetPos().z then
-			surface.SetMaterial( Material( "img/cursor_down.png" ) )
+			surface.SetMaterial( Material( "materials/bhud/cursor_down.png" ) )
 		else
-			surface.SetMaterial( Material( "img/cursor.png" ) )
+			surface.SetMaterial( Material( "materials/bhud/cursor.png" ) )
 		end
 
 		surface.SetDrawColor( team.GetColor( pl:Team() ) )
