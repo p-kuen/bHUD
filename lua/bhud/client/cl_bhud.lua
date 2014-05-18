@@ -25,7 +25,7 @@ cl_bHUD_sqldata = {}
 
 sql.Query( "CREATE TABLE IF NOT EXISTS bhud_settings( 'setting' TEXT, value INTEGER );" )
 
-local check_sql = { "drawHUD", "drawPlayerHUD", "drawTimeHUD", "drawMapHUD" }
+local check_sql = { "drawHUD", "drawPlayerHUD", "drawTimeHUD", "drawMapHUD", "showday" }
 table.foreach( check_sql, function( index, setting )
 
 	if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) then
@@ -37,6 +37,7 @@ table.foreach( check_sql, function( index, setting )
 
 end )
 
+-- PANEL
 function cl_bHUD_SettingsPanel()
 
 	local pw = ScrW() / 4
@@ -55,15 +56,17 @@ function cl_bHUD_SettingsPanel()
 
 	end )
 
-	cl_bHUD.addlbl( frm, "Minimap Settings:", 10, ch + 7 )
-	cl_bHUD.addsld( frm, "Minimap-Radius", 10, ch + 20, 300, 50, 150, bhud_map_radius, "radius" )
+	cl_bHUD.addlbl( frm, "Minimap Settings:", 195, 35 )
+	cl_bHUD.addsld( frm, "Radius", 195, 53, 300, 50, 150, bhud_map["radius"], "radius" )
+	cl_bHUD.addsld( frm, "Border", 195, 73, 300, 0, 15, bhud_map["border"], "border" )
+	cl_bHUD.addsld( frm, "X-Position", 195, 93, 300, 10 + bhud_map["radius"] + bhud_map["border"], ScrW() - bhud_map["radius"] - 10 - bhud_map["border"], bhud_map["left"], "left" )
+	cl_bHUD.addsld( frm, "Y-Position", 195, 113, 300, 10 + bhud_map["radius"] + bhud_map["border"], ScrH() - bhud_map["radius"] - 10 - bhud_map["border"], bhud_map["top"], "top" )
 
 end
 
--- CHANGE SQL SETTINGS
+-- OPEN SETTINGS-PANEL
 function cl_bHUD.chat( ply, text, team, dead )
 
-	-- Open the Panel if requested
 	if text == "!bhud_settings" then
 		cl_bHUD_SettingsPanel()
 		return true
@@ -253,12 +256,16 @@ function cl_bHUD.showTimeHUD()
 	if cl_bHUD_sqldata["drawTimeHUD"] == false then return end
 
 	local width
+	local time = os.date( "%H:%M" )
+	if cl_bHUD_sqldata["showday"] then
+		time = os.date( "%d %B %Y - %H:%M" )
+	end
 
 	if bigtimemenu then
 		width = 150
 	else
 		surface.SetFont( "bhud_roboto_15" )
-		width = 11 + surface.GetTextSize( os.date( "%H:%M" ) )
+		width = 12 + surface.GetTextSize( time )
 	end
 
 	local height = 67
@@ -270,7 +277,11 @@ function cl_bHUD.showTimeHUD()
 		top = 45
 
 		draw.RoundedBoxEx( 4, left, top, width, 25, Color( 50, 50, 50, 230 ), true, true, false, false )
-		draw.SimpleText( "Time:", "bhud_roboto_15", left + 5, top + 5, Color( 255, 255, 255 ), 0 , 0 )
+		if !cl_bHUD_sqldata["showday"] then
+			draw.SimpleText( "Time:", "bhud_roboto_15", left + 5, top + 5, Color( 255, 255, 255 ), 0 , 0 )
+		else
+			draw.SimpleText( os.date( "%d %B %Y" ), "bhud_roboto_15", left + 5, top + 5, Color( 255, 255, 255 ), 0 , 0 )
+		end
 		draw.SimpleText( os.date( "%H:%M" ), "bhud_roboto_15", left + width - 6, top + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
 
 		draw.RoundedBoxEx( 4, left, top + 25, width, height, Color( 100, 100, 100, 230 ), false, false, true, true )
@@ -293,7 +304,7 @@ function cl_bHUD.showTimeHUD()
 		top = 15
 
 		draw.RoundedBoxEx( 4, left, top, width, 25, Color( 50, 50, 50, 230 ), true, true, true, true )
-		draw.SimpleText( os.date( "%H:%M" ), "bhud_roboto_15", left + width - 6, top + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
+		draw.SimpleText( time, "bhud_roboto_15", left + width - 6, top + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
 
 	end
 
@@ -338,13 +349,26 @@ end )
 --  MINIMAP HUD  --
 -------------------
 
-bhud_map_radius = 100
-local map_qual = 60
-local map_border = 5
-local map_tolerance = 200
+-- SET DEFAULT VALUES
+bhud_map = {}
+bhud_map["radius"] = 100
+bhud_map["border"] = 7
+bhud_map["left"] = ScrW() - bhud_map["radius"] - 10 - bhud_map["border"]
+bhud_map["top"] = ScrH() - bhud_map["radius"] - 10 - bhud_map["border"]
+bhud_map["tolerance"] = 200
 
-bhud_map_left = ScrW() - bhud_map_radius - 10 - map_border
-bhud_map_top = ScrH() - bhud_map_radius - 10 - map_border
+-- LOAD CUSTOM SETTINGS
+local check_sql = { "left", "top", "radius", "border" }
+table.foreach( check_sql, function( index, setting )
+
+	if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = 'minimap_" .. setting .. "'" ) then
+		sql.Query( "INSERT INTO bhud_settings ( setting, value ) VALUES( 'minimap_" .. setting .. "', " .. bhud_map[setting] .. " )" )
+		bhud_map[setting] = tonumber( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = 'minimap_" .. setting .. "'" ) )
+	else
+		bhud_map[setting] = tonumber( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = 'minimap_" .. setting .. "'" ) )
+	end
+
+end )
 
 function cl_bHUD.showMinimapHUD()
 
@@ -355,40 +379,51 @@ function cl_bHUD.showMinimapHUD()
 	-- If BHUD-Time was deactivated by sql-settings
 	if cl_bHUD_sqldata["drawMapHUD"] == false then return end
 
-	local circle = {}
-	local bcircle = {}
-	
+	local circles = {}
 	local deg = 0
 	local sin, cos, rad = math.sin, math.cos, math.rad
 
-	for i = 1, map_qual do
-		deg = rad( i * 360 ) / map_qual
-		circle[i] = {
-			x = bhud_map_left + cos( deg ) * bhud_map_radius,
-			y = bhud_map_top + sin( deg ) * bhud_map_radius
-		}
-		bcircle[i] = {
-			x = bhud_map_left + cos( deg ) * ( bhud_map_radius + map_border ),
-			y = bhud_map_top + sin( deg ) * ( bhud_map_radius + map_border )
-		}
+	local function draw_circle( name, quality, xpos, ypos, size, color )
+
+		circles[name] = {}
+
+		for i = 1, quality do
+			deg = rad( i * 360 ) / quality
+			circles[name][i] = {
+				x = xpos + cos( deg ) * size,
+				y = ypos + sin( deg ) * size
+			}
+		end
+
+		surface.SetDrawColor( color )
+		draw.NoTexture()
+		surface.DrawPoly( circles[name] )
+
 	end
+	
+	-- BORDER
+	draw_circle( "minimap_border", 60, bhud_map["left"], bhud_map["top"], bhud_map["radius"] + bhud_map["border"], Color( 255, 150, 0 ) )
 
-	surface.SetDrawColor( Color( 255, 150, 0 ) )
-	draw.NoTexture()
-	surface.DrawPoly( bcircle )
+	-- BACKGROUND
+	draw_circle( "minimap_background", 60, bhud_map["left"], bhud_map["top"], bhud_map["radius"], Color( 50, 50, 50 ) )
 
-	surface.SetDrawColor( Color( 50, 50, 50 ) )
-	draw.NoTexture()
-	surface.DrawPoly( circle )
-
+	-- MIDDLE CURSOR
 	surface.SetMaterial( Material( "materials/bhud/cursor.png" ) )
 	surface.SetDrawColor( team.GetColor( LocalPlayer():Team() ) )
-	surface.DrawTexturedRect( bhud_map_left - 8, bhud_map_top - 8, 16, 16 )
+	surface.DrawTexturedRect( bhud_map["left"] - 8, bhud_map["top"] - 8, 16, 16 )
 
+	-- NORTH
+	local north = math.AngleDifference( LocalPlayer():EyeAngles().y, 0 )
+	surface.SetMaterial( Material( "materials/bhud/north.png" ) )
+	surface.SetDrawColor( Color( 255, 255, 255 ) )
+	surface.DrawTexturedRect( bhud_map["left"] + ( -sin( rad( north ) ) * bhud_map["radius"] ) - 11, bhud_map["top"] + ( cos( rad( north ) ) * bhud_map["radius"] ) - 11, 22, 22 )
+
+	-- OTHER PLAYERS
 	table.foreach( player.GetAll(), function( id, pl )
 
 		if pl == LocalPlayer() then return end
 
+		-- Set Variables ( Positions, Angles, ... )
 		local e = LocalPlayer():EyeAngles().y
 		local a1 = LocalPlayer():GetPos() - pl:GetPos()
 		local a2 = a1:Angle().y
@@ -396,26 +431,30 @@ function cl_bHUD.showMinimapHUD()
 		local dist = Vector( lx, ly, 0 ):Distance( Vector( px, py, 0 ) )
 		local ang = math.AngleDifference( e - 180, a2 )
 
+		-- Calculate Player-Cursor-Positions
 		local d = rad( ang + 180 )
 		local posx = -sin( d ) * ( math.Clamp( dist, 0, 1000 ) / 10 )
 		local posy = cos( d ) * ( math.Clamp( dist, 0, 1000 ) / 10 )
 
-		if LocalPlayer():GetPos().z + map_tolerance < pl:GetPos().z then
+		-- Set correct Cursor-Picture
+		if LocalPlayer():GetPos().z + bhud_map["tolerance"] < pl:GetPos().z then
 			surface.SetMaterial( Material( "materials/bhud/cursor_up.png" ) )
-		elseif LocalPlayer():GetPos().z - map_tolerance > pl:GetPos().z then
+		elseif LocalPlayer():GetPos().z - bhud_map["tolerance"] > pl:GetPos().z then
 			surface.SetMaterial( Material( "materials/bhud/cursor_down.png" ) )
 		else
 			surface.SetMaterial( Material( "materials/bhud/cursor.png" ) )
 		end
 
+		-- Draw Player-Curosr
 		surface.SetDrawColor( team.GetColor( pl:Team() ) )
-		surface.DrawTexturedRectRotated( bhud_map_left + posx, bhud_map_top + posy, 16, 16, -math.AngleDifference( e, pl:EyeAngles().y ) )
+		surface.DrawTexturedRectRotated( bhud_map["left"] + posx, bhud_map["top"] + posy, 16, 16, -math.AngleDifference( e, pl:EyeAngles().y ) )
 
+		-- Draw Playername and Distance
 		surface.SetFont( "bhud_roboto_14" )
 		surface.SetTextColor( 255, 255, 255, 255 )
-		surface.SetTextPos( bhud_map_left + posx - 8, bhud_map_top + posy + 10 )
+		surface.SetTextPos( bhud_map["left"] + posx - 8, bhud_map["top"] + posy + 10 )
 		surface.DrawText( pl:Nick() )
-		surface.SetTextPos( bhud_map_left + posx - 8, bhud_map_top + posy + 20 )
+		surface.SetTextPos( bhud_map["left"] + posx - 8, bhud_map["top"] + posy + 20 )
 		surface.DrawText( math.floor( LocalPlayer():GetPos():Distance( pl:GetPos() ) / 50 ) .. " m" )
 
 	end )

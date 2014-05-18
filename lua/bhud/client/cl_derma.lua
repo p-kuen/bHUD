@@ -10,7 +10,6 @@ function cl_bHUD.addfrm( x, y, w, h )
 	frame:SetBackgroundBlur( true )
 	frame:MakePopup()
 
-	--function frame:PaintOver()
 	function frame:Paint()
 
 		draw.RoundedBoxEx( 4, 0, 0, w, 25, Color( 255, 150, 0 ), true, true, false, false )
@@ -127,10 +126,20 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 	sld.ValueChanged = function( self, number )
 		
 		if variable == "radius" then
-			bhud_map_radius = math.floor( number )
-			bhud_map_left = ScrW() - bhud_map_radius - 10 - 5
-			bhud_map_top = ScrH() - bhud_map_radius - 10 - 5
+			bhud_map["radius"] = math.floor( number )
 		end
+		if variable == "left" then
+			bhud_map["left"] = math.floor( number )
+		end
+		if variable == "top" then
+			bhud_map["top"] = math.floor( number )
+		end
+		if variable == "border" then
+			bhud_map["border"] = math.floor( number )
+		end
+
+		sql.Query( "UPDATE bhud_settings SET value = " .. math.floor( number ) .. " WHERE setting = 'minimap_" .. variable .. "'" )
+		
 		lbl2:SetText( tostring( math.floor( number ) ) )
 		lbl2:SizeToContents()
 		posx = math.floor( number )
@@ -139,8 +148,7 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 
 	function sld:PaintOver()
 
-		draw.RoundedBox( 2, 125, 8, w - 137, 17, Color( 100, 100, 100 ) )
-		draw.RoundedBox( 2, posx + 75 + ( posx * 0.1 ), 12, 10, 10, Color( 255, 150, 0 ) )
+		draw.RoundedBox( 2, 258, 8, w - 263, 17, Color( 100, 100, 100 ) )
 
 	end
 

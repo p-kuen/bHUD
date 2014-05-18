@@ -26,23 +26,19 @@ We have programed a completely new Minimap, as one Guy suggested in the comments
 - You and all other players will have there own team-color
 - You can change the size of it in the Settings-Panel ( If you want to know, how to open the settings-panel, just read through the whole text )
 
-<b>Planned Features for the Minimap:</b>
-- Some little improvements with the distance
-- More abilities to change some values for the minimap ( position, scale, ... )
-- Top-View of the Map or a top-view camera
-
 <h3>Custom Images:</h3>
 - We have added some little custom images for the new bHUD
 - Each of them are just 16 pixels big and therefore they only have about 500 bytes, so that shouldn't be a problem for downloading them ( You can find them here: "garrysmod/garrysmod/download/img/" )
 - You don't need to install it client-side! You only need to install it on the server. The rest will do bHUD for you.
 
-<h3>Settings: ( not finished yet, but you can manage already some things )</h3>
-- You can enable/disable every part of this HUD or the complete one ( if you restart the game or the server, this settings will stay )
-- You can change the size of the Minimap ( at the moment this setting doesn't stay after a restart, but will be added soon! )
-- As I mentioned, it is not fully completed, so some new settings and changes will come
+<h3>Settings:</h3>
 
 <b>How to open the settings panel:</b>
-Write in the chatbox: "!bhud_settings" and press enter
+Write in the chatbox: "!bhud_settings" and press enter!
+
+- You can enable/disable every part of this HUD or the complete one
+- You can change the size, position and border of the Minimap
+- If you restart Garry's Mod, you will get the Settings back from your last configuration!
 
 <h3>Fixes:</h3>
 - You can now use bHUD in the SinglePlayer!
