@@ -2,6 +2,15 @@
 --  FONTS  --
 -------------
 
+surface.CreateFont( "bhud_roboto_22_ns", {
+	font = "Roboto",
+	size = 22,
+	weight = 500,
+	antialias = true,
+	outline = false,
+	shadow = false
+} )
+
 surface.CreateFont( "bhud_roboto_20", {
 	font = "Roboto",
 	size = 20,

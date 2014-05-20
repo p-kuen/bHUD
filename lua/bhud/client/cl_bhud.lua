@@ -21,21 +21,24 @@ hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 --  SQL - SETTINGS  --
 ----------------------
 
-cl_bHUD_sqldata = {}
+cl_bHUD_Settings = {}
 
 sql.Query( "CREATE TABLE IF NOT EXISTS bhud_settings( 'setting' TEXT, value INTEGER );" )
 
-local check_sql = { "drawHUD", "drawPlayerHUD", "drawTimeHUD", "drawMapHUD", "showday" }
+local check_sql = { "drawHUD", "drawPlayerHUD", "drawHoverNames", "drawTimeHUD", "drawMapHUD", "showday" }
 table.foreach( check_sql, function( index, setting )
 
 	if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) then
 		sql.Query( "INSERT INTO bhud_settings ( setting, value ) VALUES( '" .. setting .. "', 1 )" )
-		cl_bHUD_sqldata[setting] = tobool( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) )
+		cl_bHUD_Settings[setting] = tobool( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) )
 	else
-		cl_bHUD_sqldata[setting] = tobool( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) )
+		cl_bHUD_Settings[setting] = tobool( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) )
 	end
 
 end )
+
+-- BHUD-SETTINGS INFORMATION
+chat.AddText( Color( 255, 50, 0 ), "[bHUD - Settings]", Color( 255, 255, 255 ), " Write '", Color( 0, 161, 222 ), "!bhud_settings", Color( 255, 255, 255 ), "' to open the ", Color( 0, 161, 222 ), "Settings-Panel", Color( 255, 255, 255 ), "!" )
 
 -- PANEL
 function cl_bHUD_SettingsPanel()
@@ -49,7 +52,7 @@ function cl_bHUD_SettingsPanel()
 	cl_bHUD.addlbl( frm, "Enable/Disable Features:", 10, 35 )
 
 	local ch = 61
-	table.foreach( cl_bHUD_sqldata, function( setting, value )
+	table.foreach( cl_bHUD_Settings, function( setting, value )
 
 		cl_bHUD.addchk( frm, setting, 10, ch, setting )
 		ch = ch + 20
@@ -86,40 +89,55 @@ bhud_ar_bar = 0
 
 function cl_bHUD.showHUD()
 
-	-- Don't draw the HUD if the cvar cl_drawhud is set to 0
-	if !drawHUD then return end
-	-- If BHUD was deactivated with the sql-settings
-	if cl_bHUD_sqldata["drawHUD"] == false then return end
-	-- If BHUD was deactivated with the sql-settings
-	if cl_bHUD_sqldata["drawPlayerHUD"] == false then return end
+	-- CHECK DRAWING THE HUD
+	if !drawHUD or !cl_bHUD_Settings["drawHUD"] or !cl_bHUD_Settings["drawPlayerHUD"] then return end
+	if !LocalPlayer():Alive() or !LocalPlayer():IsValid() or !LocalPlayer():GetActiveWeapon():IsValid() then return end
 
+
+	-- HOVER NAMES
+	if cl_bHUD_Settings["drawHoverNames"] then
+
+		table.foreach( player.GetAll(), function( id, pl )
+
+			if LocalPlayer() == pl or !LocalPlayer():Visible( pl ) then return end
+
+			local pos = pl:GetPos() + Vector( 0, 0, 100 )
+			local screen = pos:ToScreen()
+			local teamcol = team.GetColor( pl:Team() )
+			local alpha = math.Clamp( 255 - ( LocalPlayer():GetPos():Distance( pl:GetPos() ) / 100 ), 0, 255 )
+
+			surface.SetFont( "bhud_roboto_22_ns" )
+			screen.x = screen.x - ( surface.GetTextSize( pl:Nick() ) / 2 )
+
+			draw.SimpleTextOutlined( pl:Nick(), "bhud_roboto_22_ns", screen.x, screen.y, Color( alpha, alpha, alpha, alpha ), 0 , 0, 1, Color( 100, 100, 100, alpha ) )
+
+		end )
+
+	end
+
+
+	-- GET PLAYER DATA
 	local ply = LocalPlayer()
-	if !ply:Alive() or !ply:IsValid() or !ply:GetActiveWeapon():IsValid() then return end
-	if ply:GetActiveWeapon():GetPrintName() == "Camera" then return end
-
 	local player = {
 
 		name = ply:Nick(),
 		team = team.GetName( ply:Team() ),
-		weapon = ply:GetActiveWeapon(),
 		health = ply:Health(),
 		armor = ply:Armor(),
 
-		wep = ply:GetActiveWeapon(),
-		wep_name = ply:GetActiveWeapon():GetPrintName(),
-		wep_ammo_1 = ply:GetActiveWeapon():Clip1(),
-		wep_ammo_2 = ply:GetActiveWeapon():Clip2(),
-		wep_ammo_1_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetPrimaryAmmoType() ),
-		wep_ammo_2_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetSecondaryAmmoType() )
+		weapon = ply:GetActiveWeapon():GetPrintName(),
+		ammo1 = ply:GetActiveWeapon():Clip1(),
+		ammo1_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetPrimaryAmmoType() ),
+		ammo2_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetSecondaryAmmoType() )
 
 	}
 	
-	-- Check the player's Team
+	-- SET PLAYER'S TEAM
 	if player["team"] != "" and player["team"] != "Unassigned" then
 		player["name"] = "[" .. player["team"] .. "] " .. ply:Nick()
 	end
 
-	-- PLAYER PANEL SIZES
+	-- SET HUD SIZES
 	local width = 195
 	local height
 	if player["armor"] > 0 then height = 90 else height = 65 end
@@ -128,9 +146,9 @@ function cl_bHUD.showHUD()
 
 	local wep_width = 200
 	local wep_height
-	if player["wep_ammo_2_max"] != 0 then wep_height = 90 else wep_height = 65 end
+	if player["ammo2_max"] != 0 then wep_height = 90 else wep_height = 65 end
 	local wep_top = ScrH() - wep_height - 20
-	local wep_left = left + width + 10
+	local wep_left = 230
 
 	-- BACKGROUND
 	draw.RoundedBox( 4, left, top, width, height, Color( 50, 50, 50, 230 ) )
@@ -198,8 +216,8 @@ function cl_bHUD.showHUD()
 
 	-- WEAPONS
 
-	if player["wep_ammo_1"] == -1 and player["wep_ammo_1_max"] <= 0 then return end
-	if player["wep_ammo_1"] == -1 then player["wep_ammo_1"] = "1" end
+	if player["ammo1"] == -1 and player["ammo1_max"] <= 0 then return end
+	if player["ammo1"] == -1 then player["ammo1"] = "1" end
 
 	-- BACKGROUND
 	draw.RoundedBox( 4, wep_left, wep_top, wep_width, wep_height, Color( 50, 50, 50, 230 ) )
@@ -209,7 +227,7 @@ function cl_bHUD.showHUD()
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( wep_left + 10, wep_top + 12, 16, 16 )
 
-	draw.SimpleText( player["wep_name"], "bhud_roboto_20", wep_left + 38, wep_top + 10, Color( 255, 255, 255 ), 0 , 0 )
+	draw.SimpleText( player["weapon"], "bhud_roboto_20", wep_left + 38, wep_top + 10, Color( 255, 255, 255 ), 0 , 0 )
 
 	-- AMMO 1
 	surface.SetMaterial( Material( "materials/bhud/ammo_1.png" ) )
@@ -218,8 +236,8 @@ function cl_bHUD.showHUD()
 
 	surface.SetFont( "bhud_roboto_20" )
 
-	draw.SimpleText( player["wep_ammo_1"], "bhud_roboto_20", wep_left + 38, wep_top + 35, Color( 255, 255, 255 ), 0 , 0 )
-	draw.SimpleText( "/ " .. player["wep_ammo_1_max"], "bhud_roboto_20", wep_left + 38 + surface.GetTextSize( player["wep_ammo_1"] ) + 6, wep_top + 35, Color( 200, 200, 200 ), 0 , 0 )
+	draw.SimpleText( player["ammo1"], "bhud_roboto_20", wep_left + 38, wep_top + 35, Color( 255, 255, 255 ), 0 , 0 )
+	draw.SimpleText( "/ " .. player["ammo1_max"], "bhud_roboto_20", wep_left + 38 + surface.GetTextSize( player["ammo1"] ) + 6, wep_top + 35, Color( 200, 200, 200 ), 0 , 0 )
 
 	if wep_height != 90 then return end
 
@@ -228,7 +246,7 @@ function cl_bHUD.showHUD()
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( wep_left + 10, wep_top + 62, 16, 16 )
 
-	draw.SimpleText( player["wep_ammo_2_max"], "bhud_roboto_20", wep_left + 38, wep_top + 60, Color( 255, 255, 255 ), 0 , 0 )
+	draw.SimpleText( player["ammo2_max"], "bhud_roboto_20", wep_left + 38, wep_top + 60, Color( 255, 255, 255 ), 0 , 0 )
 
 end
 hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )
@@ -248,16 +266,12 @@ local td = {
 
 function cl_bHUD.showTimeHUD()
 
-	-- Don't draw the HUD if the cvar cl_drawhud is set to 0
-	if !drawHUD then return end
-	-- If BHUD was deactivated by sql-settings
-	if cl_bHUD_sqldata["drawHUD"] == false then return end
-	-- If BHUD-Time was deactivated by sql-settings
-	if cl_bHUD_sqldata["drawTimeHUD"] == false then return end
+	-- CHECK DRAWING THE HUD
+	if !drawHUD or !cl_bHUD_Settings["drawHUD"] or !cl_bHUD_Settings["drawTimeHUD"] then return end
 
 	local width
 	local time = os.date( "%H:%M" )
-	if cl_bHUD_sqldata["showday"] then
+	if cl_bHUD_Settings["showday"] then
 		time = os.date( "%d %B %Y - %H:%M" )
 	end
 
@@ -277,7 +291,7 @@ function cl_bHUD.showTimeHUD()
 		top = 45
 
 		draw.RoundedBoxEx( 4, left, top, width, 25, Color( 50, 50, 50, 230 ), true, true, false, false )
-		if !cl_bHUD_sqldata["showday"] then
+		if !cl_bHUD_Settings["showday"] then
 			draw.SimpleText( "Time:", "bhud_roboto_15", left + 5, top + 5, Color( 255, 255, 255 ), 0 , 0 )
 		else
 			draw.SimpleText( os.date( "%d %B %Y" ), "bhud_roboto_15", left + 5, top + 5, Color( 255, 255, 255 ), 0 , 0 )
@@ -339,7 +353,6 @@ end )
 hook.Add( "OnContextMenuClose", "bhud_closedContextMenu", function()
 
 	bigtimemenu = false
-	getTimes()
 
 end )
 
@@ -375,9 +388,9 @@ function cl_bHUD.showMinimapHUD()
 	-- Don't draw the HUD if the cvar cl_drawhud is set to 0
 	if !drawHUD then return end
 	-- If BHUD was deactivated by sql-settings
-	if cl_bHUD_sqldata["drawHUD"] == false then return end
+	if cl_bHUD_Settings["drawHUD"] == false then return end
 	-- If BHUD-Time was deactivated by sql-settings
-	if cl_bHUD_sqldata["drawMapHUD"] == false then return end
+	if cl_bHUD_Settings["drawMapHUD"] == false then return end
 
 	local circles = {}
 	local deg = 0

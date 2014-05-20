@@ -64,7 +64,7 @@ function cl_bHUD.addchk( derma, text, x, y, setting )
 	local chk = vgui.Create( "DCheckBoxLabel", derma )
 	chk:SetPos( x, y )
 	chk:SetText( "" )
-	chk:SetChecked( cl_bHUD_sqldata[setting] )
+	chk:SetChecked( cl_bHUD_Settings[setting] )
 	chk:SizeToContents()
 
 	function chk:PaintOver()
@@ -79,7 +79,7 @@ function cl_bHUD.addchk( derma, text, x, y, setting )
 
 		local IsChecked = chk:GetChecked() and "1" or "0"
 		sql.Query( "UPDATE bhud_settings SET value = " .. IsChecked .. " WHERE setting = '" .. setting .. "'" )
-		cl_bHUD_sqldata[setting] = chk:GetChecked() and true or false
+		cl_bHUD_Settings[setting] = chk:GetChecked() and true or false
 
 	end
 

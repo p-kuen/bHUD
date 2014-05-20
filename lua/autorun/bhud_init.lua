@@ -1,4 +1,3 @@
-sv_bHUD = {}
 cl_bHUD = {}
 
 AddCSLuaFile()
