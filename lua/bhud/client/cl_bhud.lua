@@ -1,6 +1,6 @@
-------------------------------------------
---  CHECK CONV AND DISABLE DEFAULT HUD  --
-------------------------------------------
+---------------------------
+--  CHECK CLIENT CONVAR  --
+---------------------------
 
 -- Check Convars
 local drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
@@ -8,12 +8,6 @@ function cl_bHUD.setDrawHUD( ply, cmd, args )
 	drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
 end
 concommand.Add( "cl_drawhud", cl_bHUD.setDrawHUD )
-
--- Disable Default-HUD
-function cl_bHUD.drawHUD( HUDName )
-	if HUDName == "CHudHealth" or HUDName == "CHudBattery" or HUDName == "CHudAmmo" or HUDName == "CHudSecondaryAmmo" then return false end
-end
-hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 
 
 
@@ -95,6 +89,15 @@ hook.Add( "OnPlayerChat", "cl_bHUD_OnPlayerChat", cl_bHUD.chat )
 -----------------------
 --  PLAYER INFO HUD  --
 -----------------------
+
+-- DISABLE DEFAULT HUD
+function cl_bHUD.drawHUD( HUDName )
+	if !cl_bHUD_Settings["drawHUD"] then return end
+	if HUDName == "CHudHealth" or HUDName == "CHudBattery" or HUDName == "CHudAmmo" or HUDName == "CHudSecondaryAmmo" then return false end
+end
+hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
+
+
 
 bhud_hp_bar = 0
 bhud_ar_bar = 0
