@@ -16,6 +16,9 @@ function cl_bHUD.addfrm( x, y, w, h )
 		draw.RoundedBoxEx( 4, 0, 25, w, h - 25, Color( 50, 50, 50 ), false, false, true, true )
 		draw.SimpleText( "bHUD - Settings", "bhud_roboto_18_ns", 5, 3, Color( 50, 50, 50 ), 0, 0 )
 
+		draw.RoundedBox( 2, 5, 30, ( w / 2 ) - 5, h - 35, Color( 60, 60, 60 ) )
+		draw.RoundedBox( 2, ( w / 2 ) + 5, 30, ( w / 2 ) - 9, h - 35, Color( 60, 60, 60 ) )
+
 	end
 
 	local close_button = vgui.Create( "DButton", frame )
@@ -96,17 +99,20 @@ end
 function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 
 	local sld = vgui.Create( "DNumSlider", derma )
-	sld:SetPos( x - 20, y )
+	sld:SetPos( x + 70, y - 6 )
 	sld:SetWide( w )
 	sld:SetMin( min )
 	sld:SetMax( max )
 	sld:SetDecimals( 0 )
-	sld:SetText( "" )
+	sld:SetText( "test" )
 	sld:SetDark( false )
 	sld:SetValue( value )
+	sld.Scratch:SetVisible( false )
+	sld.Label:SetVisible( false )
+	
 
 	local lbl = vgui.Create( "DLabel", derma )
-	lbl:SetPos( x, y + 8 )
+	lbl:SetPos( x, y + 4 )
 	lbl:SetColor( Color( 255, 255, 255 ) )
 	lbl:SetFont( "bhud_roboto_16" )
 	lbl:SetText( text )
@@ -114,7 +120,7 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 	lbl:SizeToContents()
 
 	local lbl2 = vgui.Create( "DLabel", derma )
-	lbl2:SetPos( x + w - 60, y + 8 )
+	lbl2:SetPos( x + w + 30, y + 4 )
 	lbl2:SetColor( Color( 255, 255, 255 ) )
 	lbl2:SetFont( "bhud_roboto_16" )
 	lbl2:SetText( tostring( value ) )
@@ -148,7 +154,7 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 
 	function sld:PaintOver()
 
-		draw.RoundedBox( 2, 258, 8, w - 263, 17, Color( 100, 100, 100 ) )
+		draw.RoundedBox( 2, w - 44, 10, 40, 17, Color( 100, 100, 100 ) )
 
 	end
 

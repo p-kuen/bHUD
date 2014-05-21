@@ -49,21 +49,33 @@ function cl_bHUD_SettingsPanel()
 	local py = ScrH() / 2 - ( ph / 2 )
 
 	local frm = cl_bHUD.addfrm( px, py, pw, ph )
-	cl_bHUD.addlbl( frm, "Enable/Disable Features:", 10, 35 )
+	local ch = 35
+	cl_bHUD.addchk( frm, "Enable bHUD", 10, ch, "drawHUD" )
+	ch = ch + 35
 
-	local ch = 61
-	table.foreach( cl_bHUD_Settings, function( setting, value )
+	cl_bHUD.addlbl( frm, "Player HUD:", 10, ch )
+	ch = ch + 25
+	cl_bHUD.addchk( frm, "Show Player-HUD", 10, ch, "drawPlayerHUD" )
+	ch = ch + 20
+	cl_bHUD.addchk( frm, "Show names over players", 10, ch, "drawHoverNames" )
+	ch = ch + 30
 
-		cl_bHUD.addchk( frm, setting, 10, ch, setting )
-		ch = ch + 20
+	cl_bHUD.addlbl( frm, "Time HUD:", 10, ch )
+	ch = ch + 25
+	cl_bHUD.addchk( frm, "Show Time-HUD", 10, ch, "drawTimeHUD" )
+	ch = ch + 20
+	cl_bHUD.addchk( frm, "Show Time and Date", 10, ch, "showday" )
+	ch = ch + 30
 
-	end )
+	cl_bHUD.addlbl( frm, "Minimap:", 10, ch )
+	ch = ch + 25
+	cl_bHUD.addchk( frm, "Show Minimap", 10, ch, "drawMapHUD" )
 
-	cl_bHUD.addlbl( frm, "Minimap Settings:", 195, 35 )
-	cl_bHUD.addsld( frm, "Radius", 195, 53, 300, 50, 150, bhud_map["radius"], "radius" )
-	cl_bHUD.addsld( frm, "Border", 195, 73, 300, 0, 15, bhud_map["border"], "border" )
-	cl_bHUD.addsld( frm, "X-Position", 195, 93, 300, 10 + bhud_map["radius"] + bhud_map["border"], ScrW() - bhud_map["radius"] - 10 - bhud_map["border"], bhud_map["left"], "left" )
-	cl_bHUD.addsld( frm, "Y-Position", 195, 113, 300, 10 + bhud_map["radius"] + bhud_map["border"], ScrH() - bhud_map["radius"] - 10 - bhud_map["border"], bhud_map["top"], "top" )
+	cl_bHUD.addlbl( frm, "Minimap Settings:", pw / 2 + 10, 35 )
+	cl_bHUD.addsld( frm, "Radius", pw / 2 + 10, 55, 155, 50, 150, bhud_map["radius"], "radius" )
+	cl_bHUD.addsld( frm, "Border", pw / 2 + 10, 75, 155, 0, 15, bhud_map["border"], "border" )
+	cl_bHUD.addsld( frm, "X-Position", pw / 2 + 10, 95, 155, 10 + bhud_map["radius"] + bhud_map["border"], ScrW() - bhud_map["radius"] - 10 - bhud_map["border"], bhud_map["left"], "left" )
+	cl_bHUD.addsld( frm, "Y-Position", pw / 2 + 10, 115, 155, 10 + bhud_map["radius"] + bhud_map["border"], ScrH() - bhud_map["radius"] - 10 - bhud_map["border"], bhud_map["top"], "top" )
 
 end
 
