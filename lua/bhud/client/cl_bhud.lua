@@ -99,9 +99,8 @@ hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 
 
 
-local player_health = 0
-local player_armor = 0
-local background_height = 65
+local health = 0
+local armor = 0
 
 function cl_bHUD.showHUD()
 
@@ -157,9 +156,8 @@ function cl_bHUD.showHUD()
 	local width = 195
 	local height
 	if player["armor"] > 0 then height = 90 else height = 65 end
-	if background_height != height then background_height = cl_bHUD.Animation( background_height, height, 0.3 ) end
 	local left = 20
-	local top = ScrH() - background_height - 20
+	local top = ScrH() - height - 20
 
 	local wep_width = 200
 	local wep_height
@@ -168,7 +166,7 @@ function cl_bHUD.showHUD()
 	local wep_left = 230
 
 	-- BACKGROUND
-	draw.RoundedBox( 4, left, top, width, background_height, Color( 50, 50, 50, 230 ) )
+	draw.RoundedBox( 4, left, top, width, height, Color( 50, 50, 50, 230 ) )
 
 	-- PLAYER NAME
 	surface.SetFont( "bhud_roboto_18" )
@@ -186,36 +184,36 @@ function cl_bHUD.showHUD()
 	draw.SimpleText( player["name"], "bhud_roboto_20", left + 38, top + 10, team.GetColor( ply:Team() ), 0, 0 )
 
 	-- PLAYER HEALTH
-	if player_health != player["health"] then player_health = cl_bHUD.Animation( player_health, player["health"], 1 ) end
+	health = cl_bHUD.Animation( health, player["health"], 1 )
 
 	surface.SetFont( "bhud_roboto_18" )
 	surface.SetMaterial( Material( "materials/bhud/heart.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( left + 10, top + 37, 16, 16 )
 
-	draw.RoundedBox( 1, left + 35, top + 35, player_health * 1.5, 20, Color( 255, 50, 0, 230 ) )
+	draw.RoundedBox( 1, left + 35, top + 35, health * 1.5, 20, Color( 255, 50, 0, 230 ) )
 
-	if 10 + surface.GetTextSize( tostring( player["health"] ) ) < player_health * 1.5 then
-		draw.SimpleText( tostring( math.Round( player_health, 0 ) ), "bhud_roboto_18", left + 30 + ( player_health * 1.5 ) - surface.GetTextSize( tostring( player["health"] ) ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
+	if 10 + surface.GetTextSize( tostring( player["health"] ) ) < health * 1.5 then
+		draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_roboto_18", left + 30 + ( health * 1.5 ) - surface.GetTextSize( tostring( player["health"] ) ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
 	else
-		draw.SimpleText( tostring( math.Round( player_health, 0 ) ), "bhud_roboto_18", left + 40 + ( player_health * 1.5 ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
+		draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_roboto_18", left + 40 + ( health * 1.5 ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
 	end
 
 	-- PLAYER ARMOR
 	if player["armor"] > 0 then
 
-		if player_armor != player["armor"] then player_armor = cl_bHUD.Animation( player_armor, player["armor"], 1 ) end
+		armor = cl_bHUD.Animation( armor, player["armor"], 1 )
 
 		surface.SetMaterial( Material( "materials/bhud/shield.png" ) )
 		surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 		surface.DrawTexturedRect( left + 10, top + 62, 16, 16 )
 
-		draw.RoundedBox( 1, left + 35, top + 60, player_armor * 1.5, 20, Color( 0, 161, 222, 230 ) )
+		draw.RoundedBox( 1, left + 35, top + 60, armor * 1.5, 20, Color( 0, 161, 222, 230 ) )
 
-		if 10 + surface.GetTextSize( tostring( player["armor"] ) ) < player_armor * 1.5 then
-			draw.SimpleText( tostring( math.Round( player_armor, 0 ) ), "bhud_roboto_18", left + 30 + ( player_armor * 1.5 ) - surface.GetTextSize( tostring( player["armor"] ) ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
+		if 10 + surface.GetTextSize( tostring( player["armor"] ) ) < armor * 1.5 then
+			draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_roboto_18", left + 30 + ( armor * 1.5 ) - surface.GetTextSize( tostring( player["armor"] ) ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
 		else
-			draw.SimpleText( tostring( math.Round( player_armor, 0 ) ), "bhud_roboto_18", left + 40 + ( player_armor * 1.5 ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
+			draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_roboto_18", left + 40 + ( armor * 1.5 ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
 		end
 
 	end
@@ -272,76 +270,64 @@ local td = {
 	addon = ""
 }
 
-local time_top = 0
-local time_left = 0
-local time_width = 0
-local time_height = 0
+local anim_top = 0
+local anim_left = 0
+local anim_width = 0
 
 function cl_bHUD.showTimeHUD()
 
 	-- CHECK DRAWING THE HUD
 	if !drawHUD or !cl_bHUD_Settings["drawHUD"] or !cl_bHUD_Settings["drawTimeHUD"] then return end
 
-	local width
-	local height
-	local top
+	surface.SetFont( "bhud_roboto_15" )
+
 	local time = os.date( "%H:%M" )
-	if cl_bHUD_Settings["showday"] then
-		time = os.date( "%d %B %Y - %H:%M" )
-	end
+
+	local height = 25
+	local top
+	local width
+	local mode
 
 	if bigtimemenu then
-		height = 67
 		width = 150
-		top = 45
+		mode = false
+		top = 50
 	else
-		surface.SetFont( "bhud_roboto_15" )
-		height = 0
-		width = 12 + surface.GetTextSize( time )
-		top = 15
+		if cl_bHUD_Settings["showday"] then time = os.date( "%d %B %Y - %H:%M" ) end
+		width = surface.GetTextSize( time ) + 10
+		mode = true
+		top = 20
 	end
-	local left = ScrW() - width - 15
+
+	local left = ScrW() - width - 20
+
+	anim_top = cl_bHUD.Animation( anim_top, top, 0.3 )
+	anim_left = cl_bHUD.Animation( anim_left, left, 0.3 )
+	anim_width = cl_bHUD.Animation( anim_width, width, 0.3 )
+
+	draw.RoundedBoxEx( 4, anim_left, anim_top, anim_width, height, Color( 50, 50, 50, 230 ), true, true, mode, mode )
+	draw.SimpleText( time, "bhud_roboto_15", ScrW() - 25, anim_top + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
+
+	if !bigtimemenu then return end
+
+	local header
+	if !cl_bHUD_Settings["showday"] then header = "Time: " else header = os.date( "%d %B %Y" ) end
+
+	draw.SimpleText( header, "bhud_roboto_15", anim_left + 5, anim_top + 5, Color( 255, 255, 255 ), 0 , 0 )
+
+	draw.RoundedBoxEx( 4, anim_left, anim_top + height, anim_width, 67, Color( 100, 100, 100, 230 ), false, false, true, true )
+
+	-- Session
+	draw.SimpleText( "Session:", "bhud_roboto_15", anim_left + 5, anim_top + 30, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( string.NiceTime( os.time() - jointime ), "bhud_roboto_15", anim_left + 11 + surface.GetTextSize( "Session:" ), anim_top + 30, Color( 255, 255, 255 ), 0, 0 )
+
+	-- Total
+	draw.SimpleText( "Total:", "bhud_roboto_15", anim_left + 5, anim_top + 50, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( string.NiceTime( td.time + ( os.time() - jointime ) ), "bhud_roboto_15", anim_left + 11 + surface.GetTextSize( "Total:" ), anim_top + 50, Color( 255, 255, 255 ), 0, 0 )
 	
-	-- ANIMATIONS
-	if time_top != top then time_top = cl_bHUD.Animation( time_top, top, 0.3 ) end
-	if time_left != left then time_left = cl_bHUD.Animation( time_left, left, 0.3 ) end
-	if time_width != width then time_width = cl_bHUD.Animation( time_width, width, 0.3 ) end
-	if time_height != height then time_height = cl_bHUD.Animation( time_height, height, 0.3 ) end
-
-	if bigtimemenu then
-
-		draw.RoundedBoxEx( 4, time_left, time_top, time_width, 25, Color( 50, 50, 50, 230 ), true, true, false, false )
-		if !cl_bHUD_Settings["showday"] then
-			draw.SimpleText( "Time:", "bhud_roboto_15", time_left + 5, time_top + 5, Color( 255, 255, 255 ), 0 , 0 )
-		else
-			draw.SimpleText( os.date( "%d %B %Y" ), "bhud_roboto_15", time_left + 5, time_top + 5, Color( 255, 255, 255 ), 0 , 0 )
-		end
-		draw.SimpleText( os.date( "%H:%M" ), "bhud_roboto_15", time_left + time_width - 6, time_top + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
-
-		draw.RoundedBoxEx( 4, time_left, time_top + 25, time_width, time_height, Color( 100, 100, 100, 230 ), false, false, true, true )
-
-		-- Session
-		if time_height < 5 then return end
-		surface.SetFont( "bhud_roboto_16" )
-		draw.SimpleText( "Session:", "bhud_roboto_16", time_left + 6, time_top + 30, Color( 255, 255, 255 ), 0, 0 )
-		draw.SimpleText( string.NiceTime( os.time() - jointime ), "bhud_roboto_16", time_left + 11 + surface.GetTextSize( "Session:" ), time_top + 30, Color( 255, 255, 255 ), 0, 0 )
-
-		-- Total
-		if time_height < 45 then return end
-		draw.SimpleText( "Total:", "bhud_roboto_16", time_left + 6, time_top + 50, Color( 255, 255, 255 ), 0, 0 )
-		draw.SimpleText( string.NiceTime( td.time + ( os.time() - jointime ) ), "bhud_roboto_16", time_left + 11 + surface.GetTextSize( "Total:" ), time_top + 50, Color( 255, 255, 255 ), 0, 0 )
-		
-		-- Addon
-		if time_height < 65 then return end
-		draw.SimpleText( "Addon:", "bhud_roboto_16", time_left + 6, time_top + 70, Color( 255, 255, 255 ), 0, 0 )
-		draw.SimpleText( td.addon, "bhud_roboto_16", time_left + 11 + surface.GetTextSize( "Addon:" ), time_top + 70, Color( 255, 255, 255 ), 0, 0 )
-
-	else
-
-		draw.RoundedBoxEx( 4, time_left, time_top, time_width, 25, Color( 50, 50, 50, 230 ), true, true, true, true )
-		draw.SimpleText( time, "bhud_roboto_15", time_left + time_width - 6, time_top + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
-
-	end
+	-- Addon
+	draw.SimpleText( "Addon:", "bhud_roboto_15", anim_left + 5, anim_top + 70, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( td.addon, "bhud_roboto_15", anim_left + 11 + surface.GetTextSize( "Addon:" ), anim_top + 70, Color( 255, 255, 255 ), 0, 0 )
 
 end
 hook.Add( "HUDPaint", "bhud_showTimeHUD", cl_bHUD.showTimeHUD )
