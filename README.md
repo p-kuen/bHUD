@@ -34,7 +34,7 @@ We have programed a completely new Minimap, as one Guy suggested in the comments
 <h3>Settings:</h3>
 
 <b>How to open the settings panel:</b>
-Write in the chatbox: "!bhud_settings" and press enter!
+If you hold the <b>c-Key</b>, you will see at the <b>right-bottom of the screen</b> a little <b>settings-icon</b>. Just <b>left-click</b> on it to open the settings menu.
 
 - You can enable/disable every part of this HUD or the complete one
 - You can change the size, position and border of the Minimap

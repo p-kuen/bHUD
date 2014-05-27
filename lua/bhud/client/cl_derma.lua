@@ -43,6 +43,7 @@ function cl_bHUD.addfrm( x, y, w, h )
 	close_button.DoClick = function()
 
 		frame:Close()
+		bhud_panel_open = false
 
 	end
 

@@ -74,15 +74,19 @@ function cl_bHUD_SettingsPanel()
 end
 
 -- OPEN SETTINGS-PANEL
-function cl_bHUD.chat( ply, text, team, dead )
+bhud_panel_open = false
+function cl_bHUD.Think()
 
-	if text == "!bhud_settings" then
-		cl_bHUD_SettingsPanel()
-		return true
+	if input.IsMouseDown( MOUSE_LEFT ) and !bhud_panel_open then
+		local x, y = gui.MousePos()
+		if x >= ScrW() - 5 - 16 and x <= ScrW() - 5 and y >= ScrH() - 5 - 16 and y <= ScrH() - 5 then
+			cl_bHUD_SettingsPanel()
+			bhud_panel_open = true
+		end
 	end
 
 end
-hook.Add( "OnPlayerChat", "cl_bHUD_OnPlayerChat", cl_bHUD.chat )
+hook.Add( "Think", "cl_bHUD_Think", cl_bHUD.Think )
 
 
 
@@ -146,7 +150,7 @@ function cl_bHUD.showHUD()
 		ammo2_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetSecondaryAmmoType() )
 
 	}
-	
+
 	-- SET PLAYER'S TEAM
 	if player["team"] != "" and player["team"] != "Unassigned" then
 		player["name"] = "[" .. player["team"] .. "] " .. ply:Nick()
@@ -309,6 +313,11 @@ function cl_bHUD.showTimeHUD()
 	draw.SimpleText( time, "bhud_roboto_15", ScrW() - 25, anim_top + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
 
 	if !bigtimemenu then return end
+
+	-- Show Settings-Icon
+	surface.SetMaterial( Material( "materials/bhud/config.png" ) )
+	surface.SetDrawColor( Color( 255, 150, 0, 255 ) )
+	surface.DrawTexturedRect( ScrW() - 5 - 16, ScrH() - 5 - 16, 16, 16 )
 
 	local header
 	if !cl_bHUD_Settings["showday"] then header = "Time: " else header = os.date( "%d %B %Y" ) end
