@@ -117,18 +117,18 @@ function cl_bHUD.showHUD()
 	if cl_bHUD_Settings["drawHoverNames"] then
 
 		table.foreach( player.GetAll(), function( id, pl )
-
-			if LocalPlayer() == pl or !LocalPlayer():Visible( pl ) then return end
+			
+			if LocalPlayer() == pl then return end
 
 			local pos = pl:GetPos() + Vector( 0, 0, 100 )
 			local screen = pos:ToScreen()
 			local teamcol = team.GetColor( pl:Team() )
-			local alpha = math.Clamp( 255 - ( LocalPlayer():GetPos():Distance( pl:GetPos() ) / 100 ), 0, 255 )
+			local alpha = math.Clamp( 255 - ( LocalPlayer():GetPos():Distance( pl:GetPos() ) / 20 ), 0, 255 )
 
 			surface.SetFont( "bhud_roboto_22_ns" )
 			screen.x = screen.x - ( surface.GetTextSize( pl:Nick() ) / 2 )
 
-			draw.SimpleTextOutlined( pl:Nick(), "bhud_roboto_22_ns", screen.x, screen.y, Color( alpha, alpha, alpha, alpha ), 0 , 0, 1, Color( 100, 100, 100, alpha ) )
+			draw.SimpleTextOutlined( pl:Nick(), "bhud_roboto_22_ns", screen.x, screen.y, Color( 255, 255, 255, alpha ), 0 , 0, 1, Color( 100, 100, 100, alpha ) )
 
 		end )
 
@@ -462,8 +462,8 @@ function cl_bHUD.showMinimapHUD()
 
 		-- Calculate Player-Cursor-Positions
 		local d = rad( ang + 180 )
-		local posx = -sin( d ) * ( math.Clamp( dist, 0, 1000 ) / 10 )
-		local posy = cos( d ) * ( math.Clamp( dist, 0, 1000 ) / 10 )
+		local posx = -sin( d ) * ( math.Clamp( dist, 0, bhud_map["radius"] * 10 ) / 10 )
+		local posy = cos( d ) * ( math.Clamp( dist, 0, bhud_map["radius"] * 10 ) / 10 )
 
 		-- Set correct Cursor-Picture
 		if LocalPlayer():GetPos().z + bhud_map["tolerance"] < pl:GetPos().z then
