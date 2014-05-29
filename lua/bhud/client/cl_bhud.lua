@@ -195,12 +195,12 @@ function cl_bHUD.showHUD()
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( left + 10, top + 37, 16, 16 )
 
-	draw.RoundedBox( 1, left + 35, top + 35, health * 1.5, 20, Color( 255, 50, 0, 230 ) )
+	draw.RoundedBox( 1, left + 35, top + 35, math.Clamp( health * 1.5, 0, 150 ), 20, Color( 255, 50, 0, 230 ) )
 
 	if 10 + surface.GetTextSize( tostring( player["health"] ) ) < health * 1.5 then
-		draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_roboto_18", left + 30 + ( health * 1.5 ) - surface.GetTextSize( tostring( player["health"] ) ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
+		draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_roboto_18", left + 30 + ( math.Clamp( health * 1.5, 0, 150 ) ) - surface.GetTextSize( tostring( player["health"] ) ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
 	else
-		draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_roboto_18", left + 40 + ( health * 1.5 ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
+		draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_roboto_18", left + 40 + ( math.Clamp( health * 1.5, 0, 150 ) ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
 	end
 
 	-- PLAYER ARMOR
@@ -212,12 +212,12 @@ function cl_bHUD.showHUD()
 		surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 		surface.DrawTexturedRect( left + 10, top + 62, 16, 16 )
 
-		draw.RoundedBox( 1, left + 35, top + 60, armor * 1.5, 20, Color( 0, 161, 222, 230 ) )
+		draw.RoundedBox( 1, left + 35, top + 60, math.Clamp( armor * 1.5, 0, 150 ), 20, Color( 0, 161, 222, 230 ) )
 
 		if 10 + surface.GetTextSize( tostring( player["armor"] ) ) < armor * 1.5 then
-			draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_roboto_18", left + 30 + ( armor * 1.5 ) - surface.GetTextSize( tostring( player["armor"] ) ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
+			draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_roboto_18", left + 30 + ( math.Clamp( armor * 1.5, 0, 150 ) ) - surface.GetTextSize( tostring( player["armor"] ) ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
 		else
-			draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_roboto_18", left + 40 + ( armor * 1.5 ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
+			draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_roboto_18", left + 40 + ( math.Clamp( armor * 1.5, 0, 150 ) ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
 		end
 
 	end
