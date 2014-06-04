@@ -9,3 +9,5 @@ resource.AddFile( "materials/bhud/cursor_down.png" )
 resource.AddFile( "materials/bhud/cursor_up.png" )
 resource.AddFile( "materials/bhud/north.png" )
 resource.AddFile( "materials/bhud/config.png" )
+
+resource.AddFile( "resource/fonts/purista.ttf" )

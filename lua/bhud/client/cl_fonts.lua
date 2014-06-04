@@ -20,10 +20,28 @@ surface.CreateFont( "bhud_roboto_20", {
 	shadow = true
 } )
 
+surface.CreateFont( "bhud_purista_20", {
+	font = "Purista SemiBold",
+	size = 20,
+	weight = 1000,
+	antialias = true,
+	outline = false,
+	shadow = true
+} )
+
 surface.CreateFont( "bhud_roboto_18", {
 	font = "Roboto",
 	size = 18,
 	weight = 500,
+	antialias = true,
+	outline = false,
+	shadow = true
+} )
+
+surface.CreateFont( "bhud_purista_18", {
+	font = "Purista SemiBold",
+	size = 18,
+	weight = 1000,
 	antialias = true,
 	outline = false,
 	shadow = true
