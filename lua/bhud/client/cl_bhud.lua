@@ -2,7 +2,6 @@
 --  CHECK CLIENT CONVAR  --
 ---------------------------
 
--- Check Convars
 local drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
 function cl_bHUD.setDrawHUD( ply, cmd, args )
 	drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
@@ -32,7 +31,7 @@ table.foreach( check_sql, function( index, setting )
 end )
 
 -- BHUD-SETTINGS INFORMATION
-chat.AddText( Color( 255, 50, 0 ), "[bHUD - Settings]", Color( 255, 255, 255 ), " Write '", Color( 0, 161, 222 ), "!bhud_settings", Color( 255, 255, 255 ), "' to open the ", Color( 0, 161, 222 ), "Settings-Panel", Color( 255, 255, 255 ), "!" )
+chat.AddText( Color( 255, 50, 0 ), "[bHUD - Settings]", Color( 255, 255, 255 ), " Hold '", Color( 0, 161, 222 ), "C", Color( 255, 255, 255 ), "' and click on the ", Color( 0, 161, 222 ), "orange symbol", Color( 255, 255, 255 ), " in the right bottom corner to open the settings!" )
 
 -- PANEL
 function cl_bHUD_SettingsPanel()
@@ -73,27 +72,6 @@ function cl_bHUD_SettingsPanel()
 
 end
 
--- OPEN SETTINGS-PANEL
-bhud_panel_open = false
-function cl_bHUD.Think()
-
-	if input.IsMouseDown( MOUSE_LEFT ) and !bhud_panel_open then
-		local x, y = gui.MousePos()
-		if x >= ScrW() - 5 - 16 and x <= ScrW() - 5 and y >= ScrH() - 5 - 16 and y <= ScrH() - 5 then
-			cl_bHUD_SettingsPanel()
-			bhud_panel_open = true
-		end
-	end
-
-end
-hook.Add( "Think", "cl_bHUD_Think", cl_bHUD.Think )
-
-
-
------------------------
---  PLAYER INFO HUD  --
------------------------
-
 -- DISABLE DEFAULT HUD
 function cl_bHUD.drawHUD( HUDName )
 	if !cl_bHUD_Settings["drawHUD"] then return end
@@ -103,15 +81,18 @@ hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 
 
 
+-----------------------
+--  PLAYER INFO HUD  --
+-----------------------
+
 local health = 0
 local armor = 0
 
 function cl_bHUD.showHUD()
 
-	-- CHECK DRAWING THE HUD
+	-- CHECK HUD-DRAW
 	if !drawHUD or !cl_bHUD_Settings["drawHUD"] or !cl_bHUD_Settings["drawPlayerHUD"] then return end
 	if !LocalPlayer():Alive() or !LocalPlayer():IsValid() or !LocalPlayer():GetActiveWeapon():IsValid() then return end
-
 
 	-- HOVER NAMES
 	if cl_bHUD_Settings["drawHoverNames"] then
@@ -134,8 +115,7 @@ function cl_bHUD.showHUD()
 
 	end
 
-
-	-- GET PLAYER DATA
+	-- PLAYER DATA
 	local ply = LocalPlayer()
 	local player = {
 
@@ -151,12 +131,12 @@ function cl_bHUD.showHUD()
 
 	}
 
-	-- SET PLAYER'S TEAM
+	-- PLAYER TEAM
 	if player["team"] != "" and player["team"] != "Unassigned" then
 		player["name"] = "[" .. player["team"] .. "] " .. ply:Nick()
 	end
 
-	-- SET HUD SIZES
+	-- HUD SIZES
 	local width = 195
 	local height
 	if player["armor"] > 0 then height = 90 else height = 65 end
@@ -273,7 +253,7 @@ hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )
 --  TIME HUD  --
 ----------------
 
-local bigtimemenu = false
+local bhud_cmenu = false
 local jointime = os.time()
 local td = {
 	time = 0,
@@ -286,19 +266,18 @@ local anim_width = 0
 
 function cl_bHUD.showTimeHUD()
 
-	-- CHECK DRAWING THE HUD
+	-- CHECK HUD DRAW
 	if !drawHUD or !cl_bHUD_Settings["drawHUD"] or !cl_bHUD_Settings["drawTimeHUD"] then return end
 
-	surface.SetFont( "bhud_roboto_15" )
-
+	-- CURRENT TIME HUD
 	local time = os.date( "%H:%M" )
-
 	local height = 25
 	local top
 	local width
 	local mode
 
-	if bigtimemenu then
+	surface.SetFont( "bhud_roboto_15" )
+	if bhud_cmenu then
 		width = 150
 		mode = false
 		top = 50
@@ -318,13 +297,10 @@ function cl_bHUD.showTimeHUD()
 	draw.RoundedBoxEx( 4, anim_left, anim_top, anim_width, height, Color( 50, 50, 50, 230 ), true, true, mode, mode )
 	draw.SimpleText( time, "bhud_roboto_15", ScrW() - 25, anim_top + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
 
-	if !bigtimemenu then return end
+	-- CHECK C-KEY
+	if !bhud_cmenu then return end
 
-	-- Show Settings-Icon
-	surface.SetMaterial( Material( "materials/bhud/config.png" ) )
-	surface.SetDrawColor( Color( 255, 150, 0, 255 ) )
-	surface.DrawTexturedRect( ScrW() - 5 - 16, ScrH() - 5 - 16, 16, 16 )
-
+	-- EXTENDED TIME HUD
 	local header
 	if !cl_bHUD_Settings["showday"] then header = "Time: " else header = os.date( "%d %B %Y" ) end
 
@@ -347,44 +323,13 @@ function cl_bHUD.showTimeHUD()
 end
 hook.Add( "HUDPaint", "bhud_showTimeHUD", cl_bHUD.showTimeHUD )
 
-local function getTimes()
-
-	if exsto then
-		time = LocalPlayer():GetNWInt( "Time_Fixed" )
-		td.addon = "Exsto"
-	elseif sql.TableExists( "utime" ) then
-		time = LocalPlayer():GetNWInt( "TotalUTime" )
-		td.addon = "UTime"
-	elseif evolve then
-		time = LocalPlayer():GetNWInt( "EV_PlayTime" )
-		td.addon = "Evolve"
-	else
-		time = 0
-		td.addon = "Not found ..."
-	end
-
-end
-
-hook.Add( "OnContextMenuOpen", "bhud_openedContextMenu", function()
-
-	bigtimemenu = true
-	getTimes()
-
-end )
-
-hook.Add( "OnContextMenuClose", "bhud_closedContextMenu", function()
-
-	bigtimemenu = false
-
-end )
-
 
 
 -------------------
 --  MINIMAP HUD  --
 -------------------
 
--- SET DEFAULT VALUES
+-- DEFAULT MINIMAP VALUES
 bhud_map = {}
 bhud_map["radius"] = 100
 bhud_map["border"] = 7
@@ -392,7 +337,7 @@ bhud_map["left"] = ScrW() - bhud_map["radius"] - 10 - bhud_map["border"]
 bhud_map["top"] = ScrH() - bhud_map["radius"] - 10 - bhud_map["border"]
 bhud_map["tolerance"] = 200
 
--- LOAD CUSTOM SETTINGS
+-- CUSTOM MINIMAP SETTINGS
 local check_sql = { "left", "top", "radius", "border" }
 table.foreach( check_sql, function( index, setting )
 
@@ -407,13 +352,10 @@ end )
 
 function cl_bHUD.showMinimapHUD()
 
-	-- Don't draw the HUD if the cvar cl_drawhud is set to 0
-	if !drawHUD then return end
-	-- If BHUD was deactivated by sql-settings
-	if cl_bHUD_Settings["drawHUD"] == false then return end
-	-- If BHUD-Time was deactivated by sql-settings
-	if cl_bHUD_Settings["drawMapHUD"] == false then return end
+	-- CHECK HUD-DRAW
+	if !drawHUD or !cl_bHUD_Settings["drawHUD"] or !cl_bHUD_Settings["drawMapHUD"] then return end
 
+	-- DRAW CIRCLES
 	local circles = {}
 	local deg = 0
 	local sin, cos, rad = math.sin, math.cos, math.rad
@@ -436,10 +378,10 @@ function cl_bHUD.showMinimapHUD()
 
 	end
 	
-	-- BORDER
+	-- CIRCLE BORDER
 	draw_circle( "minimap_border", 60, bhud_map["left"], bhud_map["top"], bhud_map["radius"] + bhud_map["border"], Color( 255, 150, 0 ) )
 
-	-- BACKGROUND
+	-- CIRCLE BACKGROUND
 	draw_circle( "minimap_background", 60, bhud_map["left"], bhud_map["top"], bhud_map["radius"], Color( 50, 50, 50 ) )
 
 	-- MIDDLE CURSOR
@@ -496,3 +438,62 @@ function cl_bHUD.showMinimapHUD()
 
 end
 hook.Add( "HUDPaint", "bhud_showMinimapHUD", cl_bHUD.showMinimapHUD )
+
+
+
+---------------------
+--  SETTINGS ICON  --
+---------------------
+
+function cl_bHUD.showSettingsIcon()
+
+	if !bhud_cmenu then return end
+
+	-- Check Mouse-Click and Mouse-Position
+	if input.IsMouseDown( MOUSE_LEFT ) and !bhud_panel_open then
+		local x, y = gui.MousePos()
+		if x >= ScrW() - 5 - 16 and x <= ScrW() - 5 and y >= ScrH() - 5 - 16 and y <= ScrH() - 5 then
+			cl_bHUD_SettingsPanel()
+			bhud_panel_open = true
+		end
+	end
+
+	-- Draw little symbol
+	surface.SetMaterial( Material( "materials/bhud/config.png" ) )
+	surface.SetDrawColor( Color( 255, 150, 0, 255 ) )
+	surface.DrawTexturedRect( ScrW() - 5 - 16, ScrH() - 5 - 16, 16, 16 )
+
+end
+hook.Add( "HUDPaint", "bhud_showMinimapHUD", cl_bHUD.showSettingsIcon )
+
+
+
+--------------
+--  C-MENU  --
+--------------
+
+hook.Add( "OnContextMenuOpen", "bhud_openedContextMenu", function()
+
+	bhud_cmenu = true
+
+	if exsto then
+		time = LocalPlayer():GetNWInt( "Time_Fixed" )
+		td.addon = "Exsto"
+	elseif sql.TableExists( "utime" ) then
+		time = LocalPlayer():GetNWInt( "TotalUTime" )
+		td.addon = "UTime"
+	elseif evolve then
+		time = LocalPlayer():GetNWInt( "EV_PlayTime" )
+		td.addon = "Evolve"
+	else
+		time = 0
+		td.addon = "Not found ..."
+	end
+
+end )
+
+hook.Add( "OnContextMenuClose", "bhud_closedContextMenu", function()
+
+	bhud_cmenu = false
+
+end )
