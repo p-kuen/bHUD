@@ -228,7 +228,9 @@ function cl_bHUD.showHUD()
 
 	-- Color
 	local ammocol = Color( 255, 255, 255 )
-	if player["ammo1"] <= 5 then
+	-- Convert Ammo to a number if it is a string
+	if type( player["ammo1"] ) == "string" then player["ammo1"] = tonumber( player["ammo1"] ) end
+	if player["ammo1"] <= 5 and player["weapon"] != "GRENADE" and player["weapon"] != "RPG" then
 		ammocol = Color( 255, 0, 0 )
 	end
 

@@ -1,5 +1,7 @@
+-- FRAME
 function cl_bHUD.addfrm( x, y, w, h )
 
+	-- Frame
 	local frame = vgui.Create( "DFrame" )
 	frame:SetPos( x, y )
 	frame:SetSize( w, h )
@@ -10,6 +12,25 @@ function cl_bHUD.addfrm( x, y, w, h )
 	frame:SetBackgroundBlur( true )
 	frame:MakePopup()
 
+	-- Close Button
+	local close_button = vgui.Create( "DButton", frame )
+	close_button:Center()
+	close_button:SetFont( "bhud_roboto_18_ns" )
+	close_button:SetTextColor( Color( 255, 255, 255 ) )
+	close_button:SetText( "x" )
+	close_button:SetPos( w - 50, 0 )
+	close_button:SetSize( 45, 20 )
+	close_button:SetDark( false )
+
+	-- Actions
+	close_button.DoClick = function()
+
+		frame:Close()
+		bhud_panel_open = false
+
+	end
+
+	-- Painting
 	function frame:Paint()
 
 		draw.RoundedBoxEx( 4, 0, 0, w, 25, Color( 255, 150, 0 ), true, true, false, false )
@@ -21,15 +42,6 @@ function cl_bHUD.addfrm( x, y, w, h )
 
 	end
 
-	local close_button = vgui.Create( "DButton", frame )
-	close_button:Center()
-	close_button:SetFont( "bhud_roboto_18_ns" )
-	close_button:SetTextColor( Color( 255, 255, 255 ) )
-	close_button:SetText( "x" )
-	close_button:SetPos( w - 50, 0 )
-	close_button:SetSize( 45, 20 )
-	close_button:SetDark( false )
-
 	function close_button:Paint()
 
 		if close_button:IsHovered() then
@@ -40,17 +52,11 @@ function cl_bHUD.addfrm( x, y, w, h )
 
 	end
 
-	close_button.DoClick = function()
-
-		frame:Close()
-		bhud_panel_open = false
-
-	end
-
 	return frame
 
 end
 
+-- LABEL
 function cl_bHUD.addlbl( derma, text, x, y )
 
 	local lbl = vgui.Create( "DLabel", derma )
@@ -63,30 +69,17 @@ function cl_bHUD.addlbl( derma, text, x, y )
 
 end
 
+-- CHECKBOX
 function cl_bHUD.addchk( derma, text, x, y, setting )
 
+	-- Checkbox
 	local chk = vgui.Create( "DCheckBoxLabel", derma )
 	chk:SetPos( x, y )
 	chk:SetText( "" )
 	chk:SetChecked( cl_bHUD_Settings[setting] )
 	chk:SizeToContents()
 
-	function chk:PaintOver()
-
-		draw.RoundedBox( 2, 0, 0, chk:GetTall(), chk:GetTall(), Color( 100, 100, 100 ) )
-		if chk:GetChecked() == false then return end
-		draw.RoundedBox( 2, 0, 0, chk:GetTall(), chk:GetTall(), Color( 255, 150, 0 ) )
-
-	end
-
-	function chk:OnChange()
-
-		local IsChecked = chk:GetChecked() and "1" or "0"
-		sql.Query( "UPDATE bhud_settings SET value = " .. IsChecked .. " WHERE setting = '" .. setting .. "'" )
-		cl_bHUD_Settings[setting] = chk:GetChecked() and true or false
-
-	end
-
+	-- Checkbox Name
 	local lbl = vgui.Create( "DLabel", derma )
 	lbl:SetPos( x + 20, y )
 	lbl:SetColor( Color( 255, 255, 255 ) )
@@ -95,10 +88,30 @@ function cl_bHUD.addchk( derma, text, x, y, setting )
 	lbl:SetDark( false )
 	lbl:SizeToContents()
 
+	-- Actions
+	function chk:OnChange()
+
+		local IsChecked = chk:GetChecked() and "1" or "0"
+		sql.Query( "UPDATE bhud_settings SET value = " .. IsChecked .. " WHERE setting = '" .. setting .. "'" )
+		cl_bHUD_Settings[setting] = chk:GetChecked() and true or false
+
+	end
+
+	-- Painting
+	function chk:PaintOver()
+
+		draw.RoundedBox( 2, 0, 0, chk:GetTall(), chk:GetTall(), Color( 100, 100, 100 ) )
+		if chk:GetChecked() == false then return end
+		draw.RoundedBox( 2, 0, 0, chk:GetTall(), chk:GetTall(), Color( 255, 150, 0 ) )
+
+	end
+
 end
 
+-- SLIDER
 function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 
+	-- Slider
 	local sld = vgui.Create( "DNumSlider", derma )
 	sld:SetPos( x + 70, y - 6 )
 	sld:SetWide( w )
@@ -110,8 +123,8 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 	sld:SetValue( value )
 	sld.Scratch:SetVisible( false )
 	sld.Label:SetVisible( false )
-	
 
+	-- Slider Name
 	local lbl = vgui.Create( "DLabel", derma )
 	lbl:SetPos( x, y + 4 )
 	lbl:SetColor( Color( 255, 255, 255 ) )
@@ -120,6 +133,7 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 	lbl:SetDark( false )
 	lbl:SizeToContents()
 
+	-- Slider Value
 	local lbl2 = vgui.Create( "DLabel", derma )
 	lbl2:SetPos( x + w + 30, y + 4 )
 	lbl2:SetColor( Color( 255, 255, 255 ) )
@@ -130,6 +144,7 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 
 	local posx = value
 
+	-- Actions
 	sld.ValueChanged = function( self, number )
 		
 		if variable == "radius" then
@@ -153,6 +168,7 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 
 	end
 
+	-- Painting
 	function sld:PaintOver()
 
 		draw.RoundedBox( 2, w - 44, 10, 40, 17, Color( 100, 100, 100 ) )

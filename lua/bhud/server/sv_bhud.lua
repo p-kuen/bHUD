@@ -1,3 +1,4 @@
+-- Images
 resource.AddFile( "materials/bhud/player.png" )
 resource.AddFile( "materials/bhud/heart.png" )
 resource.AddFile( "materials/bhud/shield.png" )
@@ -10,4 +11,5 @@ resource.AddFile( "materials/bhud/cursor_up.png" )
 resource.AddFile( "materials/bhud/north.png" )
 resource.AddFile( "materials/bhud/config.png" )
 
+-- Fonts
 resource.AddFile( "resource/fonts/purista.ttf" )
