@@ -466,7 +466,7 @@ function cl_bHUD.showSettingsIcon()
 	surface.DrawTexturedRect( ScrW() - 5 - 16, ScrH() - 5 - 16, 16, 16 )
 
 end
-hook.Add( "HUDPaint", "bhud_showMinimapHUD", cl_bHUD.showSettingsIcon )
+hook.Add( "HUDPaint", "bhud_showSettingsIcon", cl_bHUD.showSettingsIcon )
 
 
 
