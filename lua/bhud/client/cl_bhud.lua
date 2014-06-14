@@ -38,6 +38,8 @@ function cl_bHUD_SettingsPanel()
 
 	local pw = ScrW() / 4
 	local ph = ScrH() / 4
+	if pw < 480 then pw = 480 end
+	if ph < 270 then ph = 270 end
 	local px = ScrW() / 2 - ( pw / 2 )
 	local py = ScrH() / 2 - ( ph / 2 )
 
