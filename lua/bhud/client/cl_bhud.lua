@@ -155,7 +155,7 @@ function cl_bHUD.showHUD()
 	draw.RoundedBox( 4, left, top, width, height, Color( 50, 50, 50, 230 ) )
 
 	-- PLAYER NAME
-	surface.SetFont( "bhud_purista_20" )
+	surface.SetFont( "bhud_roboto_20" )
 	if surface.GetTextSize( player["name"] ) > ( width - 38 - 10 ) then
 		while surface.GetTextSize( player["name"] ) > ( width - 38 - 15 ) do
 			player["name"] = string.Left( player["name"], string.len( player["name"] ) -1 )
@@ -167,12 +167,12 @@ function cl_bHUD.showHUD()
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( left + 10, top + 12, 16, 16 )
 
-	draw.SimpleText( player["name"], "bhud_purista_20", left + 38, top + 10, team.GetColor( ply:Team() ), 0, 0 )
+	draw.SimpleText( player["name"], "bhud_roboto_20", left + 38, top + 10, team.GetColor( ply:Team() ), 0, 0 )
 
 	-- PLAYER HEALTH
 	health = cl_bHUD.Animation( health, player["health"], 1 )
 
-	surface.SetFont( "bhud_purista_18" )
+	surface.SetFont( "bhud_roboto_18" )
 	surface.SetMaterial( Material( "materials/bhud/heart.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( left + 10, top + 37, 16, 16 )
@@ -180,9 +180,9 @@ function cl_bHUD.showHUD()
 	draw.RoundedBox( 1, left + 35, top + 35, math.Clamp( health * 1.5, 0, 150 ), 20, Color( 255, 50, 0, 230 ) )
 
 	if 10 + surface.GetTextSize( tostring( player["health"] ) ) < health * 1.5 then
-		draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_purista_18", left + 30 + ( math.Clamp( health * 1.5, 0, 150 ) ) - surface.GetTextSize( tostring( player["health"] ) ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
+		draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_roboto_18", left + 30 + ( math.Clamp( health * 1.5, 0, 150 ) ) - surface.GetTextSize( tostring( player["health"] ) ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
 	else
-		draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_purista_18", left + 40 + ( math.Clamp( health * 1.5, 0, 150 ) ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
+		draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_roboto_18", left + 40 + ( math.Clamp( health * 1.5, 0, 150 ) ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
 	end
 
 	-- PLAYER ARMOR
@@ -197,9 +197,9 @@ function cl_bHUD.showHUD()
 		draw.RoundedBox( 1, left + 35, top + 60, math.Clamp( armor * 1.5, 0, 150 ), 20, Color( 0, 161, 222, 230 ) )
 
 		if 10 + surface.GetTextSize( tostring( player["armor"] ) ) < armor * 1.5 then
-			draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_purista_18", left + 30 + ( math.Clamp( armor * 1.5, 0, 150 ) ) - surface.GetTextSize( tostring( player["armor"] ) ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
+			draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_roboto_18", left + 30 + ( math.Clamp( armor * 1.5, 0, 150 ) ) - surface.GetTextSize( tostring( player["armor"] ) ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
 		else
-			draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_purista_18", left + 40 + ( math.Clamp( armor * 1.5, 0, 150 ) ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
+			draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_roboto_18", left + 40 + ( math.Clamp( armor * 1.5, 0, 150 ) ), top + 62, Color( 255, 255, 255 ), 0 , 0 )
 		end
 
 	end
@@ -219,7 +219,7 @@ function cl_bHUD.showHUD()
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( wep_left + 10, wep_top + 12, 16, 16 )
 
-	draw.SimpleText( player["weapon"], "bhud_purista_20", wep_left + 38, wep_top + 10, Color( 255, 255, 255 ), 0 , 0 )
+	draw.SimpleText( player["weapon"], "bhud_roboto_20", wep_left + 38, wep_top + 10, Color( 255, 255, 255 ), 0 , 0 )
 
 	-- AMMO 1
 	surface.SetMaterial( Material( "materials/bhud/ammo_1.png" ) )
@@ -236,8 +236,8 @@ function cl_bHUD.showHUD()
 		ammocol = Color( 255, 0, 0 )
 	end
 
-	draw.SimpleText( player["ammo1"], "bhud_purista_20", wep_left + 38, wep_top + 35, ammocol, 0 , 0 )
-	draw.SimpleText( "| " .. player["ammo1_max"], "bhud_purista_20", wep_left + 38 + surface.GetTextSize( player["ammo1"] ) + 6, wep_top + 35, Color( 200, 200, 200 ), 0 , 0 )
+	draw.SimpleText( player["ammo1"], "bhud_roboto_20", wep_left + 38, wep_top + 35, ammocol, 0 , 0 )
+	draw.SimpleText( "| " .. player["ammo1_max"], "bhud_roboto_20", wep_left + 38 + surface.GetTextSize( player["ammo1"] ) + 6, wep_top + 35, Color( 200, 200, 200 ), 0 , 0 )
 
 	if wep_height != 90 then return end
 
@@ -246,7 +246,7 @@ function cl_bHUD.showHUD()
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( wep_left + 10, wep_top + 62, 16, 16 )
 
-	draw.SimpleText( player["ammo2_max"], "bhud_purista_20", wep_left + 38, wep_top + 60, Color( 255, 255, 255 ), 0 , 0 )
+	draw.SimpleText( player["ammo2_max"], "bhud_roboto_20", wep_left + 38, wep_top + 60, Color( 255, 255, 255 ), 0 , 0 )
 
 end
 hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )

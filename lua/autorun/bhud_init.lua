@@ -8,7 +8,18 @@ AddCSLuaFile( "bhud/client/cl_animation.lua" )
 
 if SERVER then
 
-	include( "bhud/server/sv_bhud.lua" )
+	-- Images
+	resource.AddFile( "materials/bhud/player.png" )
+	resource.AddFile( "materials/bhud/heart.png" )
+	resource.AddFile( "materials/bhud/shield.png" )
+	resource.AddFile( "materials/bhud/pistol.png" )
+	resource.AddFile( "materials/bhud/ammo_1.png" )
+	resource.AddFile( "materials/bhud/ammo_2.png" )
+	resource.AddFile( "materials/bhud/cursor.png" )
+	resource.AddFile( "materials/bhud/cursor_down.png" )
+	resource.AddFile( "materials/bhud/cursor_up.png" )
+	resource.AddFile( "materials/bhud/north.png" )
+	resource.AddFile( "materials/bhud/config.png" )
 
 else
 
