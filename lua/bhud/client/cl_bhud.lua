@@ -31,7 +31,7 @@ table.foreach( check_sql, function( index, setting )
 end )
 
 -- BHUD-SETTINGS INFORMATION
-chat.AddText( Color( 255, 50, 0 ), "[bHUD - Settings]", Color( 255, 255, 255 ), " Hold '", Color( 0, 161, 222 ), "C", Color( 255, 255, 255 ), "' and click on the ", Color( 0, 161, 222 ), "orange symbol", Color( 255, 255, 255 ), " in the right bottom corner to open the settings!" )
+chat.AddText( Color( 255, 50, 0 ), "[bHUD - Settings]", Color( 255, 255, 255 ), " Hold '", Color( 255, 150, 0 ), "C", Color( 255, 255, 255 ), "' and click on the ", Color( 255, 150, 0 ), "orange symbol", Color( 255, 255, 255 ), " in the right bottom corner to open the settings!" )
 
 -- PANEL
 function cl_bHUD_SettingsPanel()
