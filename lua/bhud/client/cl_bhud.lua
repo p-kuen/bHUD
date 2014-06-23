@@ -3,10 +3,9 @@
 ---------------------------
 
 local drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
-function cl_bHUD.setDrawHUD( ply, cmd, args )
-	drawHUD = tobool( GetConVarNumber( "cl_drawhud" ) )
-end
-concommand.Add( "cl_drawhud", cl_bHUD.setDrawHUD )
+cvars.AddChangeCallback( "cl_drawhud", function( name, old, new )
+	if tobool( new ) then drawHUD = true else drawHUD = false end
+end )
 
 
 
