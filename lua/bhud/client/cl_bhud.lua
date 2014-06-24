@@ -435,7 +435,7 @@ function cl_bHUD.showMinimapHUD()
 		surface.SetTextPos( bhud_map["left"] + posx - 8, bhud_map["top"] + posy + 10 )
 		surface.DrawText( pl:Nick() )
 		surface.SetTextPos( bhud_map["left"] + posx - 8, bhud_map["top"] + posy + 20 )
-		surface.DrawText( math.floor( LocalPlayer():GetPos():Distance( pl:GetPos() ) / 50 ) .. " m" )
+		surface.DrawText( math.Round( ( LocalPlayer():GetPos():Distance( pl:GetPos() ) * 0.75 ) * 0.0254, 0 ) .. " m" )
 
 	end )
 
