@@ -23,7 +23,7 @@ hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 
 local health = 0
 local armor = 0
-local way = 0
+local way = false
 local h_alpha = 230
 
 function cl_bHUD.showHUD()
@@ -58,7 +58,6 @@ function cl_bHUD.showHUD()
 	local player = {
 
 		name = ply:Nick(),
-		team = team.GetName( ply:Team() ),
 		health = ply:Health(),
 		armor = ply:Armor(),
 
@@ -68,11 +67,6 @@ function cl_bHUD.showHUD()
 		ammo2_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetSecondaryAmmoType() )
 
 	}
-
-	-- PLAYER TEAM
-	if player["team"] != "" and player["team"] != "Unassigned" then
-		player["name"] = "[" .. player["team"] .. "] " .. ply:Nick()
-	end
 
 	-- HUD SIZES
 	local width = 195
@@ -114,8 +108,8 @@ function cl_bHUD.showHUD()
 	surface.DrawTexturedRect( left + 10, top + 37, 16, 16 )
 
 	if player["health"] <= 10 then
-		if h_alpha >= 230 then way = 0 elseif h_alpha <= 100 then way = 1 end
-		if way == 1 then h_alpha = h_alpha + 2 else h_alpha = h_alpha - 2 end
+		if h_alpha >= 230 then way = false elseif h_alpha <= 100 then way = true end
+		if way then h_alpha = h_alpha + 2.5 else h_alpha = h_alpha - 2.5 end
 	else h_alpha = 230 end
 	draw.RoundedBox( 1, left + 35, top + 35, math.Clamp( health * 1.5, 0, 150 ), 20, Color( 255, 50, 0, h_alpha ) )
 
