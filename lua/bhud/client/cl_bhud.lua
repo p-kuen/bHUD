@@ -24,7 +24,7 @@ hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 local health = 0
 local armor = 0
 local way = false
-local h_alpha = 230
+local h_pulse = 230
 
 function cl_bHUD.showHUD()
 
@@ -107,11 +107,11 @@ function cl_bHUD.showHUD()
 	surface.SetDrawColor( Color( 255, 255, 255, 255 ) )
 	surface.DrawTexturedRect( left + 10, top + 37, 16, 16 )
 
-	if player["health"] <= 10 then
-		if h_alpha >= 230 then way = false elseif h_alpha <= 100 then way = true end
-		if way then h_alpha = h_alpha + 2.5 else h_alpha = h_alpha - 2.5 end
-	else h_alpha = 230 end
-	draw.RoundedBox( 1, left + 35, top + 35, math.Clamp( health * 1.5, 0, 150 ), 20, Color( 255, 50, 0, h_alpha ) )
+	if player["health"] <= 20 then
+		if h_pulse >= 230 then way = false elseif h_pulse <= 100 then way = true end
+		if way then h_pulse = h_pulse + 2.5 else h_pulse = h_pulse - 2.5 end
+	else h_pulse = 230 end
+	draw.RoundedBox( 1, left + 35, top + 35, math.Clamp( health * 1.5, 0, 150 ), 20, Color( 255, 50 + ( 230 - h_pulse ), 0, 230 ) )
 
 	if 10 + surface.GetTextSize( tostring( player["health"] ) ) < health * 1.5 then
 		draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_roboto_18", left + 30 + ( math.Clamp( health * 1.5, 0, 150 ) ) - surface.GetTextSize( tostring( player["health"] ) ), top + 37, Color( 255, 255, 255 ), 0 , 0 )
