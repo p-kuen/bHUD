@@ -417,7 +417,7 @@ hook.Add( "OnContextMenuOpen", "bhud_openedContextMenu", function()
 	if exsto then
 		time = LocalPlayer():GetNWInt( "Time_Fixed" )
 		td.addon = "Exsto"
-	elseif sql.TableExists( "utime" ) then
+	elseif utime_enable:GetBool() then
 		time = LocalPlayer():GetNWInt( "TotalUTime" )
 		td.addon = "UTime"
 	elseif evolve then
