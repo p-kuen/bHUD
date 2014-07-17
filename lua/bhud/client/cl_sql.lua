@@ -6,7 +6,7 @@
 sql.Query( "CREATE TABLE IF NOT EXISTS bhud_settings( 'setting' TEXT, value INTEGER );" )
 
 -- LOAD EXISTING SQL-SETTINGS
-local check_sql = { "drawHUD", "drawPlayerHUD", "drawHoverNames", "drawTimeHUD", "drawMapHUD", "showday" }
+local check_sql = { "drawHUD", "drawPlayerHUD", "drawHoverNames", "drawTimeHUD", "drawMapHUD", "showday", "design" }
 table.foreach( check_sql, function( index, setting )
 
 	if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) then
@@ -31,6 +31,7 @@ function cl_bHUD_SettingsPanel()
 	local frm = cl_bHUD.addfrm( px, py, pw, ph )
 	local ch = 35
 	cl_bHUD.addchk( frm, "Enable bHUD", 10, ch, "drawHUD" )
+	cl_bHUD.addchk( frm, "Old design", 135, ch, "design" )
 	ch = ch + 35
 
 	cl_bHUD.addlbl( frm, "Player HUD:", 10, ch )

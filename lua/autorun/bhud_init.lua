@@ -1,6 +1,8 @@
 AddCSLuaFile()
 AddCSLuaFile( "bhud/client/cl_sql.lua" )
 AddCSLuaFile( "bhud/client/cl_bhud.lua" )
+AddCSLuaFile( "bhud/client/cl_design1.lua" )
+AddCSLuaFile( "bhud/client/cl_design2.lua" )
 AddCSLuaFile( "bhud/client/cl_fonts.lua" )
 AddCSLuaFile( "bhud/client/cl_derma.lua" )
 AddCSLuaFile( "bhud/client/cl_animation.lua" )
@@ -19,6 +21,12 @@ if SERVER then
 	resource.AddFile( "materials/bhud/cursor_up.png" )
 	resource.AddFile( "materials/bhud/north.png" )
 	resource.AddFile( "materials/bhud/config.png" )
+	resource.AddFile( "materials/bhud/player32.png" )
+	resource.AddFile( "materials/bhud/heart32.png" )
+	resource.AddFile( "materials/bhud/shield32.png" )
+	resource.AddFile( "materials/bhud/pistol32.png" )
+	resource.AddFile( "materials/bhud/ammo_132.png" )
+	resource.AddFile( "materials/bhud/ammo_232.png" )
 
 else
 
@@ -27,6 +35,8 @@ else
 
 	include( "bhud/client/cl_sql.lua" )
 	include( "bhud/client/cl_bhud.lua" )
+	include( "bhud/client/cl_design1.lua" )
+	include( "bhud/client/cl_design2.lua" )
 	include( "bhud/client/cl_fonts.lua" )
 	include( "bhud/client/cl_derma.lua" )
 	include( "bhud/client/cl_animation.lua" )
