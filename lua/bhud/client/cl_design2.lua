@@ -79,7 +79,7 @@ function cl_bHUD.Design2()
 
 	-- Box
 	draw.RoundedBox( 0, left, topa + 52, width, logo_size, Color( 50, 50, 50 ) )
-	draw.RoundedBox( 0, left + logo_size, topa + 52, bar_size * ( math.Clamp( health, 0, 100 ) / 100 ), logo_size, Color( 255, 50, 0 ) )
+	draw.RoundedBox( 0, left + logo_size, topa + 52, bar_size * ( math.Clamp( health, 0, 100 ) / 100 ), logo_size, Color( 255, 25, 0 ) )
 	MakeTriangle( left + logo_size, topa + 52 + ( logo_size / 2 ) - 7, 15 )
 
 	-- Icon & Text
@@ -104,8 +104,6 @@ function cl_bHUD.Design2()
 
 	-- WEAPON
 	if player["ammo1"] == -1 and player["ammo1_max"] <= 0 then
-		clip_max_1 = {}
-		clip_max_2 = {}
 		return
 	end
 	if player["ammo1"] == -1 then player["ammo1"] = "1" end
@@ -122,10 +120,11 @@ function cl_bHUD.Design2()
 
 	-- AMMO 1
 	if !clip_max_1[ player["class"] ] or player["ammo1"] > clip_max_1[ player["class"] ] then clip_max_1[ player["class"] ] = player["ammo1"] end
+	clip1 = cl_bHUD.Animation( clip1, player["ammo1"], 0.25 )
 
 	-- Box
 	draw.RoundedBox( 0, leftw, topwa + 52, width, logo_size, Color( 50, 50, 50 ) )
-	draw.RoundedBox( 0, leftw + logo_size, topwa + 52, ( 100 / clip_max_1[ player["class"] ] * player["ammo1"] ) * 2, logo_size, Color( 255, 150, 0 ) )
+	draw.RoundedBox( 0, leftw + logo_size, topwa + 52, math.Clamp( ( 100 / clip_max_1[ player["class"] ] * clip1 ) * 2, 0, 200 ), logo_size, Color( 255, 150, 0 ) )
 	MakeTriangle( leftw + logo_size, topwa + 52 + ( logo_size / 2 ) - 7, 15 )
 
 	-- Icon & Text
@@ -136,10 +135,11 @@ function cl_bHUD.Design2()
 	-- AMMO 2
 	if !clip_max_2[ player["class"] ] or player["ammo2_max"] > clip_max_2[ player["class"] ] then clip_max_2[ player["class"] ] = player["ammo2_max"] end
 	if player["ammo2_max"] != 0 then
+	clip2 = cl_bHUD.Animation( clip2, player["ammo2_max"], 0.25 )
 
 	-- Box
 	draw.RoundedBox( 0, leftw, topwa + 104, width, logo_size, Color( 50, 50, 50 ) )
-	draw.RoundedBox( 0, leftw + logo_size, topwa + 104, ( 100 / clip_max_2[ player["class"] ] * player["ammo2_max"] ) * 2, logo_size, Color( 255, 150, 0 ) )
+	draw.RoundedBox( 0, leftw + logo_size, topwa + 104, math.Clamp( ( 100 / clip_max_2[ player["class"] ] * clip2 ) * 2, 0, 200 ), logo_size, Color( 255, 150, 0 ) )
 	MakeTriangle( leftw + logo_size, topwa + 104 + ( logo_size / 2 ) - 7, 15 )
 
 	-- Icon & Text
