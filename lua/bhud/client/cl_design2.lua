@@ -103,9 +103,7 @@ function cl_bHUD.Design2()
 
 
 	-- WEAPON
-	if player["ammo1"] == -1 and player["ammo1_max"] <= 0 then
-		return
-	end
+	if player["ammo1"] == -1 and player["ammo1_max"] <= 0 then return end
 	if player["ammo1"] == -1 then player["ammo1"] = "1" end
 
 	-- Box

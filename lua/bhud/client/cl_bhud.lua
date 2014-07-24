@@ -42,7 +42,7 @@ function cl_bHUD.showHUD()
 			surface.SetFont( "bhud_roboto_22_ns" )
 			screen.x = screen.x - ( surface.GetTextSize( pl:Nick() ) / 2 )
 
-			draw.SimpleTextOutlined( pl:Nick(), "bhud_roboto_22_ns", screen.x, screen.y, Color( 255, 255, 255, alpha ), 0 , 0, 1, Color( 100, 100, 100, alpha ) )
+			draw.SimpleTextOutlined( pl:Nick(), "bhud_roboto_22_ns", screen.x, screen.y, Color( teamcol.r, teamcol.g, teamcol.b, alpha ), 0 , 0, 1, Color( 100, 100, 100, alpha ) )
 
 		end )
 
@@ -153,10 +153,8 @@ table.foreach( check_sql, function( index, setting )
 
 	if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = 'minimap_" .. setting .. "'" ) then
 		sql.Query( "INSERT INTO bhud_settings ( setting, value ) VALUES( 'minimap_" .. setting .. "', " .. bhud_map[setting] .. " )" )
-		bhud_map[setting] = tonumber( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = 'minimap_" .. setting .. "'" ) )
-	else
-		bhud_map[setting] = tonumber( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = 'minimap_" .. setting .. "'" ) )
 	end
+	bhud_map[setting] = tonumber( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = 'minimap_" .. setting .. "'" ) )
 
 end )
 
