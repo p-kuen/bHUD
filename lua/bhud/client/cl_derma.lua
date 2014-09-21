@@ -75,18 +75,11 @@ function cl_bHUD.addchk( derma, text, x, y, setting )
 	-- Checkbox
 	local chk = vgui.Create( "DCheckBoxLabel", derma )
 	chk:SetPos( x, y )
-	chk:SetText( "" )
+	chk:SetText( text )
 	chk:SetChecked( cl_bHUD_Settings[setting] )
+	chk.Label:SetColor( Color( 255, 255, 255 ) )
+	chk.Label:SetFont( "bhud_roboto_16" )
 	chk:SizeToContents()
-
-	-- Checkbox Name
-	local lbl = vgui.Create( "DLabel", derma )
-	lbl:SetPos( x + 20, y )
-	lbl:SetColor( Color( 255, 255, 255 ) )
-	lbl:SetFont( "bhud_roboto_16" )
-	lbl:SetText( text )
-	lbl:SetDark( false )
-	lbl:SizeToContents()
 
 	-- Actions
 	function chk:OnChange()

@@ -70,7 +70,7 @@ function cl_bHUD.Design2()
 
 	-- Icon & Text
 	MakeIcon( "materials/bhud/player32.png", left + 5, topa + 5, team.GetColor( ply:Team() ) )
-	draw.SimpleText( player["name"], "bhud_roboto_32", left + logo_size + 10, topa + 2, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( player["name"], "bhud_roboto_32_ns", left + logo_size + 10, topa + 2, Color( 255, 255, 255 ), 0, 0 )
 	draw.SimpleText( team.GetName( ply:Team() ), "bhud_default_12_ns", left + logo_size + 4, topa + 28, Color( 255, 255, 255 ), 0, 0 )
 
 
@@ -84,7 +84,7 @@ function cl_bHUD.Design2()
 
 	-- Icon & Text
 	MakeIcon( "materials/bhud/heart32.png", left + 5, topa + 52 + 6, Color( 255, 255, 255 ) )
-	draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_roboto_32", left + logo_size + 10, topa + 52 + 6, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( tostring( math.Round( health, 0 ) ), "bhud_roboto_32_ns", left + logo_size + 10, topa + 52 + 6, Color( 255, 255, 255 ), 0, 0 )
 
 
 	-- ARMOR
@@ -98,13 +98,16 @@ function cl_bHUD.Design2()
 
 	-- Icon & Text
 	MakeIcon( "materials/bhud/shield32.png", left + 5, top + 104 + 5, Color( 255, 255, 255 ) )
-	draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_roboto_32", left + logo_size + 10, top + 104 + 6, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( tostring( math.Round( armor, 0 ) ), "bhud_roboto_32_ns", left + logo_size + 10, top + 104 + 6, Color( 255, 255, 255 ), 0, 0 )
 	end
 
 
 	-- WEAPON
 	if player["ammo1"] == -1 and player["ammo1_max"] <= 0 then return end
-	if player["ammo1"] == -1 then player["ammo1"] = "1" end
+	if player["ammo1"] == -1 then
+		player["ammo1"] = player["ammo1_max"]
+		player["ammo1_max"] = ""
+	end
 
 	-- Box
 	draw.RoundedBox( 0, leftw, topwa, width, logo_size, Color( 50, 50, 50 ) )
@@ -113,7 +116,7 @@ function cl_bHUD.Design2()
 
 	-- Icon & Text
 	MakeIcon( "materials/bhud/pistol32.png", leftw + 5, topwa + 5, Color( 255, 255, 255 ) )
-	draw.SimpleText( player["weapon"], "bhud_roboto_32", leftw + logo_size + 10, topwa + 6, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( player["weapon"], "bhud_roboto_32_ns", leftw + logo_size + 10, topwa + 6, Color( 255, 255, 255 ), 0, 0 )
 
 
 	-- AMMO 1
@@ -127,8 +130,8 @@ function cl_bHUD.Design2()
 
 	-- Icon & Text
 	MakeIcon( "materials/bhud/ammo_132.png", leftw + 5, topwa + 52 + 5, Color( 255, 255, 255 ) )
-	draw.SimpleText( tostring( player["ammo1"] ) .. " / " .. tostring( player["ammo1_max"] ), "bhud_roboto_32", leftw + logo_size + 10, topwa + 52 + 6, Color( 255, 255, 255 ), 0, 0 )
-
+	if player["ammo1_max"] == "" then ammotext = tostring( player["ammo1"] ) else tostring( player["ammo1"] ) .. " / " .. tostring( player["ammo1_max"] ) end
+	draw.SimpleText( ammotext, "bhud_roboto_32_ns", leftw + logo_size + 10, topwa + 52 + 6, Color( 255, 255, 255 ), 0, 0 )
 
 	-- AMMO 2
 	if !clip_max_2[ player["class"] ] or player["ammo2_max"] > clip_max_2[ player["class"] ] then clip_max_2[ player["class"] ] = player["ammo2_max"] end
@@ -142,7 +145,7 @@ function cl_bHUD.Design2()
 
 	-- Icon & Text
 	MakeIcon( "materials/bhud/ammo_232.png", leftw + 5, topwa + 104 + 5, Color( 255, 255, 255 ) )
-	draw.SimpleText( tostring( player["ammo2_max"] ), "bhud_roboto_32", leftw + logo_size + 10, topwa + 104 + 6, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( tostring( player["ammo2_max"] ), "bhud_roboto_32_ns", leftw + logo_size + 10, topwa + 104 + 6, Color( 255, 255, 255 ), 0, 0 )
 	end
 
 end

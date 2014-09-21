@@ -33,7 +33,6 @@ function cl_bHUD.showHUD()
 		table.foreach( player.GetAll(), function( id, pl )
 			
 			if pl == LocalPlayer() or !pl:Alive() then return end
-
 			local pos = pl:GetPos() + Vector( 0, 0, 100 )
 			local screen = pos:ToScreen()
 			local teamcol = team.GetColor( pl:Team() )

@@ -1,10 +1,10 @@
 -- Roboto, 32 Pixels
-surface.CreateFont( "bhud_roboto_32", {
+surface.CreateFont( "bhud_roboto_32_ns", {
 	font = "Roboto",
 	size = 32,
 	weight = 500,
 	antialias = true,
-	shadow = true
+	shadow = false
 } )
 
 -- Roboto, 22 Pixels, no shadow
