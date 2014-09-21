@@ -130,7 +130,7 @@ function cl_bHUD.Design2()
 
 	-- Icon & Text
 	MakeIcon( "materials/bhud/ammo_132.png", leftw + 5, topwa + 52 + 5, Color( 255, 255, 255 ) )
-	if player["ammo1_max"] == "" then ammotext = tostring( player["ammo1"] ) else tostring( player["ammo1"] ) .. " / " .. tostring( player["ammo1_max"] ) end
+	if player["ammo1_max"] == "" then ammotext = tostring( player["ammo1"] ) else ammotext = tostring( player["ammo1"] ) .. " / " .. tostring( player["ammo1_max"] ) end
 	draw.SimpleText( ammotext, "bhud_roboto_32_ns", leftw + logo_size + 10, topwa + 52 + 6, Color( 255, 255, 255 ), 0, 0 )
 
 	-- AMMO 2
