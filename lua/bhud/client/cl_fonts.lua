@@ -61,13 +61,13 @@ surface.CreateFont( "bhud_roboto_16", {
 	shadow = true
 } )
 
--- Roboto, 15 Pixels
-surface.CreateFont( "bhud_roboto_15", {
+-- Roboto, 15 Pixels, no shadow
+surface.CreateFont( "bhud_roboto_15_ns", {
 	font = "Roboto",
 	size = 15,
 	weight = 500,
 	antialias = true,
-	shadow = true
+	shadow = false
 } )
 
 -- Roboto, 14 Pixels
