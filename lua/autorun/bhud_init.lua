@@ -7,42 +7,37 @@ AddCSLuaFile( "bhud/client/cl_derma.lua" )
 AddCSLuaFile( "bhud/client/cl_animation.lua" )
 
 if SERVER then
+	
+	local bhud_restrictions = {
+		minimap = false,
+		hovername = false,
+		deathnote = false
+	}
 
 	-- Load restrictions
-	local bhud_restrictions = {}
-
 	if file.Exists( "bhud_server_settings.txt", "DATA" ) then
+
 		local cont = file.Read( "bhud_server_settings.txt", "DATA" )
-		cont = string.Replace( cont, "=", ";" )
-		cont = string.Explode( ";", cont )
-		bhud_restrictions.minimap = tobool( cont[2] )
-		bhud_restrictions.hovername = tobool( cont[4] )
-		bhud_restrictions.deathnote = tobool( cont[6] )
-	else
-		bhud_restrictions.minimap = false
-		bhud_restrictions.hovername = false
-		bhud_restrictions.deathnote = false
+		if util.JSONToTable( cont ) != nil then
+			bhud_restrictions = util.JSONToTable( cont )
+		end
+
 	end
 
 	-- Change/Save restrictions
 	concommand.Add( "bhud_restrict", function( ply, cmd, args )
 		
-		local content = ""
-		if !file.Exists( "bhud_server_settings.txt", "DATA" ) then
-			file.Write( "bhud_server_settings.txt", "minimap=false;hovernames=false;deathnote=false;" )
-		end
-		content = file.Read( "bhud_server_settings.txt", "DATA" )
-		local a = string.find( content, args[1] )
-		if !a then
+		if args[2] != "true" and args[2] != "false" or bhud_restrictions[ args[1] ] == nil then
+
 			print( "Setting is wrong! Use 'minimap' or 'hovernames' or 'deathnote'! (e.g. bhud_restrict minimap true)" )
-			return
+
+		else
+
+			bhud_restrictions[ args[1] ] = tobool( args[2] )
+			file.Write( "bhud_server_settings.txt", util.TableToJSON( bhud_restrictions ) )
+			print( "Set " .. args[1] .. "-restriction to " .. args[2] .. "!" )
+
 		end
-		local b = string.find( content, ";", a )
-		local s = string.sub( content, a, b )
-		local r = args[1] .. "=" .. args[2] .. ";"
-		content = string.Replace( content, s, r )
-		file.Write( "bhud_server_settings.txt", content )
-		print( "Done!" )
 
 	end )
 
