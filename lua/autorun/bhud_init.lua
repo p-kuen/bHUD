@@ -33,7 +33,7 @@ if SERVER then
 		
 		if args[2] != "true" and args[2] != "false" or bhud_restrictions[ args[1] ] == nil then
 
-			print( "Setting is wrong! Use 'minimap' or 'hovernames' or 'deathnote'! (e.g. bhud_restrict minimap true)" )
+			print( "Setting is wrong! Use 'minimap' or 'hovernames'! (e.g. bhud_restrict minimap true)" )
 
 		else
 
