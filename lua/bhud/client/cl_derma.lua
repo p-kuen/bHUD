@@ -84,8 +84,8 @@ function cl_bHUD.addchk( derma, text, x, y, setting )
 	-- Actions
 	function chk:OnChange()
 
-		local IsChecked = chk:GetChecked() and "1" or "0"
-		sql.Query( "UPDATE bhud_settings SET value = " .. IsChecked .. " WHERE setting = '" .. setting .. "'" )
+		local IsChecked = chk:GetChecked() and "true" or "false"
+		sql.Query( "UPDATE bhud_settings SET value = '" .. IsChecked .. "' WHERE setting = '" .. setting .. "'" )
 		cl_bHUD_Settings[setting] = chk:GetChecked() and true or false
 
 	end
@@ -139,21 +139,10 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 
 	-- Actions
 	sld.ValueChanged = function( self, number )
-		
-		if variable == "radius" then
-			bhud_map["radius"] = math.floor( number )
-		end
-		if variable == "left" then
-			bhud_map["left"] = math.floor( number )
-		end
-		if variable == "top" then
-			bhud_map["top"] = math.floor( number )
-		end
-		if variable == "border" then
-			bhud_map["border"] = math.floor( number )
-		end
 
-		sql.Query( "UPDATE bhud_settings SET value = " .. math.floor( number ) .. " WHERE setting = 'minimap_" .. variable .. "'" )
+		cl_bHUD_Settings[variable] = math.floor( number )
+
+		sql.Query( "UPDATE bhud_settings SET value = '" .. tostring( math.floor( number ) ) .. "' WHERE setting = '" .. variable .. "'" )
 		
 		lbl2:SetText( tostring( math.floor( number ) ) )
 		lbl2:SizeToContents()

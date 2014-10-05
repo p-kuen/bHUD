@@ -6,12 +6,16 @@ AddCSLuaFile( "bhud/client/cl_fonts.lua" )
 AddCSLuaFile( "bhud/client/cl_derma.lua" )
 AddCSLuaFile( "bhud/client/cl_animation.lua" )
 
+local files = file.Find( "bhud/client/designs/*.lua", "LUA" )
+table.foreach( files, function( key, plugin )
+	AddCSLuaFile( "bhud/client/designs/" .. plugin )
+end )
+
 if SERVER then
 	
 	local bhud_restrictions = {
 		minimap = false,
-		hovername = false,
-		deathnote = false
+		hovername = false
 	}
 
 	-- Load restrictions
@@ -42,6 +46,12 @@ if SERVER then
 	end )
 
 	-- Images
+	resource.AddFile( "materials/bhud/player16.png" )
+	resource.AddFile( "materials/bhud/heart16.png" )
+	resource.AddFile( "materials/bhud/shield16.png" )
+	resource.AddFile( "materials/bhud/pistol16.png" )
+	resource.AddFile( "materials/bhud/ammo_116.png" )
+	resource.AddFile( "materials/bhud/ammo_216.png" )
 	resource.AddFile( "materials/bhud/player32.png" )
 	resource.AddFile( "materials/bhud/heart32.png" )
 	resource.AddFile( "materials/bhud/shield32.png" )
@@ -51,7 +61,6 @@ if SERVER then
 	resource.AddFile( "materials/bhud/cursor.png" )
 	resource.AddFile( "materials/bhud/cursor_up.png" )
 	resource.AddFile( "materials/bhud/cursor_down.png" )
-	resource.AddFile( "materials/bhud/skull32.png" )
 	resource.AddFile( "materials/bhud/north.png" )
 	resource.AddFile( "materials/bhud/config.png" )
 
@@ -59,22 +68,13 @@ if SERVER then
 	util.AddNetworkString( "bhud_authed" )
 	util.AddNetworkString( "bhud_deathnotice" )
 
-	-- Death notice
+	-- Server restrictions
 	function bhud_player_authed( ply, sid, uid )
 		net.Start( "bhud_authed" )
 			net.WriteTable( bhud_restrictions )
 		net.Send( ply )
 	end
 	hook.Add( "PlayerAuthed", "bhud_player_authed", bhud_player_authed )
-
-	-- Death notice
-	function bhud_player_death( vic, inf, att )
-		net.Start( "bhud_deathnotice" )
-			net.WriteTable( { vic, inf, att } )
-		net.Broadcast()
-		if bhud_restrictions.deathnote == false then return false end
-	end
-	hook.Add( "PlayerDeath", "bhud_player_death", bhud_player_death )
 
 else
 
@@ -86,5 +86,14 @@ else
 	include( "bhud/client/cl_fonts.lua" )
 	include( "bhud/client/cl_derma.lua" )
 	include( "bhud/client/cl_animation.lua" )
+	
+	local files = file.Find( "bhud/client/designs/*.lua", "LUA" )
+	local designs = 0
+	table.foreach( files, function( key, plugin )
+		include( "bhud/client/designs/" .. plugin )
+		designs = designs + 1
+	end )
+
+	cl_bHUD_Settings[ "designs" ] = designs
 
 end

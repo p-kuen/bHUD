@@ -3,17 +3,38 @@
 ----------------------
 
 -- CREATE SQL TABLE
-sql.Query( "CREATE TABLE IF NOT EXISTS bhud_settings( 'setting' TEXT, value INTEGER );" )
+if sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = 'drawHUD'" ) == "1" then
+	sql.Query( "DROP TABLE bhud_settings" )
+end
+sql.Query( "CREATE TABLE IF NOT EXISTS bhud_settings( 'setting' TEXT, value TEXT )" )
 
--- LOAD EXISTING SQL-SETTINGS
-local check_sql = { "drawHUD", "drawPlayerHUD", "drawHoverNames", "drawTimeHUD", "drawMapHUD", "showday" }
-table.foreach( check_sql, function( index, setting )
+-- SET DEFAULT SQL-SETTINGS
+local check_sql = {}
+check_sql["drawHUD"] = true
+check_sql["drawPlayerHUD"] = true
+check_sql["drawHoverNames"] = true
+check_sql["drawTimeHUD"] = true
+check_sql["showday"] = false
+check_sql["drawMapHUD"] = true
+check_sql["design"] = 1
+check_sql["map_radius"] = 100
+check_sql["map_border"] = 3
+check_sql["map_left"] = ScrW() - check_sql["map_radius"] - check_sql["map_border"] - 10
+check_sql["map_top"] = ScrH() - check_sql["map_radius"] - check_sql["map_border"] - 10
+check_sql["map_tolerance"] = 200
+
+-- LOAD CUSTOM SQL-SETTINGS
+table.foreach( check_sql, function( setting, value )
 
 	if !sql.Query( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) then
-		sql.Query( "INSERT INTO bhud_settings ( setting, value ) VALUES( '" .. setting .. "', 1 )" )
-		cl_bHUD_Settings[setting] = tobool( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) )
+		sql.Query( "INSERT INTO bhud_settings ( setting, value ) VALUES( '" .. setting .. "', '" .. tostring( value ) .. "' )" )
+	end
+
+	local val = sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" )
+	if val == "true" or val == "false" then
+		cl_bHUD_Settings[setting] = tobool( val )
 	else
-		cl_bHUD_Settings[setting] = tobool( sql.QueryValue( "SELECT value FROM bhud_settings WHERE setting = '" .. setting .. "'" ) )
+		cl_bHUD_Settings[setting] = tonumber( val )
 	end
 
 end )
@@ -52,10 +73,13 @@ function cl_bHUD_SettingsPanel()
 	cl_bHUD.addchk( frm, "Show Minimap", 10, ch, "drawMapHUD" )
 
 	cl_bHUD.addlbl( frm, "Minimap Settings:", pw / 2 + 10, 35 )
-	cl_bHUD.addsld( frm, "Radius", pw / 2 + 10, 55, 155, 50, 150, bhud_map["radius"], "radius" )
-	cl_bHUD.addsld( frm, "Border", pw / 2 + 10, 75, 155, 0, 15, bhud_map["border"], "border" )
-	cl_bHUD.addsld( frm, "X-Position", pw / 2 + 10, 95, 155, 10 + bhud_map["radius"] + bhud_map["border"], ScrW() - bhud_map["radius"] - 10 - bhud_map["border"], bhud_map["left"], "left" )
-	cl_bHUD.addsld( frm, "Y-Position", pw / 2 + 10, 115, 155, 10 + bhud_map["radius"] + bhud_map["border"], ScrH() - bhud_map["radius"] - 10 - bhud_map["border"], bhud_map["top"], "top" )
+	cl_bHUD.addsld( frm, "Design", pw / 2 + 10, 55, 155, 1, cl_bHUD_Settings["designs"], cl_bHUD_Settings["design"], "design" )
+
+	cl_bHUD.addlbl( frm, "Minimap Settings:", pw / 2 + 10, 95 )
+	cl_bHUD.addsld( frm, "Radius", pw / 2 + 10, 115, 155, 50, 150, cl_bHUD_Settings["map_radius"], "map_radius" )
+	cl_bHUD.addsld( frm, "Border", pw / 2 + 10, 135, 155, 0, 15, cl_bHUD_Settings["map_border"], "map_border" )
+	cl_bHUD.addsld( frm, "X-Position", pw / 2 + 10, 155, 155, 10 + cl_bHUD_Settings["map_radius"] + cl_bHUD_Settings["map_border"], ScrW() - cl_bHUD_Settings["map_radius"] - 10 - cl_bHUD_Settings["map_border"], cl_bHUD_Settings["map_left"], "map_left" )
+	cl_bHUD.addsld( frm, "Y-Position", pw / 2 + 10, 175, 155, 10 + cl_bHUD_Settings["map_radius"] + cl_bHUD_Settings["map_border"], ScrH() - cl_bHUD_Settings["map_radius"] - 10 - cl_bHUD_Settings["map_border"], cl_bHUD_Settings["map_top"], "map_top" )
 
 end
 
