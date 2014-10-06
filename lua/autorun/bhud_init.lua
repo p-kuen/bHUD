@@ -66,7 +66,6 @@ if SERVER then
 
 	-- Network strings
 	util.AddNetworkString( "bhud_authed" )
-	util.AddNetworkString( "bhud_deathnotice" )
 
 	-- Server restrictions
 	function bhud_player_authed( ply, sid, uid )
@@ -94,6 +93,6 @@ else
 		designs = designs + 1
 	end )
 
-	cl_bHUD_Settings[ "designs" ] = designs
+	cl_bHUD_Settings["designs"] = designs
 
 end

@@ -26,15 +26,13 @@ hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 --  PLAYER INFO HUD  --
 -----------------------
 
-
-
 function cl_bHUD.showHUD()
 
 	-- CHECK HUD-DRAW
 	if !drawHUD or !cl_bHUD_Settings[ "drawHUD" ] or !cl_bHUD_Settings[ "drawPlayerHUD" ] then return end
 	if !LocalPlayer():Alive() or !LocalPlayer():IsValid() or !LocalPlayer():GetActiveWeapon():IsValid() then return end
 
-	cl_bHUD[ "design_" .. tostring( cl_bHUD_Settings[ "design" ] ) ]()
+	cl_bHUD["design_" .. tostring( cl_bHUD_Settings["design"] )]()
 
 end
 hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )
@@ -85,7 +83,7 @@ local time = {
 	aleft = 0,
 	width = 0,
 	awidth = 0,
-	height = 25,
+	height = 26,
 	mode = false,
 	cmenu = false
 }
@@ -103,7 +101,7 @@ function cl_bHUD.showTimeHUD()
 		time.top = 50
 	else
 		if cl_bHUD_Settings["showday"] then time.ctime = os.date( "%d %B %Y - %H:%M" ) end
-		surface.SetFont( "bhud_roboto_15_ns" )
+		surface.SetFont( "bhud_roboto_16" )
 		time.width = surface.GetTextSize( time.ctime ) + 10
 		time.mode = true
 		time.top = 20
@@ -115,30 +113,30 @@ function cl_bHUD.showTimeHUD()
 	time.aleft = cl_bHUD.Animation( time.aleft, time.left, 0.3 )
 	time.awidth = cl_bHUD.Animation( time.awidth, time.width, 0.3 )
 
-	draw.RoundedBoxEx( 4, time.aleft, time.atop, time.awidth, time.height, Color( 50, 50, 50, 230 ), true, true, time.mode, time.mode )
-	draw.SimpleText( time.ctime, "bhud_roboto_15_ns", ScrW() - 25, time.atop + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
+	draw.RoundedBoxEx( 4, time.aleft, time.atop, time.awidth, time.height, Color( 0, 0, 0, 230 ), true, true, time.mode, time.mode )
+	draw.SimpleText( time.ctime, "bhud_roboto_16", ScrW() - 25, time.atop + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
 
 	-- CHECK C-KEY / EXTENDED TIME HUD
 	if !time.cmenu then return end
 
 	-- Header
 	if !cl_bHUD_Settings["showday"] then time.ctime = "Time: " else time.ctime = os.date( "%d %B %Y" ) end
-	draw.SimpleText( time.ctime, "bhud_roboto_15_ns", time.aleft + 5, time.atop + 5, Color( 255, 255, 255 ), 0 , 0 )
+	draw.SimpleText( time.ctime, "bhud_roboto_16", time.aleft + 5, time.atop + 5, Color( 255, 255, 255 ), 0 , 0 )
 
 	-- Background
-	draw.RoundedBoxEx( 4, time.aleft, time.atop + time.height, time.awidth, 67, Color( 100, 100, 100, 230 ), false, false, true, true )
+	draw.RoundedBoxEx( 4, time.aleft, time.atop + time.height, time.awidth, 65, Color( 0, 0, 0, 200 ), false, false, true, true )
 
 	-- Session
-	draw.SimpleText( "Session:", "bhud_roboto_15_ns", time.aleft + 5, time.atop + 30, Color( 255, 255, 255 ), 0, 0 )
-	draw.SimpleText( string.NiceTime( os.time() - time.jtime ), "bhud_roboto_15_ns", time.aleft + 11 + surface.GetTextSize( "Session:" ), time.atop + 30, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( "Session:", "bhud_roboto_14", time.aleft + 5, time.atop + 30, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( string.NiceTime( os.time() - time.jtime ), "bhud_roboto_14", time.aleft + 11 + surface.GetTextSize( "Session:" ), time.atop + 30, Color( 255, 255, 255 ), 0, 0 )
 
 	-- Total
-	draw.SimpleText( "Total:", "bhud_roboto_15_ns", time.aleft + 5, time.atop + 50, Color( 255, 255, 255 ), 0, 0 )
-	draw.SimpleText( string.NiceTime( time.time + ( os.time() - time.jtime ) ), "bhud_roboto_15_ns", time.aleft + 11 + surface.GetTextSize( "Total:" ), time.atop + 50, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( "Total:", "bhud_roboto_14", time.aleft + 5, time.atop + 50, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( string.NiceTime( time.time + ( os.time() - time.jtime ) ), "bhud_roboto_14", time.aleft + 11 + surface.GetTextSize( "Total:" ), time.atop + 50, Color( 255, 255, 255 ), 0, 0 )
 	
 	-- Addon
-	draw.SimpleText( "Addon:", "bhud_roboto_15_ns", time.aleft + 5, time.atop + 70, Color( 255, 255, 255 ), 0, 0 )
-	draw.SimpleText( time.addon, "bhud_roboto_15_ns", time.aleft + 11 + surface.GetTextSize( "Addon:" ), time.atop + 70, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( "Addon:", "bhud_roboto_14", time.aleft + 5, time.atop + 70, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( time.addon, "bhud_roboto_14", time.aleft + 11 + surface.GetTextSize( "Addon:" ), time.atop + 70, Color( 255, 255, 255 ), 0, 0 )
 
 end
 hook.Add( "HUDPaint", "bhud_showTimeHUD", cl_bHUD.showTimeHUD )
