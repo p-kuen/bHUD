@@ -46,9 +46,9 @@ local function MakeBox( l, t, v, c1, pic, c2, v2 )
 	surface.DrawTexturedRect( l + 5, t + 5, 32, 32 )
 
 	if !v2 then
-		draw.SimpleText( tostring( math.Round( v, 0 ) ), "bhud_roboto_32_ns", l + logo_size + 10, t + 6, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( tostring( math.Round( v, 0 ) ), "bhud_roboto_32", l + logo_size + 10, t + 6, Color( 255, 255, 255 ), 0, 0 )
 	else
-		draw.SimpleText( v2, "bhud_roboto_32_ns", l + logo_size + 10, t + 6, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( v2, "bhud_roboto_32", l + logo_size + 10, t + 6, Color( 255, 255, 255 ), 0, 0 )
 	end
 
 end
@@ -82,8 +82,9 @@ function cl_bHUD.design_2()
 
 
 	-- NAME
+	if cl_bHUD.Settings["player_name"] then
 	MakeBox( left, topa, player["name"], Color( 100, 100, 100 ), "player32.png", team.GetColor( ply:Team() ) )
-	draw.SimpleText( team.GetName( ply:Team() ), "bhud_default_12_ns", left + logo_size + 10, topa + 30, Color( 255, 255, 255 ), 0, 0 )
+	end
 
 	-- HEALTH
 	health = cl_bHUD.Animation( health, player["health"], 1 )

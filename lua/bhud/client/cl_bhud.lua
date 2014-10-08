@@ -15,7 +15,7 @@ end )
 
 -- DISABLE DEFAULT HUD
 function cl_bHUD.drawHUD( HUDName )
-	if !cl_bHUD_Settings["drawHUD"] then return end
+	if !cl_bHUD.Settings["drawHUD"] then return end
 	if HUDName == "CHudHealth" or HUDName == "CHudBattery" or HUDName == "CHudAmmo" or HUDName == "CHudSecondaryAmmo" then return false end
 end
 hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
@@ -29,10 +29,10 @@ hook.Add( "HUDShouldDraw", "bhud_drawHUD", cl_bHUD.drawHUD )
 function cl_bHUD.showHUD()
 
 	-- CHECK HUD-DRAW
-	if !drawHUD or !cl_bHUD_Settings[ "drawHUD" ] or !cl_bHUD_Settings[ "drawPlayerHUD" ] then return end
+	if !drawHUD or !cl_bHUD.Settings[ "drawHUD" ] or !cl_bHUD.Settings[ "drawPlayerHUD" ] then return end
 	if !LocalPlayer():Alive() or !LocalPlayer():IsValid() or !LocalPlayer():GetActiveWeapon():IsValid() then return end
 
-	cl_bHUD["design_" .. tostring( cl_bHUD_Settings["design"] )]()
+	cl_bHUD["design_" .. tostring( cl_bHUD.Settings["design"] )]()
 
 end
 hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )
@@ -46,7 +46,7 @@ hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )
 function cl_bHUD.showHovernameHUD()
 
 	-- CHECK HUD-DRAW
-	if !drawHUD or !cl_bHUD_Settings["drawHoverNames"] or bhud_restrictions["hovernames"] == true then return end
+	if !drawHUD or !cl_bHUD.Settings["drawHoverNames"] or bhud_restrictions["hovernames"] == true then return end
 
 	table.foreach( player.GetAll(), function( id, pl )
 		
@@ -56,10 +56,10 @@ function cl_bHUD.showHovernameHUD()
 		local teamcol = team.GetColor( pl:Team() )
 		local alpha = math.Clamp( 255 - ( LocalPlayer():GetPos():Distance( pl:GetPos() ) / 20 ), 0, 255 )
 
-		surface.SetFont( "bhud_roboto_22_ns" )
+		surface.SetFont( "bhud_roboto_22" )
 		screen.x = screen.x - ( surface.GetTextSize( pl:Nick() ) / 2 )
 
-		draw.SimpleTextOutlined( pl:Nick(), "bhud_roboto_22_ns", screen.x, screen.y, Color( teamcol.r, teamcol.g, teamcol.b, alpha ), 0 , 0, 1, Color( 100, 100, 100, alpha ) )
+		draw.SimpleTextOutlined( pl:Nick(), "bhud_roboto_22", screen.x, screen.y, Color( teamcol.r, teamcol.g, teamcol.b, alpha ), 0 , 0, 1, Color( 100, 100, 100, alpha ) )
 
 	end )
 
@@ -91,7 +91,7 @@ local time = {
 function cl_bHUD.showTimeHUD()
 
 	-- CHECK HUD DRAW
-	if !drawHUD or !cl_bHUD_Settings["drawHUD"] or !cl_bHUD_Settings["drawTimeHUD"] then return end
+	if !drawHUD or !cl_bHUD.Settings["drawHUD"] or !cl_bHUD.Settings["drawTimeHUD"] then return end
 
 	-- CURRENT TIME HUD
 	time.ctime = os.date( "%H:%M" )
@@ -100,7 +100,7 @@ function cl_bHUD.showTimeHUD()
 		time.mode = false
 		time.top = 50
 	else
-		if cl_bHUD_Settings["showday"] then time.ctime = os.date( "%d %B %Y - %H:%M" ) end
+		if cl_bHUD.Settings["showday"] then time.ctime = os.date( "%d %B %Y - %H:%M" ) end
 		surface.SetFont( "bhud_roboto_16" )
 		time.width = surface.GetTextSize( time.ctime ) + 10
 		time.mode = true
@@ -120,7 +120,7 @@ function cl_bHUD.showTimeHUD()
 	if !time.cmenu then return end
 
 	-- Header
-	if !cl_bHUD_Settings["showday"] then time.ctime = "Time: " else time.ctime = os.date( "%d %B %Y" ) end
+	if !cl_bHUD.Settings["showday"] then time.ctime = "Time: " else time.ctime = os.date( "%d %B %Y" ) end
 	draw.SimpleText( time.ctime, "bhud_roboto_16", time.aleft + 5, time.atop + 5, Color( 255, 255, 255 ), 0 , 0 )
 
 	-- Background
@@ -150,7 +150,7 @@ hook.Add( "HUDPaint", "bhud_showTimeHUD", cl_bHUD.showTimeHUD )
 function cl_bHUD.showMinimapHUD()
 
 	-- CHECK HUD-DRAW
-	if !drawHUD or !cl_bHUD_Settings["drawHUD"] or !cl_bHUD_Settings["drawMapHUD"] or bhud_restrictions["minimap"] == true then return end
+	if !drawHUD or !cl_bHUD.Settings["drawHUD"] or !cl_bHUD.Settings["drawMapHUD"] or bhud_restrictions["minimap"] == true then return end
 
 	-- DRAW CIRCLES
 	local circles = {}
@@ -176,21 +176,21 @@ function cl_bHUD.showMinimapHUD()
 	end
 	
 	-- CIRCLE BORDER
-	draw_circle( "minimap_border", 60, cl_bHUD_Settings[ "map_left" ], cl_bHUD_Settings[ "map_top" ], cl_bHUD_Settings[ "map_radius" ] + cl_bHUD_Settings[ "map_border" ], Color( 255, 150, 0 ) )
+	draw_circle( "minimap_border", 60, cl_bHUD.Settings[ "map_left" ], cl_bHUD.Settings[ "map_top" ], cl_bHUD.Settings[ "map_radius" ] + cl_bHUD.Settings[ "map_border" ], Color( 255, 150, 0 ) )
 
 	-- CIRCLE BACKGROUND
-	draw_circle( "minimap_background", 60, cl_bHUD_Settings[ "map_left" ], cl_bHUD_Settings[ "map_top" ], cl_bHUD_Settings[ "map_radius" ], Color( 50, 50, 50 ) )
+	draw_circle( "minimap_background", 60, cl_bHUD.Settings[ "map_left" ], cl_bHUD.Settings[ "map_top" ], cl_bHUD.Settings[ "map_radius" ], Color( 50, 50, 50 ) )
 
 	-- MIDDLE CURSOR
 	surface.SetMaterial( Material( "materials/bhud/cursor.png" ) )
 	surface.SetDrawColor( team.GetColor( LocalPlayer():Team() ) )
-	surface.DrawTexturedRect( cl_bHUD_Settings[ "map_left" ] - 8, cl_bHUD_Settings[ "map_top" ] - 8, 16, 16 )
+	surface.DrawTexturedRect( cl_bHUD.Settings[ "map_left" ] - 8, cl_bHUD.Settings[ "map_top" ] - 8, 16, 16 )
 
 	-- NORTH
 	local north = math.AngleDifference( LocalPlayer():EyeAngles().y, 0 )
 	surface.SetMaterial( Material( "materials/bhud/north.png" ) )
 	surface.SetDrawColor( Color( 255, 255, 255 ) )
-	surface.DrawTexturedRect( cl_bHUD_Settings[ "map_left" ] + ( -sin( rad( north ) ) * cl_bHUD_Settings[ "map_radius" ] ) - 8, cl_bHUD_Settings[ "map_top" ] + ( cos( rad( north ) ) * cl_bHUD_Settings[ "map_radius" ] ) - 8, 16, 16 )
+	surface.DrawTexturedRect( cl_bHUD.Settings[ "map_left" ] + ( -sin( rad( north ) ) * cl_bHUD.Settings[ "map_radius" ] ) - 8, cl_bHUD.Settings[ "map_top" ] + ( cos( rad( north ) ) * cl_bHUD.Settings[ "map_radius" ] ) - 8, 16, 16 )
 
 	-- OTHER PLAYERS
 	table.foreach( player.GetAll(), function( id, pl )
@@ -207,13 +207,13 @@ function cl_bHUD.showMinimapHUD()
 
 		-- Calculate Player-Cursor-Positions
 		local d = rad( ang + 180 )
-		local posx = -sin( d ) * ( math.Clamp( dist, 0, cl_bHUD_Settings[ "map_radius" ] * 10 ) / 10 )
-		local posy = cos( d ) * ( math.Clamp( dist, 0, cl_bHUD_Settings[ "map_radius" ] * 10 ) / 10 )
+		local posx = -sin( d ) * ( math.Clamp( dist, 0, cl_bHUD.Settings[ "map_radius" ] * 10 ) / 10 )
+		local posy = cos( d ) * ( math.Clamp( dist, 0, cl_bHUD.Settings[ "map_radius" ] * 10 ) / 10 )
 
 		-- Set correct Cursor-Picture
-		if LocalPlayer():GetPos().z + cl_bHUD_Settings[ "map_tolerance" ] < pl:GetPos().z then
+		if LocalPlayer():GetPos().z + cl_bHUD.Settings[ "map_tolerance" ] < pl:GetPos().z then
 			surface.SetMaterial( Material( "materials/bhud/cursor_up.png" ) )
-		elseif LocalPlayer():GetPos().z - cl_bHUD_Settings[ "map_tolerance" ] > pl:GetPos().z then
+		elseif LocalPlayer():GetPos().z - cl_bHUD.Settings[ "map_tolerance" ] > pl:GetPos().z then
 			surface.SetMaterial( Material( "materials/bhud/cursor_down.png" ) )
 		else
 			surface.SetMaterial( Material( "materials/bhud/cursor.png" ) )
@@ -221,14 +221,14 @@ function cl_bHUD.showMinimapHUD()
 
 		-- Draw Player-Curosr
 		surface.SetDrawColor( team.GetColor( pl:Team() ) )
-		surface.DrawTexturedRectRotated( cl_bHUD_Settings[ "map_left" ] + posx, cl_bHUD_Settings[ "map_top" ] + posy, 16, 16, -math.AngleDifference( e, pl:EyeAngles().y ) )
+		surface.DrawTexturedRectRotated( cl_bHUD.Settings[ "map_left" ] + posx, cl_bHUD.Settings[ "map_top" ] + posy, 16, 16, -math.AngleDifference( e, pl:EyeAngles().y ) )
 
 		-- Draw Playername and Distance
 		surface.SetFont( "bhud_roboto_14" )
 		surface.SetTextColor( 255, 255, 255, 255 )
-		surface.SetTextPos( cl_bHUD_Settings[ "map_left" ] + posx - 8, cl_bHUD_Settings[ "map_top" ] + posy + 10 )
+		surface.SetTextPos( cl_bHUD.Settings[ "map_left" ] + posx - 8, cl_bHUD.Settings[ "map_top" ] + posy + 10 )
 		surface.DrawText( pl:Nick() )
-		surface.SetTextPos( cl_bHUD_Settings[ "map_left" ] + posx - 8, cl_bHUD_Settings[ "map_top" ] + posy + 20 )
+		surface.SetTextPos( cl_bHUD.Settings[ "map_left" ] + posx - 8, cl_bHUD.Settings[ "map_top" ] + posy + 20 )
 		surface.DrawText( math.Round( ( LocalPlayer():GetPos():Distance( pl:GetPos() ) * 0.75 ) * 0.0254, 0 ) .. " m" )
 
 	end )
@@ -250,7 +250,7 @@ function cl_bHUD.showSettingsIcon()
 	if input.IsMouseDown( MOUSE_LEFT ) and !bhud_panel_open then
 		local x, y = gui.MousePos()
 		if x >= ScrW() - 5 - 16 and x <= ScrW() - 5 and y >= ScrH() - 5 - 16 and y <= ScrH() - 5 then
-			cl_bHUD_SettingsPanel()
+			cl_bHUD.SettingsPanel()
 			bhud_panel_open = true
 		end
 	end

@@ -1,5 +1,5 @@
 -- Roboto, 32 Pixels
-surface.CreateFont( "bhud_roboto_32_ns", {
+surface.CreateFont( "bhud_roboto_32", {
 	font = "Roboto",
 	size = 32,
 	weight = 500,
@@ -8,21 +8,12 @@ surface.CreateFont( "bhud_roboto_32_ns", {
 } )
 
 -- Roboto, 22 Pixels, no shadow
-surface.CreateFont( "bhud_roboto_22_ns", {
-	font = "Roboto",
-	size = 22,
-	weight = 500,
-	antialias = true,
-	shadow = false
-} )
-
--- Roboto, 22 Pixels
 surface.CreateFont( "bhud_roboto_22", {
 	font = "Roboto",
 	size = 22,
 	weight = 500,
 	antialias = true,
-	shadow = true
+	shadow = false
 } )
 
 -- Roboto, 20 Pixels
@@ -31,20 +22,11 @@ surface.CreateFont( "bhud_roboto_20", {
 	size = 20,
 	weight = 500,
 	antialias = true,
-	shadow = true
+	shadow = false
 } )
 
 -- Roboto, 18 Pixels
 surface.CreateFont( "bhud_roboto_18", {
-	font = "Roboto",
-	size = 18,
-	weight = 500,
-	antialias = true,
-	shadow = true
-} )
-
--- Roboto, 18 Pixels, no shadow
-surface.CreateFont( "bhud_roboto_18_ns", {
 	font = "Roboto",
 	size = 18,
 	weight = 500,
@@ -58,15 +40,6 @@ surface.CreateFont( "bhud_roboto_16", {
 	size = 16,
 	weight = 500,
 	antialias = true,
-	shadow = true
-} )
-
--- Roboto, 15 Pixels, no shadow
-surface.CreateFont( "bhud_roboto_15_ns", {
-	font = "Roboto",
-	size = 15,
-	weight = 500,
-	antialias = true,
 	shadow = false
 } )
 
@@ -76,14 +49,15 @@ surface.CreateFont( "bhud_roboto_14", {
 	size = 14,
 	weight = 500,
 	antialias = true,
-	shadow = true
+	shadow = false
 } )
 
--- Default, 12 Pixels, no shadow
-surface.CreateFont( "bhud_default_12_ns", {
-	font = "Default",
+-- Marlett, 12 Pixels, no shadow
+surface.CreateFont( "bhud_marlett_12", {
+	font = "marlett",
 	size = 12,
-	weight = 500,
+	weight = 0,
 	antialias = false,
-	shadow = false
+	shadow = false,
+	symbol = true
 } )

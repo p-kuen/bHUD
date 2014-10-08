@@ -15,9 +15,9 @@ function cl_bHUD.addfrm( x, y, w, h )
 	-- Close Button
 	local close_button = vgui.Create( "DButton", frame )
 	close_button:Center()
-	close_button:SetFont( "bhud_roboto_18_ns" )
+	close_button:SetFont( "bhud_marlett_12" )
 	close_button:SetTextColor( Color( 255, 255, 255 ) )
-	close_button:SetText( "x" )
+	close_button:SetText( "r" )
 	close_button:SetPos( w - 50, 0 )
 	close_button:SetSize( 45, 20 )
 	close_button:SetDark( false )
@@ -35,10 +35,10 @@ function cl_bHUD.addfrm( x, y, w, h )
 
 		draw.RoundedBoxEx( 4, 0, 0, w, 25, Color( 255, 150, 0 ), true, true, false, false )
 		draw.RoundedBoxEx( 4, 0, 25, w, h - 25, Color( 50, 50, 50 ), false, false, true, true )
-		draw.SimpleText( "bHUD - Settings", "bhud_roboto_18_ns", 5, 3, Color( 50, 50, 50 ), 0, 0 )
+		draw.SimpleText( "bHUD - Settings", "bhud_roboto_18", 5, 3, Color( 50, 50, 50 ), 0, 0 )
 
-		draw.RoundedBox( 2, 5, 30, ( w / 2 ) - 5, h - 35, Color( 60, 60, 60 ) )
-		draw.RoundedBox( 2, ( w / 2 ) + 5, 30, ( w / 2 ) - 9, h - 35, Color( 60, 60, 60 ) )
+		draw.RoundedBox( 4, 5, 30, ( w / 2 ) - 10, h - 35, Color( 60, 60, 60 ) )
+		draw.RoundedBox( 4, ( w / 2 ) + 5, 30, ( w / 2 ) - 10, h - 35, Color( 60, 60, 60 ) )
 
 	end
 
@@ -62,7 +62,7 @@ function cl_bHUD.addlbl( derma, text, x, y )
 	local lbl = vgui.Create( "DLabel", derma )
 	lbl:SetPos( x, y )
 	lbl:SetColor( Color( 255, 255, 255 ) )
-	lbl:SetFont( "bhud_roboto_16" )
+	lbl:SetFont( "bhud_roboto_18" )
 	lbl:SetText( text )
 	lbl:SetDark( false )
 	lbl:SizeToContents()
@@ -76,9 +76,9 @@ function cl_bHUD.addchk( derma, text, x, y, setting )
 	local chk = vgui.Create( "DCheckBoxLabel", derma )
 	chk:SetPos( x, y )
 	chk:SetText( text )
-	chk:SetChecked( cl_bHUD_Settings[setting] )
+	chk:SetChecked( cl_bHUD.Settings[setting] )
 	chk.Label:SetColor( Color( 255, 255, 255 ) )
-	chk.Label:SetFont( "bhud_roboto_16" )
+	chk.Label:SetFont( "bhud_roboto_14" )
 	chk:SizeToContents()
 
 	-- Actions
@@ -86,7 +86,7 @@ function cl_bHUD.addchk( derma, text, x, y, setting )
 
 		local IsChecked = chk:GetChecked() and "true" or "false"
 		sql.Query( "UPDATE bhud_settings SET value = '" .. IsChecked .. "' WHERE setting = '" .. setting .. "'" )
-		cl_bHUD_Settings[setting] = chk:GetChecked() and true or false
+		cl_bHUD.Settings[setting] = chk:GetChecked() and true or false
 
 	end
 
@@ -121,14 +121,14 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 	local lbl = vgui.Create( "DLabel", derma )
 	lbl:SetPos( x, y + 4 )
 	lbl:SetColor( Color( 255, 255, 255 ) )
-	lbl:SetFont( "bhud_roboto_16" )
+	lbl:SetFont( "bhud_roboto_14" )
 	lbl:SetText( text )
 	lbl:SetDark( false )
 	lbl:SizeToContents()
 
 	-- Slider Value
 	local lbl2 = vgui.Create( "DLabel", derma )
-	lbl2:SetPos( x + w + 30, y + 4 )
+	lbl2:SetPos( x + w + 34, y + 4 )
 	lbl2:SetColor( Color( 255, 255, 255 ) )
 	lbl2:SetFont( "bhud_roboto_16" )
 	lbl2:SetText( tostring( value ) )
@@ -140,7 +140,7 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 	-- Actions
 	sld.ValueChanged = function( self, number )
 
-		cl_bHUD_Settings[variable] = math.floor( number )
+		cl_bHUD.Settings[variable] = math.floor( number )
 
 		sql.Query( "UPDATE bhud_settings SET value = '" .. tostring( math.floor( number ) ) .. "' WHERE setting = '" .. variable .. "'" )
 		
@@ -153,7 +153,7 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 	-- Painting
 	function sld:PaintOver()
 
-		draw.RoundedBox( 2, w - 44, 10, 40, 17, Color( 100, 100, 100 ) )
+		draw.RoundedBox( 2, w - 40, 10, 40, 17, Color( 100, 100, 100 ) )
 
 	end
 

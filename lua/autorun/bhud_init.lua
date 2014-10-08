@@ -40,6 +40,7 @@ if SERVER then
 			bhud_restrictions[ args[1] ] = tobool( args[2] )
 			file.Write( "bhud_server_settings.txt", util.TableToJSON( bhud_restrictions ) )
 			print( "Set " .. args[1] .. "-restriction to " .. args[2] .. "!" )
+			print( "Please restart the server when you are finish." )
 
 		end
 
@@ -78,7 +79,7 @@ if SERVER then
 else
 
 	cl_bHUD = {}
-	cl_bHUD_Settings = {}
+	cl_bHUD.Settings = {}
 
 	include( "bhud/client/cl_sql.lua" )
 	include( "bhud/client/cl_bhud.lua" )
@@ -93,6 +94,6 @@ else
 		designs = designs + 1
 	end )
 
-	cl_bHUD_Settings["designs"] = designs
+	cl_bHUD.Settings["designs"] = designs
 
 end

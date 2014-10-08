@@ -5,6 +5,7 @@ local height = 70
 local heighta = 70
 local top = ScrH() - height - 20
 local topa = ScrH() - height - 20
+local t = 0
 
 local heightw = 65
 local heightaw = 65
@@ -23,6 +24,7 @@ function cl_bHUD.design_1()
 
 	-- PLAYER DATA
 	local ply = LocalPlayer()
+	local pn = 0
 	local player = {
 
 		name = ply:Nick(),
@@ -39,6 +41,10 @@ function cl_bHUD.design_1()
 
 
 	if player.armor > 0 then height = 100 else height = 70 end
+	if !cl_bHUD.Settings["player_name"] then
+		height = height - 30
+		pn = 30
+	end
 	top = ScrH() - height - 20
 	topa = cl_bHUD.Animation( topa, top, 0.3 )
 	heighta = cl_bHUD.Animation( heighta, height, 0.3 )
@@ -55,19 +61,21 @@ function cl_bHUD.design_1()
 	draw.RoundedBox( 4, 20, topa, width, heighta, Color( 0, 0, 0, 230 ) )
 
 	-- NAME
+	if cl_bHUD.Settings["player_name"] then
 	MakeImage( 30, topa + 12, "player16.png", Color( 255, 255, 255 ) )
 	draw.SimpleText( player.name, "bhud_roboto_20", 56, topa + 10, team.GetColor( ply:Team() ), 0, 0 )
+	end
 
 	-- HEALTH
-	MakeImage( 30, topa + 42, "heart16.png", Color( 255, 255, 255 ) )
-	draw.RoundedBox( 4, 56, topa + 40, math.Clamp( health * 1.5, 0, 150 ), 20, Color( 255, 25, 0 ) )
-	draw.SimpleText( tostring( math.Round( health ) ), "bhud_roboto_18", 60, topa + 41, Color( 255, 255, 255 ), 0, 0 )
+	MakeImage( 30, topa + 42 - pn, "heart16.png", Color( 255, 255, 255 ) )
+	draw.RoundedBox( 4, 56, topa + 40 - pn, math.Clamp( health * 1.5, 0, 150 ), 20, Color( 255, 25, 0 ) )
+	draw.SimpleText( tostring( math.Round( health ) ), "bhud_roboto_18", 60, topa + 41 - pn, Color( 255, 255, 255 ), 0, 0 )
 
 	-- ARMOR
 	if player.armor > 0 then
-	MakeImage( 30, topa + 72, "shield16.png", Color( 255, 255, 255 ) )
-	draw.RoundedBox( 4, 56, topa + 70, math.Clamp( armor * 1.5, 0, 150 ), 20, Color( 0, 161, 222 ) )
-	draw.SimpleText( tostring( math.Round( armor ) ), "bhud_roboto_18", 60, topa + 71, Color( 255, 255, 255 ), 0, 0 )
+	MakeImage( 30, topa + 72 - pn, "shield16.png", Color( 255, 255, 255 ) )
+	draw.RoundedBox( 4, 56, topa + 70 - pn, math.Clamp( armor * 1.5, 0, 150 ), 20, Color( 0, 161, 222 ) )
+	draw.SimpleText( tostring( math.Round( armor ) ), "bhud_roboto_18", 60, topa + 71 - pn, Color( 255, 255, 255 ), 0, 0 )
 	end
 
 	-- WEAPON-BACKGROUND
