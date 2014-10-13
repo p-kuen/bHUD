@@ -46,7 +46,7 @@ hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )
 function cl_bHUD.showHovernameHUD()
 
 	-- CHECK HUD-DRAW
-	if !drawHUD or !cl_bHUD.Settings["drawHoverNames"] or bhud_restrictions["hovernames"] == true then return end
+	if !drawHUD or !cl_bHUD.Settings["drawHoverNames"] or bhud_restrictions["hovername"] == true then return end
 
 	table.foreach( player.GetAll(), function( id, pl )
 		
