@@ -39,14 +39,14 @@ hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )
 
 
 
------------------------------------
---  HOVERNAME / DEATHNOTICE HUD  --
------------------------------------
+-----------------
+--  HOVERNAME  --
+-----------------
 
 function cl_bHUD.showHovernameHUD()
 
 	-- CHECK HUD-DRAW
-	if !drawHUD or !cl_bHUD.Settings["drawHoverNames"] or bhud_restrictions["hovername"] == true then return end
+	if !drawHUD or !cl_bHUD.Settings["drawHoverNames"] or bhud_restrictions["hovername"] == true or engine.ActiveGamemode() == "prop_hunt" then return end
 
 	table.foreach( player.GetAll(), function( id, pl )
 		
@@ -150,7 +150,7 @@ hook.Add( "HUDPaint", "bhud_showTimeHUD", cl_bHUD.showTimeHUD )
 function cl_bHUD.showMinimapHUD()
 
 	-- CHECK HUD-DRAW
-	if !drawHUD or !cl_bHUD.Settings["drawHUD"] or !cl_bHUD.Settings["drawMapHUD"] or bhud_restrictions["minimap"] == true then return end
+	if !drawHUD or !cl_bHUD.Settings["drawHUD"] or !cl_bHUD.Settings["drawMapHUD"] or bhud_restrictions["minimap"] == true or engine.ActiveGamemode() == "prop_hunt" then return end
 
 	-- DRAW CIRCLES
 	local circles = {}
@@ -245,6 +245,13 @@ hook.Add( "HUDPaint", "bhud_showMinimapHUD", cl_bHUD.showMinimapHUD )
 function cl_bHUD.showSettingsIcon()
 
 	if !time.cmenu then return end
+
+	-- If Gamemode is Prop Hunt open the settings panel immediatly
+	if engine.ActiveGamemode() == "prop_hunt" and !bhud_panel_open then
+		cl_bHUD.SettingsPanel()
+		bhud_panel_open = true
+		return
+	end
 
 	-- Check Mouse-Click and Mouse-Position
 	if input.IsMouseDown( MOUSE_LEFT ) and !bhud_panel_open then
