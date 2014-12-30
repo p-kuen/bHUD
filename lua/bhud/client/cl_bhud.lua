@@ -30,7 +30,7 @@ function cl_bHUD.showHUD()
 
 	-- CHECK HUD-DRAW
 	if !drawHUD or !cl_bHUD.Settings[ "drawHUD" ] or !cl_bHUD.Settings[ "drawPlayerHUD" ] then return end
-	if !LocalPlayer():Alive() or !LocalPlayer():IsValid() or !LocalPlayer():GetActiveWeapon():IsValid() then return end
+	if !LocalPlayer():Alive() or !LocalPlayer():IsValid() then return end
 
 	cl_bHUD["design_" .. tostring( cl_bHUD.Settings["design"] )]()
 

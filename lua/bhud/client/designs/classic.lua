@@ -29,15 +29,17 @@ function cl_bHUD.design_1()
 
 		name = ply:Nick(),
 		health = ply:Health(),
-		armor = ply:Armor(),
-
-		weapon = ply:GetActiveWeapon():GetPrintName(),
-		class = ply:GetActiveWeapon():GetClass(),
-		ammo1 = ply:GetActiveWeapon():Clip1(),
-		ammo1_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetPrimaryAmmoType() ),
-		ammo2_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetSecondaryAmmoType() )
+		armor = ply:Armor()
 
 	}
+
+	if LocalPlayer():GetActiveWeapon():IsValid() then
+		player.weapon = ply:GetActiveWeapon():GetPrintName()
+		player.class = ply:GetActiveWeapon():GetClass()
+		player.ammo1 = ply:GetActiveWeapon():Clip1()
+		player.ammo1_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetPrimaryAmmoType() )
+		player.ammo2_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetSecondaryAmmoType() )
+	end
 
 
 	if player.armor > 0 then height = 100 else height = 70 end
@@ -78,6 +80,7 @@ function cl_bHUD.design_1()
 	draw.SimpleText( tostring( math.Round( armor ) ), "bhud_roboto_18", 60, topa + 71 - pn, Color( 255, 255, 255 ), 0, 0 )
 	end
 
+	if !LocalPlayer():GetActiveWeapon():IsValid() then return end
 	-- WEAPON-BACKGROUND
 	if player.ammo1 == -1 and player.ammo1_max <= 0 then return end
 	draw.RoundedBox( 4, 20 + width + 20, topaw, width, heightaw, Color( 0, 0, 0, 230 ) )

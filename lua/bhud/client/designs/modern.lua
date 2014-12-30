@@ -61,15 +61,17 @@ function cl_bHUD.design_2()
 
 		name = ply:Nick(),
 		health = ply:Health(),
-		armor = ply:Armor(),
-
-		weapon = ply:GetActiveWeapon():GetPrintName(),
-		class = ply:GetActiveWeapon():GetClass(),
-		ammo1 = ply:GetActiveWeapon():Clip1(),
-		ammo1_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetPrimaryAmmoType() ),
-		ammo2_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetSecondaryAmmoType() )
+		armor = ply:Armor()
 
 	}
+
+	if LocalPlayer():GetActiveWeapon():IsValid() then
+		player.weapon = ply:GetActiveWeapon():GetPrintName()
+		player.class = ply:GetActiveWeapon():GetClass()
+		player.ammo1 = ply:GetActiveWeapon():Clip1()
+		player.ammo1_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetPrimaryAmmoType() )
+		player.ammo2_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetSecondaryAmmoType() )
+	end
 
 
 	local top = ScrH() - left - ( logo_size * 2 ) - 10
@@ -96,6 +98,7 @@ function cl_bHUD.design_2()
 		MakeBox( left, topa + 104, armor, Color( 0, 161, 222 ), "shield32.png" )
 	end
 
+	if !LocalPlayer():GetActiveWeapon():IsValid() then return end
 	-- WEAPON
 	if player["ammo1"] == -1 and player["ammo1_max"] <= 0 then return end
 	if player["ammo1"] == -1 then
