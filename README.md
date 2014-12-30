@@ -13,7 +13,7 @@
 
 <h2>Designs:</h2>
 
-We are constantly adding new designs to bHUD, so you are able to change between them whenever you want!
+We are offering some nice designs for bHUD, so you are able to change between them whenever you want! (Just open the settings-menu to change between them)
 
 <h3>Minimap:</h3>
 We programed a completely new Minimap, as one Guy suggested in the comments!
@@ -28,14 +28,14 @@ We programed a completely new Minimap, as one Guy suggested in the comments!
 - You don't need to install it client-side! A fully working copy of bHUD is enough! The rest will do bHUD for you.
 
 <h3>Settings:</h3>
-If you hold the <b>c-Key</b>, you will see at the <b>right-bottom of the screen</b> a little <b>settings-icon</b>. Just <b>left-click</b> on it to open the settings.
+If you hold the <b>c-key</b>, you will see at the <b>right-bottom of the screen</b> a little <b>settings-icon</b>. Just <b>left-click</b> on it to open the settings.
 
 - You can enable/disable bHUD or just some parts of it
 - You can change some minimap, timeHUD and other HUD settings
 - If you restart Garry's Mod, you will get the Settings back from your last configuration!
 
 <h4>Server Restrictions:</h4>
-You can also restrict some parts of bHUD server-widely. Just type into the serverconsole following commands:
+You can also restrict some parts of bHUD <b>server-widely</b>. Just type into the server-console following commands:
 - bhud_restrict hovername true/false (allow/restrict usability of hovernames)
 - bhud_restrict minimap true/false (allow/restrict usabil of the minimap)
 
