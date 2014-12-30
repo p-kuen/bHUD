@@ -1,6 +1,6 @@
 <h1>Beautiful HUD ( bHUD )</h1>
 
-<b>bHUD is a very nice HUD for every kind of Garry's Mod Server.</b>
+<b>bHUD is a very nice HUD for Sandbox and PropHunt-Servers in Garry's Mod!</b>
 
 <h2>It shows you:</h2>
 - Own player data ( name, rank, team-color )
@@ -11,9 +11,9 @@
 - played time ( hold c to expand the time panel )
 - Minimap
 
-<h2>Redesign of bHUD:</h2>
+<h2>Designs:</h2>
 
-We completely redesigned bHUD. You can swith now between two designs. Just open the settings menu and uncheck the "Old design"-checkbox, to get the new modern design!
+We are constantly adding new designs to bHUD, so you are able to change between them whenever you want!
 
 <h3>Minimap:</h3>
 We programed a completely new Minimap, as one Guy suggested in the comments!
@@ -28,12 +28,17 @@ We programed a completely new Minimap, as one Guy suggested in the comments!
 - You don't need to install it client-side! A fully working copy of bHUD is enough! The rest will do bHUD for you.
 
 <h3>Settings:</h3>
-<b>How to open the settings panel:</b>
 If you hold the <b>c-Key</b>, you will see at the <b>right-bottom of the screen</b> a little <b>settings-icon</b>. Just <b>left-click</b> on it to open the settings.
 
 - You can enable/disable bHUD or just some parts of it
 - You can change some minimap, timeHUD and other HUD settings
 - If you restart Garry's Mod, you will get the Settings back from your last configuration!
+
+<h4>Server Restrictions:</h4>
+You can also restrict some parts of bHUD server-widely. Just type into the serverconsole following commands:
+- bhud_restrict hovername true/false (allow/restrict usability of hovernames)
+- bhud_restrict minimap true/false (allow/restrict usabil of the minimap)
+
 
 <h3>Fixes:</h3>
 We try to keep bHUD as bugfree as possible. Of course it could happen, that we created a new bug. It would be great, if you can post the error message of the server/client on the github/workshop page to let us know about it. We will fix it as soon as possible. Thanks!
