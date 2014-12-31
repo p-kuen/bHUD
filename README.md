@@ -37,7 +37,7 @@ If you hold the <b>c-key</b>, you will see at the <b>right-bottom of the screen<
 <h4>Server Restrictions:</h4>
 You can also restrict some parts of bHUD <b>server-widely</b>. Just type into the server-console following commands:
 - bhud_restrict hovername true/false (allow/restrict usability of hovernames)
-- bhud_restrict minimap true/false (allow/restrict usabil of the minimap)
+- bhud_restrict minimap true/false (allow/restrict usability of the minimap)
 
 
 <h3>Fixes:</h3>
