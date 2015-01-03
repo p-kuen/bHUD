@@ -86,7 +86,7 @@ function cl_bHUD.addchk( derma, text, x, y, setting )
 
 		local IsChecked = chk:GetChecked() and "true" or "false"
 		sql.Query( "UPDATE bhud_settings SET value = '" .. IsChecked .. "' WHERE setting = '" .. setting .. "'" )
-		cl_bHUD.Settings[setting] = chk:GetChecked() and true or false
+		cl_bHUD.Settings[setting] = chk:GetChecked()
 
 	end
 
@@ -128,7 +128,7 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 
 	-- Slider Value
 	local lbl2 = vgui.Create( "DLabel", derma )
-	lbl2:SetPos( x + w + 34, y + 4 )
+	lbl2:SetPos( x + w + 32, y + 4 )
 	lbl2:SetColor( Color( 255, 255, 255 ) )
 	lbl2:SetFont( "bhud_roboto_16" )
 	lbl2:SetText( tostring( value ) )
@@ -138,22 +138,22 @@ function cl_bHUD.addsld( derma, text, x, y, w, min, max, value, variable )
 	local posx = value
 
 	-- Actions
-	sld.ValueChanged = function( self, number )
+	sld.ValueChanged = function( self, num )
 
-		cl_bHUD.Settings[variable] = math.floor( number )
+		cl_bHUD.Settings[variable] = math.floor( num )
 
-		sql.Query( "UPDATE bhud_settings SET value = '" .. tostring( math.floor( number ) ) .. "' WHERE setting = '" .. variable .. "'" )
+		sql.Query( "UPDATE bhud_settings SET value = '" .. tostring( math.floor( num ) ) .. "' WHERE setting = '" .. variable .. "'" )
 		
-		lbl2:SetText( tostring( math.floor( number ) ) )
+		lbl2:SetText( tostring( math.floor( num ) ) )
 		lbl2:SizeToContents()
-		posx = math.floor( number )
+		posx = math.floor( num )
 
 	end
 
 	-- Painting
 	function sld:PaintOver()
 
-		draw.RoundedBox( 2, w - 40, 10, 40, 17, Color( 100, 100, 100 ) )
+		draw.RoundedBox( 2, w - 42, 10, 40, 17, Color( 100, 100, 100 ) )
 
 	end
 
