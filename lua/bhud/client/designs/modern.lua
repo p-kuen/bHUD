@@ -6,7 +6,7 @@ local width = bar_size + logo_size
 local left = 20
 local leftw = ScrW() - width - 20
 
-local health = 0
+local health = 100
 local armor = 0
 local clip1 = 0
 local clip2 = 0

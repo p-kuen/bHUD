@@ -34,6 +34,12 @@ function cl_bHUD.showHUD()
 
 	cl_bHUD["design_" .. tostring( cl_bHUD.Settings["design"] )]()
 
+	-- Necessary to recreate full HUD when changed back to Design 3 (avatar)
+	if bhud_init3 and cl_bHUD.Settings["design"] != 3 then
+		bhud_init3 = false
+		bhud_avatar_f:Remove()
+	end
+
 end
 hook.Add( "HUDPaint", "bhud_showHUD", cl_bHUD.showHUD )
 
