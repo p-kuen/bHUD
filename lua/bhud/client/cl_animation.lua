@@ -1,9 +1,9 @@
-function cl_bHUD.Animation( start, goal, duration )
+function cl_bHUD.Animation( start, goal, dur )
 	
-	local frames = 1 / FrameTime()
-	local diff = math.abs( start - goal )
-	local step = diff / ( duration * frames ) * 5
+	local fps = 1 / RealFrameTime()
+	local diff = math.abs( goal - start )
+	local st = ( diff / fps ) / dur
 
-	return math.Approach( start, goal, step )
+	return start + math.Clamp( goal - start, -st, st )
 
 end

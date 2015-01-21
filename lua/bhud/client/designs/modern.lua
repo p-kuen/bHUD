@@ -1,11 +1,12 @@
-local topa = 0
-local topwa = 0
 local logo_size = 42
 local bar_size = 200
 local width = bar_size + logo_size
 local left = 20
 local leftw = ScrW() - width - 20
-
+local top = ScrH() - left - ( logo_size * 2 ) - 10
+local topa = top
+local topw = ScrH() - left - ( logo_size * 2 ) - 10
+local topwa = topw
 local health = 100
 local armor = 0
 local clip1 = 0
@@ -73,14 +74,11 @@ function cl_bHUD.design_2()
 		player.ammo2_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetSecondaryAmmoType() )
 	end
 
+	if player["armor"] > 0 then top = ScrH() - ( logo_size * 4 ) else top = ScrH() - 30 - ( logo_size * 2 ) end
+	topa = cl_bHUD.Animation( topa, top, 0.1 )
 
-	local top = ScrH() - left - ( logo_size * 2 ) - 10
-	if player["armor"] > 0 then top = top - ( logo_size + 10 ) end
-	topa = cl_bHUD.Animation( topa, top, 0.5 )
-
-	local topw = ScrH() - left - ( logo_size * 2 ) - 10
-	if player["ammo2_max"] != 0 then topw = topw - ( logo_size + 10 ) end
-	topwa = cl_bHUD.Animation( topwa, topw, 0.5 )
+	if player["ammo2_max"] != 0 then topw = ScrH() - ( logo_size * 4 ) else topw = ScrH() - 30 - ( logo_size * 2 ) end
+	topwa = cl_bHUD.Animation( topwa, topw, 0.1 )
 
 
 	-- NAME
@@ -89,11 +87,11 @@ function cl_bHUD.design_2()
 	end
 
 	-- HEALTH
-	health = cl_bHUD.Animation( health, player["health"], 1 )
+	health = cl_bHUD.Animation( health, player["health"], 0.1 )
 	MakeBox( left, topa + 52, health, Color( 255, 25, 0 ), "heart32.png" )
 	
 	-- ARMOR
-	armor = cl_bHUD.Animation( armor, player["armor"], 1 )
+	armor = cl_bHUD.Animation( armor, player["armor"], 0.1 )
 	if player["armor"] > 0 then
 		MakeBox( left, topa + 104, armor, Color( 0, 161, 222 ), "shield32.png" )
 	end
@@ -109,14 +107,14 @@ function cl_bHUD.design_2()
 
 	-- AMMO 1
 	if !clip_max_1[ player["class"] ] or player["ammo1"] > clip_max_1[ player["class"] ] then clip_max_1[ player["class"] ] = player["ammo1"] end
-	clip1 = cl_bHUD.Animation( clip1, player["ammo1"], 0.25 )
+	clip1 = cl_bHUD.Animation( clip1, player["ammo1"], 0.05 )
 	if player["ammo1_max"] == "" then ammotext = tostring( player["ammo1"] ) else ammotext = tostring( player["ammo1"] ) .. " / " .. tostring( player["ammo1_max"] ) end
 	MakeBox( leftw, topwa + 52, ( 100 / clip_max_1[ player["class"] ] ) * clip1, Color( 255, 150, 0 ), "ammo_132.png", nil, ammotext )
 
 	-- AMMO 2
 	if !clip_max_2[ player["class"] ] or player["ammo2_max"] > clip_max_2[ player["class"] ] then clip_max_2[ player["class"] ] = player["ammo2_max"] end
 	if player["ammo2_max"] != 0 then
-		clip2 = cl_bHUD.Animation( clip2, player["ammo2_max"], 0.25 )
+		clip2 = cl_bHUD.Animation( clip2, player["ammo2_max"], 0.05 )
 		MakeBox( leftw, topwa + 104, ( 100 / clip_max_2[ player["class"] ] ) * clip2, Color( 255, 150, 0 ), "ammo_232.png", nil, tostring( player["ammo2_max"] ) )
 	end
 

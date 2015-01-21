@@ -84,11 +84,11 @@ local time = {
 	jtime = os.time(),
 	ctime = os.date( "%H:%M" ),
 	width = 100,
+	awidth = 100,
 	top = 20,
 	atop = 0,
 	left = ScrW() - 120,
-	aleft = 0,
-	awidth = 0,
+	aleft = ScrW() - 120,
 	height = 26,
 	mode = false,
 	cmenu = false
@@ -115,9 +115,9 @@ function cl_bHUD.showTimeHUD()
 	time.left = ScrW() - time.width - 20
 
 	-- Animation
-	time.atop = cl_bHUD.Animation( time.atop, time.top, 0.3 )
-	time.aleft = cl_bHUD.Animation( time.aleft, time.left, 0.3 )
-	time.awidth = cl_bHUD.Animation( time.awidth, time.width, 0.3 )
+	time.atop = cl_bHUD.Animation( time.atop, time.top, 0.1 )
+	time.aleft = cl_bHUD.Animation( time.aleft, time.left, 0.1 )
+	time.awidth = cl_bHUD.Animation( time.awidth, time.width, 0.1 )
 
 	draw.RoundedBoxEx( 4, time.aleft, time.atop, time.awidth, time.height, Color( 0, 0, 0, 230 ), true, true, time.mode, time.mode )
 	draw.SimpleText( time.ctime, "bhud_roboto_16", ScrW() - 25, time.atop + 5, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )

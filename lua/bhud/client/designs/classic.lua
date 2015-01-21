@@ -48,15 +48,15 @@ function cl_bHUD.design_1()
 		pn = 30
 	end
 	top = ScrH() - height - 20
-	topa = cl_bHUD.Animation( topa, top, 0.3 )
-	heighta = cl_bHUD.Animation( heighta, height, 0.3 )
-	health = cl_bHUD.Animation( health, player.health, 0.5 )
-	armor = cl_bHUD.Animation( armor, player.armor, 0.5 )
+	topa = cl_bHUD.Animation( topa, top, 0.1 )
+	heighta = cl_bHUD.Animation( heighta, height, 0.1 )
+	health = cl_bHUD.Animation( health, player.health, 0.1 )
+	armor = cl_bHUD.Animation( armor, player.armor, 0.1 )
 
 	if player.ammo2_max != 0 then heightw = 100 else heightw = 70 end
 	topw = ScrH() - heightw - 20
-	topaw = cl_bHUD.Animation( topaw, topw, 0.3 )
-	heightaw = cl_bHUD.Animation( heightaw, heightw, 0.3 )
+	topaw = cl_bHUD.Animation( topaw, topw, 0.1 )
+	heightaw = cl_bHUD.Animation( heightaw, heightw, 0.1 )
 
 
 	-- BACKGROUND
