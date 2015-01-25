@@ -1,24 +1,24 @@
--- Send files to client
-AddCSLuaFile()
-AddCSLuaFile( "bhud/client/cl_sql.lua" )
-AddCSLuaFile( "bhud/client/cl_bhud.lua" )
-AddCSLuaFile( "bhud/client/cl_fonts.lua" )
-AddCSLuaFile( "bhud/client/cl_derma.lua" )
-AddCSLuaFile( "bhud/client/cl_animation.lua" )
-
-local files = file.Find( "bhud/client/designs/*.lua", "LUA" )
-table.foreach( files, function( key, plugin )
-	AddCSLuaFile( "bhud/client/designs/" .. plugin )
-end )
-
 if SERVER then
-	
-	local bhud_restrictions = {
-		minimap = false,
-		hovername = false
-	}
 
-	-- Load restrictions
+	-- Send files to client
+	AddCSLuaFile()
+	AddCSLuaFile( "bhud/client/cl_sql.lua" )
+	AddCSLuaFile( "bhud/client/cl_bhud.lua" )
+	AddCSLuaFile( "bhud/client/cl_fonts.lua" )
+	AddCSLuaFile( "bhud/client/cl_derma.lua" )
+
+	local files = file.Find( "bhud/client/designs/*.lua", "LUA" )
+	table.foreach( files, function( key, plugin )
+		AddCSLuaFile( "bhud/client/designs/" .. plugin )
+	end )
+
+	-- Create Restrictions-Table
+	local bhud_restrictions = { minimap = false, hovername = false }
+
+	-- Pool Network Strings
+	util.AddNetworkString( "bhud_authed" )
+
+	-- Load Restrictions
 	if file.Exists( "bhud_server_settings.txt", "DATA" ) then
 
 		local cont = file.Read( "bhud_server_settings.txt", "DATA" )
@@ -28,7 +28,7 @@ if SERVER then
 
 	end
 
-	-- Change/Save restrictions
+	-- Change/Save Restrictions
 	concommand.Add( "bhud_restrict", function( ply, cmd, args )
 		
 		if args[2] != "true" and args[2] != "false" or bhud_restrictions[ args[1] ] == nil then
@@ -46,7 +46,17 @@ if SERVER then
 
 	end )
 
-	-- Images
+	-- Send Restrictions
+	local function bhud_player_authed( ply, sid, uid )
+
+		net.Start( "bhud_authed" )
+			net.WriteTable( bhud_restrictions )
+		net.Send( ply )
+
+	end
+	hook.Add( "PlayerAuthed", "bhud_player_authed", bhud_player_authed )
+
+	-- Load Images
 	resource.AddFile( "materials/bhud/player16.png" )
 	resource.AddFile( "materials/bhud/heart16.png" )
 	resource.AddFile( "materials/bhud/shield16.png" )
@@ -65,35 +75,20 @@ if SERVER then
 	resource.AddFile( "materials/bhud/north.png" )
 	resource.AddFile( "materials/bhud/config.png" )
 
-	-- Network strings
-	util.AddNetworkString( "bhud_authed" )
-
-	-- Server restrictions
-	function bhud_player_authed( ply, sid, uid )
-		net.Start( "bhud_authed" )
-			net.WriteTable( bhud_restrictions )
-		net.Send( ply )
-	end
-	hook.Add( "PlayerAuthed", "bhud_player_authed", bhud_player_authed )
-
 else
 
-	cl_bHUD = {}
-	cl_bHUD.Settings = {}
+	cl_bHUD = { Settings = {} }
 
 	include( "bhud/client/cl_sql.lua" )
 	include( "bhud/client/cl_bhud.lua" )
 	include( "bhud/client/cl_fonts.lua" )
 	include( "bhud/client/cl_derma.lua" )
-	include( "bhud/client/cl_animation.lua" )
 	
 	local files = file.Find( "bhud/client/designs/*.lua", "LUA" )
-	local designs = 0
+	cl_bHUD.Settings.designs = 0
 	table.foreach( files, function( key, plugin )
 		include( "bhud/client/designs/" .. plugin )
-		designs = designs + 1
+		cl_bHUD.Settings.designs = cl_bHUD.Settings.designs + 1
 	end )
-
-	cl_bHUD.Settings["designs"] = designs
 
 end
