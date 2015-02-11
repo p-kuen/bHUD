@@ -1,26 +1,20 @@
-local logo_size = 42
-local bar_size = 200
-local width = bar_size + logo_size
-local left = 20
-local leftw = ScrW() - width - 20
-local top = ScrH() - left - ( logo_size * 2 ) - 10
-local topa = top
-local topw = ScrH() - left - ( logo_size * 2 ) - 10
-local topwa = topw
 local health = 100
 local armor = 0
+local sa = ScrH()
 local clip1 = 0
 local clip2 = 0
 local clip_max_1 = {}
 local clip_max_2 = {}
+local lw = ScrW() - 242 - 20
+local saw = ScrH()
 local ammotext = ""
 
-local function MakeTriangle( xpos, ypos, size, col )
+local function MakeTriangle( x, y, size, col )
 
 	local triangle = {
-		{ x = xpos, y = ypos },
-		{ x = xpos + ( size * 0.5 ), y = ypos + ( size / 2 ) },
-		{ x = xpos, y = ypos + size }
+		{ x = x, y = y },
+		{ x = x + ( size * 0.5 ), y = y + ( size / 2 ) },
+		{ x = x, y = y + size }
 	}
 
 	if !col then surface.SetDrawColor( 50, 50, 50, 255 ) else surface.SetDrawColor( col ) end
@@ -29,93 +23,79 @@ local function MakeTriangle( xpos, ypos, size, col )
 
 end
 
-local function MakeBox( l, t, v, c1, pic, c2, v2 )
+local function MakeBox( x, y, v, col, pic, piccol, v2 )
 
-	v2 = v2 or nil
-	if c2 == nil then c2 = Color( 255, 255, 255 ) end
+	piccol = piccol or Color( 255, 255, 255 )
 	if isstring( v ) then
-		if !v2 then v2 = v end
+		v2 = v2 or v
 		v = 100
 	end
 
-	draw.RoundedBox( 0, l, t, width, logo_size, Color( 50, 50, 50 ) )
-	draw.RoundedBox( 0, l + logo_size, t, bar_size * ( math.Clamp( v, 0, 100 ) / 100 ), logo_size, c1 )
-	MakeTriangle( l + logo_size, t + ( logo_size / 2 ) - 7, 15 )
+	draw.RoundedBox( 0, x, y, 242, 42, Color( 50, 50, 50 ) )
+	draw.RoundedBox( 0, x + 42, y, 200 * ( math.Clamp( v, 0, 100 ) / 100 ), 42, col )
+	MakeTriangle( x + 42, y + ( 42 / 2 ) - 7, 15 )
 
 	surface.SetMaterial( Material( "materials/bhud/" .. pic ) )
-	surface.SetDrawColor( c2 )
-	surface.DrawTexturedRect( l + 5, t + 5, 32, 32 )
+	surface.SetDrawColor( piccol )
+	surface.DrawTexturedRect( x + 5, y + 5, 32, 32 )
 
 	if !v2 then
-		draw.SimpleText( tostring( math.Round( v, 0 ) ), "bhud_roboto_32", l + logo_size + 10, t + 6, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( tostring( math.Round( v, 0 ) ), "bhud_roboto_32", x + 42 + 10, y + 6, Color( 255, 255, 255 ), 0, 0 )
 	else
-		draw.SimpleText( v2, "bhud_roboto_32", l + logo_size + 10, t + 6, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( v2, "bhud_roboto_32", x + 42 + 10, y + 6, Color( 255, 255, 255 ), 0, 0 )
 	end
 
 end
 
-function cl_bHUD.design_2()
+function bhud.design_2()
 
-	-- PLAYER DATA
-	local ply = LocalPlayer()
-	local player = {
+	local s = ScrH() - 20 - 42 - 42 - 20
+	if bhud.ply.armor > 0 then s = s - 42 - 20 end
 
-		name = ply:Nick(),
-		health = ply:Health(),
-		armor = ply:Armor()
+	sa = bhud.animate( sa, s, 0.1 )
 
-	}
-
-	if LocalPlayer():GetActiveWeapon():IsValid() then
-		player.weapon = ply:GetActiveWeapon():GetPrintName()
-		player.class = ply:GetActiveWeapon():GetClass()
-		player.ammo1 = ply:GetActiveWeapon():Clip1()
-		player.ammo1_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetPrimaryAmmoType() )
-		player.ammo2_max = ply:GetAmmoCount( ply:GetActiveWeapon():GetSecondaryAmmoType() )
+	-- Name
+	if bhud.phud.name then
+		MakeBox( 20, sa, bhud.ply.name, Color( 100, 100, 100 ), "player32.png", team.GetColor( bhud.me:Team() ) )
 	end
 
-	if player["armor"] > 0 then top = ScrH() - ( logo_size * 4 ) else top = ScrH() - 30 - ( logo_size * 2 ) end
-	topa = cl_bHUD.Animation( topa, top, 0.1 )
+	-- Health
+	health = bhud.animate( health, bhud.ply.health, 0.2 )
+	MakeBox( 20, sa + 42 + 20, health, Color( 255, 25, 0 ), "heart32.png" )
 
-	if player["ammo2_max"] != 0 then topw = ScrH() - ( logo_size * 4 ) else topw = ScrH() - 30 - ( logo_size * 2 ) end
-	topwa = cl_bHUD.Animation( topwa, topw, 0.1 )
-
-
-	-- NAME
-	if cl_bHUD.Settings["player_name"] then
-	MakeBox( left, topa, player["name"], Color( 100, 100, 100 ), "player32.png", team.GetColor( ply:Team() ) )
+	-- Armor
+	armor = bhud.animate( armor, bhud.ply.armor, 0.2 )
+	if bhud.ply.armor > 0 then
+		MakeBox( 20, sa + 42 + 20 + 42 + 20, armor, Color( 0, 161, 222 ), "shield32.png" )
 	end
 
-	-- HEALTH
-	health = cl_bHUD.Animation( health, player["health"], 0.1 )
-	MakeBox( left, topa + 52, health, Color( 255, 25, 0 ), "heart32.png" )
-	
-	-- ARMOR
-	armor = cl_bHUD.Animation( armor, player["armor"], 0.1 )
-	if player["armor"] > 0 then
-		MakeBox( left, topa + 104, armor, Color( 0, 161, 222 ), "shield32.png" )
+	-- Weapon
+	if !bhud.me:GetActiveWeapon():IsValid() then return end
+	if bhud.ply.ammo1 == -1 then
+		if bhud.ply.ammo1_max <= 0 then return end
+		bhud.ply.ammo1 = bhud.ply.ammo1_max
+		bhud.ply.ammo1_max = ""
 	end
+	if bhud.ply.ammo1 == 0 and bhud.ply.ammo1_max == 0 then return end
 
-	if !LocalPlayer():GetActiveWeapon():IsValid() then return end
-	-- WEAPON
-	if player["ammo1"] == -1 and player["ammo1_max"] <= 0 then return end
-	if player["ammo1"] == -1 then
-		player["ammo1"] = player["ammo1_max"]
-		player["ammo1_max"] = ""
-	end
-	MakeBox( leftw, topwa, player["weapon"], Color( 100, 100, 100 ), "pistol32.png" )
+	local sw = ScrH() - 20 - 42
+	if bhud.ply.ammo2_max > 0 then sw = sw - 42 - 20 end
 
-	-- AMMO 1
-	if !clip_max_1[ player["class"] ] or player["ammo1"] > clip_max_1[ player["class"] ] then clip_max_1[ player["class"] ] = player["ammo1"] end
-	clip1 = cl_bHUD.Animation( clip1, player["ammo1"], 0.05 )
-	if player["ammo1_max"] == "" then ammotext = tostring( player["ammo1"] ) else ammotext = tostring( player["ammo1"] ) .. " / " .. tostring( player["ammo1_max"] ) end
-	MakeBox( leftw, topwa + 52, ( 100 / clip_max_1[ player["class"] ] ) * clip1, Color( 255, 150, 0 ), "ammo_132.png", nil, ammotext )
+	saw = bhud.animate( saw, sw, 0.1 )
 
-	-- AMMO 2
-	if !clip_max_2[ player["class"] ] or player["ammo2_max"] > clip_max_2[ player["class"] ] then clip_max_2[ player["class"] ] = player["ammo2_max"] end
-	if player["ammo2_max"] != 0 then
-		clip2 = cl_bHUD.Animation( clip2, player["ammo2_max"], 0.05 )
-		MakeBox( leftw, topwa + 104, ( 100 / clip_max_2[ player["class"] ] ) * clip2, Color( 255, 150, 0 ), "ammo_232.png", nil, tostring( player["ammo2_max"] ) )
+	-- Ammo 1
+	if !clip_max_1[ bhud.ply.class ] or bhud.ply.ammo1 > clip_max_1[ bhud.ply.class ] then clip_max_1[ bhud.ply.class ] = bhud.ply.ammo1 end
+	clip1 = bhud.animate( clip1, bhud.ply.ammo1, 0.05 )
+	if bhud.ply.ammo1_max == "" then ammotext = tostring( bhud.ply.ammo1 ) else ammotext = tostring( bhud.ply.ammo1 ) .. " / " .. tostring( bhud.ply.ammo1_max ) end
+	MakeBox( lw, saw, ( 100 / clip_max_1[ bhud.ply.class ] ) * clip1, Color( 255, 150, 0 ), "ammo_132.png", nil, ammotext )
+
+	if bhud.ply.ammo2_max == 0 then return end
+
+	-- Ammo 2
+	if !clip_max_2[ bhud.ply.class ] or bhud.ply.ammo2_max > clip_max_2[ bhud.ply.class ] then clip_max_2[ bhud.ply.class ] = bhud.ply.ammo2_max end
+	if bhud.ply.ammo2_max != 0 then
+		clip2 = bhud.animate( clip2, bhud.ply.ammo2_max, 0.05 )
+		MakeBox( lw, saw + 42 + 20, ( 100 / clip_max_2[ bhud.ply.class ] ) * clip2, Color( 255, 150, 0 ), "ammo_232.png", nil, tostring( bhud.ply.ammo2_max ) )
 	end
 
 end

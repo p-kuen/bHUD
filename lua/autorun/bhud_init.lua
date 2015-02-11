@@ -2,10 +2,10 @@ if SERVER then
 
 	-- Send files to client
 	AddCSLuaFile()
-	AddCSLuaFile( "bhud/client/cl_sql.lua" )
-	AddCSLuaFile( "bhud/client/cl_bhud.lua" )
-	AddCSLuaFile( "bhud/client/cl_fonts.lua" )
-	AddCSLuaFile( "bhud/client/cl_derma.lua" )
+	AddCSLuaFile( "bhud/client/sql.lua" )
+	AddCSLuaFile( "bhud/client/bhud.lua" )
+	AddCSLuaFile( "bhud/client/fonts.lua" )
+	AddCSLuaFile( "bhud/client/derma.lua" )
 
 	local files = file.Find( "bhud/client/designs/*.lua", "LUA" )
 	table.foreach( files, function( key, plugin )
@@ -77,18 +77,31 @@ if SERVER then
 
 else
 
-	cl_bHUD = { Settings = {} }
+	bhud = {
+		cl_drawhud = tobool( GetConVarNumber( "cl_drawhud" ) ),
+		drawhud = nil,
+		cmenu = false,
+		popen = false,
+		res = {},
+		me = nil,
+		defs = {},
+		ply = {},
+		phud = {},
+		hhud = {},
+		thud = {},
+		mhud = {}
+	}
 
-	include( "bhud/client/cl_sql.lua" )
-	include( "bhud/client/cl_bhud.lua" )
-	include( "bhud/client/cl_fonts.lua" )
-	include( "bhud/client/cl_derma.lua" )
-	
+	include( "bhud/client/sql.lua" )
+	include( "bhud/client/bhud.lua" )
+	include( "bhud/client/fonts.lua" )
+	include( "bhud/client/derma.lua" )
+
+	bhud.phud.designs = 0
 	local files = file.Find( "bhud/client/designs/*.lua", "LUA" )
-	cl_bHUD.Settings.designs = 0
 	table.foreach( files, function( key, plugin )
 		include( "bhud/client/designs/" .. plugin )
-		cl_bHUD.Settings.designs = cl_bHUD.Settings.designs + 1
+		bhud.phud.designs = bhud.phud.designs + 1
 	end )
 
 end
