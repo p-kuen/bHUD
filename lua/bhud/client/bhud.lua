@@ -152,13 +152,14 @@ local function draw_hud()
 
 			if pl != bhud.me and pl:Alive() then
 
-				local pos = pos:ToScreen( pl:GetPos() + Vector( 0, 0, 100 ) )
+				local pos = pl:GetPos() + Vector( 0, 0, 100 )
+				local scr = pos:ToScreen()
 				local tcol = team.GetColor( pl:Team() )
 				local a = math.Clamp( 255 - ( LocalPlayer():GetPos():Distance( pl:GetPos() ) / 20 ), 0, 255 )
 
 				surface.SetFont( "bhud_roboto_22" )
-				pos.x = pos.x - ( surface.GetTextSize( pl:Nick() ) / 2 )
-				draw.SimpleTextOutlined( pl:Nick(), "bhud_roboto_22", pos.x, pos.y, Color( tcol.r, tcol.g, tcol.b, a ), 0 , 0, 1, Color( 100, 100, 100, a ) )
+				scr.x = scr.x - ( surface.GetTextSize( pl:Nick() ) / 2 )
+				draw.SimpleTextOutlined( pl:Nick(), "bhud_roboto_22", scr.x, scr.y, Color( tcol.r, tcol.g, tcol.b, a ), 0 , 0, 1, Color( 100, 100, 100, a ) )
 
 			end
 
