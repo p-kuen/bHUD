@@ -24,7 +24,7 @@ bhud.defs.mhud = { draw = true, left = ScrW() - 103 - 10, top = ScrH() - 103 - 1
 ----------------------------
 
 -- Load Settings
-if file.Exists( "bhud_settings.txt", "DATA" ) then
+function bhud.load()
 
 	local json = file.Read( "bhud_settings.txt", "DATA" )
 	local s = util.JSONToTable( json )
@@ -62,6 +62,16 @@ function bhud.save()
 	file.Write( "bhud_settings.txt", util.TableToJSON( s ) )
 
 end
+if file.Exists( "bhud_settings.txt", "DATA" ) then bhud.load() else bhud.save() bhud.load() end
+
+-- Reset Settings
+function bhud.reset()
+
+	file.Delete( "bhud_settings.txt" )
+	chat.AddText( Color( 255, 0, 0 ), "[bHUD - Reset] Please reconnect to fully reset bHUD. Thanks!" )
+
+end
+concommand.Add( "bhud_reset", bhud.reset )
 
 
 
