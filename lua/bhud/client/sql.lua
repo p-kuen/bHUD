@@ -4,6 +4,7 @@
 
 -- bHUD
 bhud.defs.drawhud = true
+bhud.defs.version = 1.3
 
 -- HoverHUD
 bhud.defs.hhud = { draw = true }
@@ -23,21 +24,26 @@ bhud.defs.mhud = { draw = true, left = ScrW() - 103 - 10, top = ScrH() - 103 - 1
 --  SAVE / LOAD SETTINGS  --
 ----------------------------
 
+-- Reset Settings
+function bhud.reset( notify )
+
+	file.Write( "bhud_settings.txt", util.TableToJSON( bhud.defs ) )
+
+	table.foreach( bhud.defs, function( k, v )
+		bhud[ k ] = v
+	end )
+
+	if notify then chat.AddText( Color( 255, 0, 0 ), "[bHUD - Reset] Please reconnect to fully reset bHUD. Thanks!" ) end
+
+end
+
 -- Load Settings
 function bhud.load()
 
-	local json = file.Read( "bhud_settings.txt", "DATA" )
-	local s = util.JSONToTable( json )
+	local s = util.JSONToTable( file.Read( "bhud_settings.txt", "DATA" ) )
+	if !s.version or s.version < bhud.defs.version then bhud.reset() return end
 	table.foreach( s, function( k, v )
-
-		if istable( v ) then
-			table.foreach( s[ k ], function( key, val )
-				bhud[ k ][ key ] = s[ k ][ key ]
-			end )
-		else
-			bhud[ k ] = v
-		end
-
+		bhud[ k ] = v
 	end )
 
 end
@@ -46,32 +52,23 @@ end
 function bhud.save()
 
 	local s = {}
-
 	table.foreach( bhud.defs, function( k, v )
-		if istable( v ) then
+		if !s[ k ] then s[ k ] = {} end
+		if istable( bhud[ k ] ) then
+			s[ k ] = {}
 			table.foreach( bhud.defs[ k ], function( key, val )
-				if !s[ k ] then s[ k ] = {} end
-				if bhud[ k ][ key ] != nil then s[ k ][ key ] = bhud[ k ][ key ] else s[ k ][ key ] = bhud.defs[ k ][ key ] end
+				s[ k ][ key ] = bhud[ k ][ key ]
 			end )
 		else
-			if bhud[ k ] != nil then s[ k ] = bhud[ k ] else s[ k ] = bhud.defs[ k ] end
+			s[ k ] = bhud[ k ]
 		end
-
 	end )
 
 	file.Write( "bhud_settings.txt", util.TableToJSON( s ) )
 
 end
-if file.Exists( "bhud_settings.txt", "DATA" ) then bhud.load() else bhud.save() bhud.load() end
-
--- Reset Settings
-function bhud.reset()
-
-	file.Delete( "bhud_settings.txt" )
-	chat.AddText( Color( 255, 0, 0 ), "[bHUD - Reset] Please reconnect to fully reset bHUD. Thanks!" )
-
-end
-concommand.Add( "bhud_reset", bhud.reset )
+concommand.Add( "bhud_reset", function() bhud.reset( true ) end )
+if file.Exists( "bhud_settings.txt", "DATA" ) then bhud.load() else bhud.reset() end
 
 
 
@@ -94,7 +91,7 @@ function bhud.spanel()
 
 	bhud.addlbl( frm, "PlayerHUD:", true, true )
 	bhud.addchk( frm, 230, "Draw player-name", bhud.phud.name, function( c ) bhud.phud.name = c end )
-	bhud.addsld( frm, 230, "Design", bhud.phud.design, 1, bhud.phud.designs, function( v ) bhud.phud.design = v end )
+	bhud.addsld( frm, 230, "Design", bhud.phud.design, 1, bhud.designs, function( v ) bhud.phud.design = v end )
 
 	bhud.addlbl( frm, "TimeHUD:", true, true )
 	bhud.addchk( frm, 230, "Draw date", bhud.thud.day, function( c ) bhud.thud.day = c end )

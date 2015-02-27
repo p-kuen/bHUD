@@ -80,9 +80,6 @@ hook.Add( "OnContextMenuClose", "bhud_closedContextMenu", function()
 	bhud.cmenu = false
 end )
 
--- TimeHUD
-bhud.thud.jtime = os.time()
-
 
 
 ----------------
@@ -202,11 +199,11 @@ local function draw_hud()
 
 			-- Session
 			draw.SimpleText( "Session:", "bhud_roboto_14", al + 10, at + 30, Color( 255, 255, 255 ), 0, 0 )
-			draw.SimpleText( string.NiceTime( os.time() - bhud.thud.jtime ), "bhud_roboto_14", al + 12 + surface.GetTextSize( "Session:" ), at + 30, Color( 255, 255, 255 ) )
+			draw.SimpleText( string.NiceTime( os.time() - bhud.jtime ), "bhud_roboto_14", al + 12 + surface.GetTextSize( "Session:" ), at + 30, Color( 255, 255, 255 ) )
 
 			-- Total
 			draw.SimpleText( "Total:", "bhud_roboto_14", al + 10, at + 50, Color( 255, 255, 255 ), 0, 0 )
-			draw.SimpleText( string.NiceTime( bhud.thud.time + ( os.time() - bhud.thud.jtime ) ), "bhud_roboto_14", al + 12 + surface.GetTextSize( "Total:" ), at + 50, Color( 255, 255, 255 ) )
+			draw.SimpleText( string.NiceTime( bhud.thud.time + ( os.time() - bhud.jtime ) ), "bhud_roboto_14", al + 12 + surface.GetTextSize( "Total:" ), at + 50, Color( 255, 255, 255 ) )
 
 		end
 
