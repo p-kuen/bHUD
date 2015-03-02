@@ -16,7 +16,7 @@ bhud.defs.phud = { draw = true, design = 1, name = true }
 bhud.defs.thud = { draw = true, day = false }
 
 -- MapHUD
-bhud.defs.mhud = { draw = true, left = ScrW() - 103 - 10, top = ScrH() - 103 - 10, rad = 100, bor = 3, tol = 200 }
+bhud.defs.mhud = { draw = true, npc = false, left = ScrW() - 103 - 10, top = ScrH() - 103 - 10, rad = 100, bor = 3, tol = 200 }
 
 
 
@@ -97,6 +97,7 @@ function bhud.spanel()
 	bhud.addchk( frm, 230, "Draw date", bhud.thud.day, function( c ) bhud.thud.day = c end )
 
 	bhud.addlbl( frm, "Minimap:", true, true )
+	bhud.addchk( frm, 230, "Draw NPCs", bhud.mhud.npc, function( c ) bhud.mhud.npc = c end )
 	bhud.addsld( frm, 230, "Radius", bhud.mhud.rad, 50, 150, function( v ) bhud.mhud.rad = v end )
 	bhud.addsld( frm, 230, "Border", bhud.mhud.bor, 0, 5, function( v ) bhud.mhud.bor = v end )
 	bhud.addsld( frm, 230, "X-Pos", bhud.mhud.left, 20 + bhud.mhud.bor + bhud.mhud.rad, ScrW() - bhud.mhud.rad - bhud.mhud.bor - 20, function( v ) bhud.mhud.left = v end )

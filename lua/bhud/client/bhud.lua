@@ -252,22 +252,18 @@ local function draw_hud()
 		surface.DrawTexturedRect( bhud.mhud.left + ( -sin( rad( north ) ) * bhud.mhud.rad ) - 8, bhud.mhud.top + ( cos( rad( north ) ) * bhud.mhud.rad ) - 8, 16, 16 )
 
 		-- OTHER PLAYERS
-		table.foreach( player.GetAll(), function( id, pl )
+		table.foreach( ents.GetAll(), function( id, pl )
 
-			if pl == bhud.me then return end
+			if ( !pl:IsPlayer() and !pl:IsNPC() ) or pl:Health() <= 0 or pl == bhud.me then return end
+			if pl:IsNPC() and !bhud.mhud.npc then return end
 
 			-- Set Variables ( Positions, Angles, ... )
-			local e = bhud.me:EyeAngles().y
-			local a1 = bhud.me:GetPos() - pl:GetPos()
-			local a2 = a1:Angle().y
-			local lx, ly, px, py = bhud.me:GetPos().x, bhud.me:GetPos().y, pl:GetPos().x, pl:GetPos().y
-			local dist = Vector( lx, ly, 0 ):Distance( Vector( px, py, 0 ) )
-			local ang = math.AngleDifference( e - 180, a2 )
+			local dist = Vector( bhud.me:GetPos().x, bhud.me:GetPos().y, 0 ):Distance( Vector( pl:GetPos().x, pl:GetPos().y, 0 ) )
+			local ang = math.AngleDifference( bhud.me:EyeAngles().y - 180, ( bhud.me:GetPos() - pl:GetPos() ):Angle().y )
 
 			-- Calculate Player-Cursor-Positions
-			local d = rad( ang + 180 )
-			local posx = -sin( d ) * ( math.Clamp( dist, 0, bhud.mhud.rad * 10 ) * 0.1 )
-			local posy = cos( d ) * ( math.Clamp( dist, 0, bhud.mhud.rad * 10 ) * 0.1 )
+			local posx = -sin( rad( ang + 180 ) ) * ( math.Clamp( dist, 0, bhud.mhud.rad * 10 ) * 0.1 )
+			local posy = cos( rad( ang + 180 ) ) * ( math.Clamp( dist, 0, bhud.mhud.rad * 10 ) * 0.1 )
 
 			-- Set correct Cursor-Picture
 			if bhud.me:GetPos().z + bhud.mhud.tol < pl:GetPos().z then
@@ -279,16 +275,14 @@ local function draw_hud()
 			end
 
 			-- Draw Player-Curosr
-			surface.SetDrawColor( team.GetColor( pl:Team() ) )
-			surface.DrawTexturedRectRotated( bhud.mhud.left + posx, bhud.mhud.top + posy, 16, 16, -math.AngleDifference( e, pl:EyeAngles().y ) )
+			local col, name = Color( 255, 255, 255 ), pl:GetClass()
+			if pl:IsPlayer() then local col = team.GetColor( pl:Team() ) local name = pl:Nick() end
+			surface.SetDrawColor( col )
+			surface.DrawTexturedRectRotated( bhud.mhud.left + posx, bhud.mhud.top + posy, 16, 16, -math.AngleDifference( bhud.me:EyeAngles().y, pl:EyeAngles().y ) )
 
-			-- Draw Playername and Distance
-			surface.SetFont( "bhud_roboto_14" )
-			surface.SetTextColor( 255, 255, 255, 255 )
-			surface.SetTextPos( bhud.mhud.left + posx - 8, bhud.mhud.top + posy + 10 )
-			surface.DrawText( pl:Nick() )
-			surface.SetTextPos( bhud.mhud.left + posx - 8, bhud.mhud.top + posy + 20 )
-			surface.DrawText( math.Round( ( bhud.me:GetPos():Distance( pl:GetPos() ) * 0.75 ) * 0.0254, 0 ) .. " m" )
+			-- Draw Name and Distance
+			draw.SimpleText( name, "bhud_roboto_14", bhud.mhud.left + posx - 8, bhud.mhud.top + posy + 10, Color( 255, 255, 255 ) )
+			draw.SimpleText( math.Round( ( bhud.me:GetPos():Distance( pl:GetPos() ) * 0.75 ) * 0.0254, 0 ) .. " m", "bhud_roboto_14", bhud.mhud.left + posx - 8, bhud.mhud.top + posy + 20, Color( 255, 255, 255 ) )
 
 		end )
 

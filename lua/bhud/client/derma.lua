@@ -47,6 +47,19 @@ function bhud.addfrm( w, h, title )
 	frm.list.VBar.btnUp:SetVisible( false )
 	frm.list.VBar.btnDown:SetVisible( false )
 
+	function frm.list.VBar:PerformLayout()
+
+		local Scroll = self:GetScroll() / self.CanvasSize
+		local BarSize = math.max( self:BarScale() * self:GetTall(), 10 )
+		local Track = self:GetTall() - BarSize
+		Track = Track + 1
+		Scroll = Scroll * Track
+
+		self.btnGrip:SetPos( 0, Scroll )
+		self.btnGrip:SetSize( 13, BarSize )
+
+	end
+
 	function frm.list.VBar:Paint() end
 
 	function frm.list.VBar.btnGrip:Paint()
