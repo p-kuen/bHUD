@@ -17,7 +17,7 @@ function bhud.addfrm( w, h, title )
 	frm.title = vgui.Create( "DLabel", frm )
 	frm.title:SetText( title )
 	frm.title:SetPos( 15, 12.5 )
-	frm.title:SetFont( "bhud_roboto_25" )
+	frm.title:SetFont( bhud.font( "roboto", 25, 750 ) )
 	frm.title:SetColor( Color( 0, 0, 0, 191.25 ) )
 	frm.title:SizeToContents()
 
@@ -34,7 +34,7 @@ function bhud.addfrm( w, h, title )
 		elseif self.Hovered then draw.RoundedBox( 4, 0, 0, 30, 30, Color( 200, 60, 60 ) )
 		else draw.RoundedBox( 4, 0, 0, 30, 30, Color( 200, 80, 80 ) )
 		end
-		draw.SimpleText( "r", "bhud_marlett_14", 9, 8, Color( 255, 255, 255 ) )
+		draw.SimpleText( "r", bhud.font( "marlett", 14, 0, false, false, true ), 9, 8, Color( 255, 255, 255 ) )
 
 	end
 
@@ -74,7 +74,7 @@ end
 function bhud.addlbl( d, text, bold, space )
 
 	local lbl = vgui.Create( "DLabel" )
-	if bold == true then lbl:SetFont( "bhud_roboto_18_bold" ) else lbl:SetFont( "bhud_roboto_28" ) end
+	if bold == true then lbl:SetFont( bhud.font( "roboto", 18, 1000 ) ) else lbl:SetFont( bhud.font( "roboto", 18 ) ) end
 	if space == true then text = "\n" .. text end
 	lbl:SetText( text )
 	lbl:SetColor( Color( 50, 50, 50 ) )
@@ -92,7 +92,7 @@ function bhud.addchk( d, w, text, c, cb )
 	chk.lbl = vgui.Create( "DLabel", chk )
 	chk.lbl:SetText( text )
 	chk.lbl:SetPos( 5, 3 )
-	chk.lbl:SetFont( "bhud_roboto_16" )
+	chk.lbl:SetFont( bhud.font( "roboto", 16, 750 ) )
 	chk.lbl:SetColor( Color( 50, 50, 50 ) )
 	chk.lbl:SizeToContents()
 
@@ -107,11 +107,11 @@ function bhud.addchk( d, w, text, c, cb )
 		if chk.box:GetChecked() then
 			draw.RoundedBox( 4, 0, 0, 40, 20, Color( 255, 150, 0 ) )
 			draw.RoundedBox( 4, 23, 3, 14, 14, Color( 240, 240, 240 ) )
-			draw.SimpleText( "ON", "bhud_roboto_12", 5, 5, Color( 255, 255, 255 ) )
+			draw.SimpleText( "ON", bhud.font( "roboto", 11, 1000 ), 5, 5, Color( 255, 255, 255 ) )
 		else
 			draw.RoundedBox( 4, 0, 0, 40, 20, Color( 75, 75, 75 ) )
 			draw.RoundedBox( 4, 3, 3, 14, 14, Color( 240, 240, 240 ) )
-			draw.SimpleText( "OFF", "bhud_roboto_12", 20, 5, Color( 255, 255, 255 ) )
+			draw.SimpleText( "OFF", bhud.font( "roboto", 11, 1000 ), 20, 5, Color( 255, 255, 255 ) )
 		end
 	end
 
@@ -136,14 +136,14 @@ function bhud.addsld( d, w, text, v, min, max, cb )
 
 	function sld:Paint( w, h )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255 ) )
-		draw.SimpleText( text, "bhud_roboto_16", 5, 2, Color( 50, 50, 50 ) )
+		draw.SimpleText( text, bhud.font( "roboto", 16, 750 ), 5, 2, Color( 50, 50, 50 ) )
 		draw.RoundedBox( 0, ( w / 2.4 ) + 8, 9, ( w / 2.4 ) - 23, 3, Color( 230, 230, 230 ) )
 	end
 
 	function sld:PaintOver( w, h )
 		draw.RoundedBox( 0, w - 45, 0, w, h, Color( 255, 255, 255 ) )
 		draw.RoundedBox( 4, w - 42, 0, 40, 20, Color( 75, 75, 75 ) )
-		draw.SimpleText( tostring( math.Round( sld:GetValue() ) ), "bhud_roboto_16", w - 38, 2, Color( 255, 255, 255 ) )
+		draw.SimpleText( tostring( math.Round( sld:GetValue() ) ), bhud.font( "roboto", 16, 750 ), w - 38, 2, Color( 255, 255, 255 ) )
 	end
 
 	function sld.Slider:Paint() end

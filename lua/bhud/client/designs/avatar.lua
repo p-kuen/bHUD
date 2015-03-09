@@ -48,13 +48,13 @@ function bhud.design_3()
 	health = bhud.animate( health, bhud.ply.health, 0.1 )
 	MakeImage( left, top + 7 + 2, "heart16.png", Color( 255, 255, 255 ) )
 	draw.RoundedBox( 4, left + 16 + 10, top + 7, math.Clamp( health * 1.25, 0, 125 ), 20, Color( 255, 25, 0 ) )
-	draw.SimpleText( tostring( math.Round( health ) ), "bhud_roboto_18", left + 16 + 10 + 5, top + 7 + 2, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( tostring( math.Round( health ) ), bhud.font( "roboto", 18, 0 ), left + 16 + 10 + 5, top + 7 + 2, Color( 255, 255, 255 ), 0, 0 )
 
 	-- Armor
 	armor = bhud.animate( armor, bhud.ply.armor, 0.1 )
 	MakeImage( left, top + 20 + 10 + 7 + 2, "shield16.png", Color( 255, 255, 255 ) )
 	if bhud.ply.armor > 0 then draw.RoundedBox( 4, left + 16 + 10, top + 20 + 10 + 7, math.Clamp( armor * 1.25, 8, 125 ), 20, Color( 0, 161, 222 ) ) end
-	draw.SimpleText( tostring( math.Round( armor ) ), "bhud_roboto_18", left + 16 + 10 + 5, top + 20 + 10 + 7 + 2, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( tostring( math.Round( armor ) ), bhud.font( "roboto", 18, 0 ), left + 16 + 10 + 5, top + 20 + 10 + 7 + 2, Color( 255, 255, 255 ), 0, 0 )
 
 	-- Weapon
 	if !LocalPlayer():GetActiveWeapon():IsValid() or bhud.ply.ammo1 == 0 and bhud.ply.ammo1_max == 0 or bhud.ply.ammo1 == -1 and bhud.ply.ammo1_max <= 0 then return end
@@ -68,7 +68,7 @@ function bhud.design_3()
 
 	-- Weapon Name
 	MakeImage( ScrW() - 206, wtop + 12, "pistol16.png", Color( 255, 255, 255 ) )
-	draw.SimpleText( bhud.sstring( bhud.ply.weapon, 150, "bhud_roboto_20" ), "bhud_roboto_20", ScrW() - 180, wtop + 10, Color( 255, 255, 255 ) )
+	draw.SimpleText( bhud.sstring( bhud.ply.weapon, 150, bhud.font( "roboto", 20 ) ), bhud.font( "roboto", 20 ), ScrW() - 180, wtop + 10, Color( 255, 255, 255 ) )
 
 	-- Ammo1
 	if bhud.ply.ammo1_max == "" then ammotext = tostring( bhud.ply.ammo1 ) else ammotext = tostring( bhud.ply.ammo1 ) .. " / " .. tostring( bhud.ply.ammo1_max ) end
@@ -77,7 +77,7 @@ function bhud.design_3()
 	local c1_w = math.Clamp( ( 150 / clip_max_1[ bhud.ply.class ] ) * clip1, 8, 150 )
 	MakeImage( ScrW() - 206, wtop + 42, "ammo_116.png", Color( 255, 255, 255 ) )
 	draw.RoundedBox( 4, ScrW() - 180, wtop + 40, c1_w, 20, Color( 255, 150, 0 ) )
-	draw.SimpleText( ammotext, "bhud_roboto_18", ScrW() - 175, math.Round( wtop + 42 ), Color( 255, 255, 255 ) )
+	draw.SimpleText( ammotext, bhud.font( "roboto", 18, 0 ), ScrW() - 175, math.Round( wtop + 42 ), Color( 255, 255, 255 ) )
 
 	-- Ammo2
 	if bhud.ply.ammo2_max != 0 then
@@ -86,7 +86,7 @@ function bhud.design_3()
 		local c2_w = math.Clamp( ( 150 / clip_max_2[ bhud.ply.class ] ) * clip2, 8, 150 )
 		draw.RoundedBox( 4, ScrW() - 180, wtop + 70, c2_w, 20, Color( 255, 150, 0 ) )
 		MakeImage( ScrW() - 206, wtop + 72, "ammo_216.png", Color( 255, 255, 255 ) )
-		draw.SimpleText( tostring( bhud.ply.ammo2_max ), "bhud_roboto_18", ScrW() - 175, math.Round( wtop + 72 ), Color( 255, 255, 255 ) )
+		draw.SimpleText( tostring( bhud.ply.ammo2_max ), bhud.font( "roboto", 18, 0 ), ScrW() - 175, math.Round( wtop + 72 ), Color( 255, 255, 255 ) )
 	end
 
 end

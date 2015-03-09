@@ -154,9 +154,9 @@ local function draw_hud()
 				local tcol = team.GetColor( pl:Team() )
 				local a = math.Clamp( 255 - ( LocalPlayer():GetPos():Distance( pl:GetPos() ) / 20 ), 0, 255 )
 
-				surface.SetFont( "bhud_roboto_22" )
+				surface.SetFont( bhud.font( "roboto", 22 ) )
 				scr.x = scr.x - ( surface.GetTextSize( pl:Nick() ) / 2 )
-				draw.SimpleTextOutlined( pl:Nick(), "bhud_roboto_22", scr.x, scr.y, Color( tcol.r, tcol.g, tcol.b, a ), 0 , 0, 1, Color( 100, 100, 100, a ) )
+				draw.SimpleTextOutlined( pl:Nick(), bhud.font( "roboto", 22 ), scr.x, scr.y, Color( tcol.r, tcol.g, tcol.b, a ), 0 , 0, 1, Color( 100, 100, 100, a ) )
 
 			end
 
@@ -169,7 +169,7 @@ local function draw_hud()
 
 		-- Caluclate vars
 		if !bhud.thud.day then bhud.thud.ptime = os.date( "%H:%M" ) else bhud.thud.ptime = os.date( "%d %B %Y - %H:%M" ) end
-		surface.SetFont( "bhud_roboto_16" )
+		surface.SetFont( bhud.font( "roboto", 16, 750 ) )
 		bhud.thud.width = surface.GetTextSize( bhud.thud.ptime ) + 10
 		if bhud.cmenu then
 			bhud.thud.width = math.Clamp( bhud.thud.width, 130, 300 )
@@ -187,7 +187,7 @@ local function draw_hud()
 		draw.RoundedBoxEx( 4, al, at, aw, 22, Color( 0, 0, 0, 230 ), true, true, !bhud.cmenu, !bhud.cmenu )
 
 		-- Time
-		draw.SimpleText( bhud.thud.ptime, "bhud_roboto_16", ScrW() - 25, math.Round( at + 3 ), Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
+		draw.SimpleText( bhud.thud.ptime, bhud.font( "roboto", 16, 750 ), ScrW() - 25, math.Round( at + 3 ), Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
 
 		if bhud.cmenu then
 
@@ -195,15 +195,15 @@ local function draw_hud()
 			draw.RoundedBoxEx( 4, al, at + 22, aw, 50, Color( 0, 0, 0, 200 ), false, false, true, true )
 
 			-- Stats
-			if !bhud.thud.day then draw.SimpleText( "Stats:", "bhud_roboto_16", al + 5, at + 3, Color( 255, 255, 255 ) ) end
+			if !bhud.thud.day then draw.SimpleText( "Stats:", bhud.font( "roboto", 16, 750 ), al + 5, at + 3, Color( 255, 255, 255 ) ) end
 
 			-- Session
-			draw.SimpleText( "Session:", "bhud_roboto_14", al + 10, at + 30, Color( 255, 255, 255 ), 0, 0 )
-			draw.SimpleText( string.NiceTime( os.time() - bhud.jtime ), "bhud_roboto_14", al + 12 + surface.GetTextSize( "Session:" ), at + 30, Color( 255, 255, 255 ) )
+			draw.SimpleText( "Session:", bhud.font( "roboto", 14 ), al + 10, at + 30, Color( 255, 255, 255 ), 0, 0 )
+			draw.SimpleText( string.NiceTime( os.time() - bhud.jtime ), bhud.font( "roboto", 14 ), al + 12 + surface.GetTextSize( "Session:" ), at + 30, Color( 255, 255, 255 ) )
 
 			-- Total
-			draw.SimpleText( "Total:", "bhud_roboto_14", al + 10, at + 50, Color( 255, 255, 255 ), 0, 0 )
-			draw.SimpleText( string.NiceTime( bhud.thud.time + ( os.time() - bhud.jtime ) ), "bhud_roboto_14", al + 12 + surface.GetTextSize( "Total:" ), at + 50, Color( 255, 255, 255 ) )
+			draw.SimpleText( "Total:", bhud.font( "roboto", 14 ), al + 10, at + 50, Color( 255, 255, 255 ), 0, 0 )
+			draw.SimpleText( string.NiceTime( bhud.thud.time + ( os.time() - bhud.jtime ) ), bhud.font( "roboto", 14 ), al + 12 + surface.GetTextSize( "Total:" ), at + 50, Color( 255, 255, 255 ) )
 
 		end
 
@@ -281,8 +281,8 @@ local function draw_hud()
 			surface.DrawTexturedRectRotated( bhud.mhud.left + posx, bhud.mhud.top + posy, 16, 16, -math.AngleDifference( bhud.me:EyeAngles().y, pl:EyeAngles().y ) )
 
 			-- Draw Name and Distance
-			draw.SimpleText( name, "bhud_roboto_14", bhud.mhud.left + posx - 8, bhud.mhud.top + posy + 10, Color( 255, 255, 255 ) )
-			draw.SimpleText( math.Round( ( bhud.me:GetPos():Distance( pl:GetPos() ) * 0.75 ) * 0.0254, 0 ) .. " m", "bhud_roboto_14", bhud.mhud.left + posx - 8, bhud.mhud.top + posy + 20, Color( 255, 255, 255 ) )
+			draw.SimpleText( name, bhud.font( "roboto", 14 ), bhud.mhud.left + posx - 8, bhud.mhud.top + posy + 10, Color( 255, 255, 255 ) )
+			draw.SimpleText( math.Round( ( bhud.me:GetPos():Distance( pl:GetPos() ) * 0.75 ) * 0.0254, 0 ) .. " m", bhud.font( "roboto", 14 ), bhud.mhud.left + posx - 8, bhud.mhud.top + posy + 20, Color( 255, 255, 255 ) )
 
 		end )
 

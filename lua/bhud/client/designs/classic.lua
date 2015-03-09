@@ -43,19 +43,19 @@ function bhud.design_1()
 	-- NAME
 	if bhud.phud.name then
 	MakeImage( 30, top + 12, "player16.png", Color( 255, 255, 255 ) )
-	draw.SimpleText( bhud.sstring( bhud.ply.name, 150, "bhud_roboto_20" ), "bhud_roboto_20", 60, math.Round( top + 10 ), team.GetColor( bhud.me:Team() ), 0, 0 )
+	draw.SimpleText( bhud.sstring( bhud.ply.name, 150, bhud.font( "roboto", 20 ) ), bhud.font( "roboto", 20 ), 60, math.Round( top + 10 ), team.GetColor( bhud.me:Team() ), 0, 0 )
 	end
 
 	-- HEALTH
 	MakeImage( 30, top + 42 - pn, "heart16.png", Color( 255, 255, 255 ) )
 	draw.RoundedBox( 4, 56, top + 40 - pn, math.Clamp( health * 1.5, 0, 150 ), 20, Color( 255, 25, 0 ) )
-	draw.SimpleText( tostring( math.Round( health ) ), "bhud_roboto_18", 60, math.Round( top + 41 - pn ), Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( tostring( math.Round( health ) ), bhud.font( "roboto", 18, 0 ), 60, math.Round( top + 41 - pn ), Color( 255, 255, 255 ), 0, 0 )
 
 	-- ARMOR
 	if bhud.ply.armor > 0 then
 	MakeImage( 30, top + 72 - pn, "shield16.png", Color( 255, 255, 255 ) )
 	draw.RoundedBox( 4, 56, top + 70 - pn, math.Clamp( armor * 1.5, 0, 150 ), 20, Color( 0, 161, 222 ) )
-	draw.SimpleText( tostring( math.Round( armor ) ), "bhud_roboto_18", 60, math.Round( top + 71 - pn ), Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( tostring( math.Round( armor ) ), bhud.font( "roboto", 18, 0 ), 60, math.Round( top + 71 - pn ), Color( 255, 255, 255 ), 0, 0 )
 	end
 
 	if !LocalPlayer():GetActiveWeapon():IsValid() or bhud.ply.ammo1 == 0 and bhud.ply.ammo1_max == 0 or bhud.ply.ammo1 == -1 and bhud.ply.ammo1_max <= 0 then return end
@@ -64,20 +64,20 @@ function bhud.design_1()
 
 	-- WEAPON-NAME
 	MakeImage( width + 50, topw + 12, "pistol16.png", Color( 255, 255, 255 ) )
-	draw.SimpleText( bhud.sstring( bhud.ply.weapon, 150, "bhud_roboto_20" ), "bhud_roboto_20", width + 76, topw + 10, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( bhud.sstring( bhud.ply.weapon, 150, bhud.font( "roboto", 20 ) ), bhud.font( "roboto", 20 ), width + 76, topw + 10, Color( 255, 255, 255 ), 0, 0 )
 
 	-- WEAPON-AMMO1
 	MakeImage( width + 50, topw + 42, "ammo_116.png", Color( 255, 255, 255 ) )
 	if bhud.ply.ammo1 != -1 then
-		draw.SimpleText( tostring( bhud.ply.ammo1 ) .. " / " .. tostring( bhud.ply.ammo1_max ), "bhud_roboto_20", width + 76, topw + 40, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( tostring( bhud.ply.ammo1 ) .. " / " .. tostring( bhud.ply.ammo1_max ), bhud.font( "roboto", 20 ), width + 76, topw + 40, Color( 255, 255, 255 ), 0, 0 )
 	else
-		draw.SimpleText( tostring( bhud.ply.ammo1_max ), "bhud_roboto_20", width + 76, topw + 40, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( tostring( bhud.ply.ammo1_max ), bhud.font( "roboto", 20 ), width + 76, topw + 40, Color( 255, 255, 255 ), 0, 0 )
 	end
 
 	-- WEAPON-AMMO2
 	if bhud.ply.ammo2_max != 0 then
 	MakeImage( width + 50, topw + 72, "ammo_216.png", Color( 255, 255, 255 ) )
-	draw.SimpleText( tostring( bhud.ply.ammo2_max ), "bhud_roboto_20", width + 76, topw + 70, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( tostring( bhud.ply.ammo2_max ), bhud.font( "roboto", 20 ), width + 76, topw + 70, Color( 255, 255, 255 ), 0, 0 )
 	end
 
 end

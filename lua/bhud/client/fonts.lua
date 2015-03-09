@@ -1,90 +1,26 @@
--- Roboto, 32 Pixels
-surface.CreateFont( "bhud_roboto_32", {
-	font = "Roboto",
-	size = 32,
-	weight = 500,
-	antialias = true,
-	shadow = false
-} )
+local fonts = {}
+function bhud.font( f, s, b, a, sh, sy )
 
--- Roboto, 25 Pixels, no shadow
-surface.CreateFont( "bhud_roboto_25", {
-	font = "Roboto",
-	size = 25,
-	weight = 750,
-	antialias = true,
-	shadow = false
-} )
+	b = b or 500
+	a = a or true
+	sh = sh or false
+	sy = sy or false
 
--- Roboto, 22 Pixels, no shadow
-surface.CreateFont( "bhud_roboto_22", {
-	font = "Roboto",
-	size = 22,
-	weight = 500,
-	antialias = true,
-	shadow = false
-} )
+	local fstr = "bhud_" .. f .. "_" .. tostring( s ) .. "_" .. tostring( b ) .. "_" .. string.sub( tostring( a ), 1, 1 ) .. "_" .. string.sub( tostring( sh ), 1, 1 )
 
--- Roboto, 20 Pixels
-surface.CreateFont( "bhud_roboto_20", {
-	font = "Roboto",
-	size = 20,
-	weight = 500,
-	antialias = true,
-	shadow = false
-} )
+	if table.HasValue( fonts, fstr ) then return fstr end
 
--- Roboto, 18 Pixels, bold
-surface.CreateFont( "bhud_roboto_18_bold", {
-	font = "Roboto",
-	size = 18,
-	weight = 1000,
-	antialias = true,
-	shadow = false
-} )
+	surface.CreateFont( fstr, {
+		font = f,
+		size = s,
+		weight = b,
+		antialias = a,
+		shadow = sh,
+		symbol = sy
+	} )
 
--- Roboto, 17 Pixels
-surface.CreateFont( "bhud_roboto_18", {
-	font = "Roboto",
-	size = 18,
-	weight = 0,
-	antialias = true,
-	shadow = false
-} )
+	table.insert( fonts, fstr )
 
--- Roboto, 16 Pixels
-surface.CreateFont( "bhud_roboto_16", {
-	font = "Roboto",
-	size = 16,
-	weight = 750,
-	antialias = true,
-	shadow = false
-} )
+	return fstr
 
--- Roboto, 14 Pixels
-surface.CreateFont( "bhud_roboto_14", {
-	font = "Roboto",
-	size = 14,
-	weight = 500,
-	antialias = true,
-	shadow = false
-} )
-
--- Roboto, 14 Pixels
-surface.CreateFont( "bhud_roboto_12", {
-	font = "Roboto",
-	size = 11,
-	weight = 1000,
-	antialias = true,
-	shadow = false
-} )
-
--- Marlett, 14 Pixels, no shadow
-surface.CreateFont( "bhud_marlett_14", {
-	font = "marlett",
-	size = 14,
-	weight = 0,
-	antialias = false,
-	shadow = false,
-	symbol = true
-} )
+end

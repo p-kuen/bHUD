@@ -40,9 +40,9 @@ local function MakeBox( x, y, v, col, pic, piccol, v2 )
 	surface.DrawTexturedRect( x + 5, y + 5, 32, 32 )
 
 	if !v2 then
-		draw.SimpleText( tostring( math.Round( v, 0 ) ), "bhud_roboto_32", x + 42 + 10, y + 6, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( tostring( math.Round( v, 0 ) ), bhud.font( "roboto", 32 ), x + 42 + 10, y + 6, Color( 255, 255, 255 ), 0, 0 )
 	else
-		draw.SimpleText( v2, "bhud_roboto_32", x + 42 + 10, y + 6, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( v2, bhud.font( "roboto", 32 ), x + 42 + 10, y + 6, Color( 255, 255, 255 ), 0, 0 )
 	end
 
 end
