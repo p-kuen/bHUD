@@ -18,11 +18,10 @@ end
 --  Short Strings  --
 ---------------------
 
-function bhud.sstring( s, w, f )
+function bhud.short( s, w, f )
 
 	surface.SetFont( f )
 	if surface.GetTextSize( s ) <= w then return s end
-	local cw = surface.GetTextSize( s )
 	local ss, ts = "", ""
 	for i = 1, string.len( s ) do
 		ts = string.sub( s, 1, i ) .. "..."
@@ -41,29 +40,45 @@ end
 
 -- Update cl_drawhud-ConVar
 cvars.AddChangeCallback( "cl_drawhud", function( name, old, new )
-	bhud.cl_drawhud = tobool( new )
+
+	bhud.cdraw = tobool( new )
+
 end )
 
--- Block Vanilla-HUD
-local function block_vhud( name )
-	if !bhud.cl_drawhud then return end
+
+
+-------------------------
+--  Block Vanilla-HUD  --
+-------------------------
+
+local function blockVHUD( name )
+
+	if !bhud.cdraw or !bhud.draw then return end
 	if name == "CHudHealth" or name == "CHudBattery" or name == "CHudAmmo" or name == "CHudSecondaryAmmo" then return false end
-end
-hook.Add( "HUDShouldDraw", "bhud_block_vhud", block_vhud )
 
--- Receive restricted bHUD-Features
-net.Receive( "bhud_authed", function( len )
+end
+hook.Add( "HUDShouldDraw", "bhud_blockVHUD", blockVHUD )
+
+
+
+--------------------
+--  Restrictions  --
+--------------------
+
+net.Receive( "bhud_restrictions", function( len )
+
 	bhud.res = net.ReadTable()
+PrintTable( bhud.res )
 end )
 
 
 
-------------------------
---  PRESET VARIABLES  --
-------------------------
+--------------------
+--  Context Menu  --
+--------------------
 
--- C-Menu
 hook.Add( "OnContextMenuOpen", "bhud_openedContextMenu", function()
+
 	bhud.cmenu = true
 	if exsto then
 		bhud.thud.time = LocalPlayer():GetNWInt( "Time_Fixed" )
@@ -74,10 +89,47 @@ hook.Add( "OnContextMenuOpen", "bhud_openedContextMenu", function()
 	else
 		bhud.thud.time = 0
 	end
+
 end )
 
 hook.Add( "OnContextMenuClose", "bhud_closedContextMenu", function()
+
 	bhud.cmenu = false
+
+end )
+
+
+
+--------------------------
+--  DRAG FUNCTIONALITY  --
+--------------------------
+
+local drag, ix, iy
+local huds = { "phud", "whud", "mhud" }
+hook.Add( "GUIMousePressed", "bhud_pmouse", function( k )
+
+	if k != MOUSE_LEFT then return end
+	local x, y = gui.MousePos()
+
+	table.foreach( huds, function( i, hud )
+
+		if !bhud[hud] or ( bhud[hud].draw != nil and !bhud[hud].draw ) then return end
+		if x > bhud[hud].x and x < ( bhud[hud].x + bhud[hud].w ) and y > bhud[hud].y and y < ( bhud[hud].y + bhud[hud].h ) then
+			ix, iy = x - bhud[hud].x, y - bhud[hud].y
+			drag = hud
+		end
+
+	end )
+
+end )
+
+hook.Add( "GUIMouseReleased", "bhud_rmouse", function()
+
+	if drag then
+		drag = nil
+		bhud.save()
+	end
+
 end )
 
 
@@ -86,16 +138,33 @@ end )
 --  DRAW HUD  --
 ----------------
 
-local al, at, aw = ScrW(), 0, 10
-local function draw_hud()
+local function drawHUD()
 
-	-- Check LocalPlayer
-	if !bhud.me or !bhud.me:IsPlayer() or bhud.ply.name == "unconnected" then bhud.me = LocalPlayer() bhud.ply.name = LocalPlayer():Nick() return end
+	if !bhud.me or bhud.ply.name == "unconnected" then
+		bhud.me = LocalPlayer()
+		bhud.ply.name = bhud.me:Nick()
+	end
 
-	-- Settings Icon
+	-- DRAG
+	if drag then
+
+		-- Set position
+		local x, y = gui.MousePos()
+		bhud[drag].x = math.Round( x - ix, -1 )
+		bhud[drag].y = math.Round( y - iy, -1 )
+
+		-- Draw position-information
+		surface.SetFont( bhud.font( "roboto", 14 ) )
+		local tx = surface.GetTextSize( tostring( bhud[drag].x ) .. ", " .. tostring( bhud[drag].y ) )
+		draw.RoundedBox( 4, bhud[drag].x, bhud[drag].y - 30, tx + 10, 23, Color( 0, 0, 0, 200 ) )
+		draw.SimpleText( tostring( bhud[drag].x ) .. ", " .. tostring( bhud[drag].y ), bhud.font( "roboto", 14 ), bhud[drag].x + 5, bhud[drag].y - 25, Color( 255, 255, 255 ) )
+
+	end
+
+	-- SETTINGS ICON
 	if bhud.cmenu then
 
-		-- If Gamemode is Prop Hunt open the settings panel immediatly
+		-- Prophunt
 		if engine.ActiveGamemode() == "prop_hunt" and !bhud.popen then
 			bhud.spanel()
 			bhud.popen = true
@@ -118,10 +187,10 @@ local function draw_hud()
 
 	end
 
-	-- General HUD-Check
-	if !bhud.cl_drawhud or !bhud.drawhud or !bhud.me:Alive() then return end
+	-- GENERAL DRAW
+	if !bhud.cdraw or !bhud.draw or !bhud.me:Alive() then return end
 
-	-- Player Data
+	-- SET PLAYER DATA
 	bhud.ply.health = bhud.me:Health()
 	bhud.ply.armor = bhud.me:Armor()
 	if bhud.me:GetActiveWeapon():IsValid() then
@@ -135,15 +204,22 @@ local function draw_hud()
 	-- PlayerHUD
 	if bhud.phud.draw then
 
-		bhud[ "design_" .. tostring( bhud.phud.design ) ]()
+		bhud[ "des" .. tostring( bhud.phud.design ) ].draw()
 
-		-- Necessary to recreate full HUD when changed back to Design 3 (avatar)
-		if bhud.phud.design != 3 and bhud_vis3 == true then bhud.avatar:Remove() bhud_vis3 = false end
+		if bhud.phud.design != bhud.cdes then
+			table.foreach( bhud[ "des" .. tostring( bhud.phud.design ) ].data, function( s, v )
+				bhud.phud[s] = v
+			end )
+			table.foreach( bhud[ "des" .. tostring( bhud.phud.design ) ].wdata, function( s, v )
+				bhud.whud[s] = v
+			end )
+			bhud.cdes = bhud.phud.design
+		end
 
 	end
 
 	-- HoverHUD
-	if bhud.hhud.draw and bhud.res.hovername != true then
+	if bhud.hhud.draw and bhud.res.hovernames != true then
 
 		table.foreach( player.GetAll(), function( id, pl )
 
@@ -171,24 +247,25 @@ local function draw_hud()
 		if !bhud.thud.day then bhud.thud.ptime = os.date( "%H:%M" ) else bhud.thud.ptime = os.date( "%d %B %Y - %H:%M" ) end
 		surface.SetFont( bhud.font( "roboto", 16, 750 ) )
 		bhud.thud.width = surface.GetTextSize( bhud.thud.ptime ) + 10
+--[[
 		if bhud.cmenu then
 			bhud.thud.width = math.Clamp( bhud.thud.width, 130, 300 )
 			bhud.thud.top = 50
 		else
+]]
 			bhud.thud.top = 20
+--[[
 		end
+]]
 		bhud.thud.left = ScrW() - 20 - bhud.thud.width
 
-		aw = bhud.animate( aw, bhud.thud.width, 0.1 )
-		al = bhud.animate( al, bhud.thud.left, 0.1 )
-		at = bhud.animate( at, bhud.thud.top, 0.1 )
-
 		-- Background
-		draw.RoundedBoxEx( 4, al, at, aw, 22, Color( 0, 0, 0, 230 ), true, true, !bhud.cmenu, !bhud.cmenu )
+--[[	--draw.RoundedBoxEx( 4, bhud.thud.left, bhud.thud.top, bhud.thud.width, 22, Color( 0, 0, 0, 230 ), true, true, !bhud.cmenu, !bhud.cmenu ) ]]
+		draw.RoundedBox( 4, bhud.thud.left, bhud.thud.top, bhud.thud.width, 22, Color( 0, 0, 0, 230 ) )
 
 		-- Time
-		draw.SimpleText( bhud.thud.ptime, bhud.font( "roboto", 16, 750 ), ScrW() - 25, math.Round( at + 3 ), Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
-
+		draw.SimpleText( bhud.thud.ptime, bhud.font( "roboto", 16 ), ScrW() - 25, bhud.thud.top + 3, Color( 255, 255, 255 ), TEXT_ALIGN_RIGHT )
+--[[
 		if bhud.cmenu then
 
 			-- Background
@@ -206,7 +283,7 @@ local function draw_hud()
 			draw.SimpleText( string.NiceTime( bhud.thud.time + ( os.time() - bhud.jtime ) ), bhud.font( "roboto", 14 ), al + 12 + surface.GetTextSize( "Total:" ), at + 50, Color( 255, 255, 255 ) )
 
 		end
-
+]]
 	end
 
 	-- MapHUD
@@ -233,23 +310,25 @@ local function draw_hud()
 			surface.DrawPoly( circles[ name ] )
 
 		end
-		
+
+		local mx, my = bhud.mhud.x + ( bhud.mhud.rad + bhud.mhud.bor ), bhud.mhud.y + ( bhud.mhud.rad + bhud.mhud.bor )
+
 		-- CIRCLE BORDER
-		draw_circle( "minimap_border", 60, bhud.mhud.left, bhud.mhud.top, bhud.mhud.rad + bhud.mhud.bor, Color( 255, 150, 0 ) )
+		draw_circle( "minimap_border", 60, mx, my, bhud.mhud.rad + bhud.mhud.bor, Color( 255, 150, 0 ) )
 
 		-- CIRCLE BACKGROUND
-		draw_circle( "minimap_background", 60, bhud.mhud.left, bhud.mhud.top, bhud.mhud.rad, Color( 50, 50, 50 ) )
+		draw_circle( "minimap_background", 60, mx, my, bhud.mhud.rad, Color( 50, 50, 50 ) )
 
 		-- MIDDLE CURSOR
 		surface.SetMaterial( Material( "materials/bhud/cursor.png" ) )
 		surface.SetDrawColor( team.GetColor( bhud.me:Team() ) )
-		surface.DrawTexturedRect( bhud.mhud.left - 8, bhud.mhud.top - 8, 16, 16 )
+		surface.DrawTexturedRect( mx - 8, my - 8, 16, 16 )
 
 		-- NORTH
 		local north = math.AngleDifference( bhud.me:EyeAngles().y, 0 )
 		surface.SetMaterial( Material( "materials/bhud/north.png" ) )
 		surface.SetDrawColor( Color( 255, 255, 255 ) )
-		surface.DrawTexturedRect( bhud.mhud.left + ( -sin( rad( north ) ) * bhud.mhud.rad ) - 8, bhud.mhud.top + ( cos( rad( north ) ) * bhud.mhud.rad ) - 8, 16, 16 )
+		surface.DrawTexturedRect( mx + ( -sin( rad( north ) ) * bhud.mhud.rad ) - 8, my + ( cos( rad( north ) ) * bhud.mhud.rad ) - 8, 16, 16 )
 
 		-- OTHER PLAYERS
 		table.foreach( ents.GetAll(), function( id, pl )
@@ -278,15 +357,15 @@ local function draw_hud()
 			local col, name = Color( 255, 255, 255 ), pl:GetClass()
 			if pl:IsPlayer() then local col = team.GetColor( pl:Team() ) local name = pl:Nick() end
 			surface.SetDrawColor( col )
-			surface.DrawTexturedRectRotated( bhud.mhud.left + posx, bhud.mhud.top + posy, 16, 16, -math.AngleDifference( bhud.me:EyeAngles().y, pl:EyeAngles().y ) )
+			surface.DrawTexturedRectRotated( mx + posx, my + posy, 16, 16, -math.AngleDifference( bhud.me:EyeAngles().y, pl:EyeAngles().y ) )
 
 			-- Draw Name and Distance
-			draw.SimpleText( name, bhud.font( "roboto", 14 ), bhud.mhud.left + posx - 8, bhud.mhud.top + posy + 10, Color( 255, 255, 255 ) )
-			draw.SimpleText( math.Round( ( bhud.me:GetPos():Distance( pl:GetPos() ) * 0.75 ) * 0.0254, 0 ) .. " m", bhud.font( "roboto", 14 ), bhud.mhud.left + posx - 8, bhud.mhud.top + posy + 20, Color( 255, 255, 255 ) )
+			draw.SimpleText( name, bhud.font( "roboto", 14 ), mx + posx - 8, my + posy + 10, Color( 255, 255, 255 ) )
+			draw.SimpleText( math.Round( ( bhud.me:GetPos():Distance( pl:GetPos() ) * 0.75 ) * 0.0254, 0 ) .. " m", bhud.font( "roboto", 14 ), mx + posx - 8, my + posy + 20, Color( 255, 255, 255 ) )
 
 		end )
 
 	end
 
 end
-hook.Add( "HUDPaint", "bhud_drawhud", draw_hud )
+hook.Add( "HUDPaint", "bhud_drawhud", drawHUD )

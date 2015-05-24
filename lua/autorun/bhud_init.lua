@@ -1,62 +1,24 @@
+bhud = {}
+
 if SERVER then
+
+	-- Load server-files
+	include( "bhud/server/server.lua" )
 
 	-- Send files to client
 	AddCSLuaFile()
-	AddCSLuaFile( "bhud/client/sql.lua" )
-	AddCSLuaFile( "bhud/client/bhud.lua" )
-	AddCSLuaFile( "bhud/client/fonts.lua" )
-	AddCSLuaFile( "bhud/client/derma.lua" )
 
 	local files = file.Find( "bhud/client/designs/*.lua", "LUA" )
 	table.foreach( files, function( key, plugin )
 		AddCSLuaFile( "bhud/client/designs/" .. plugin )
 	end )
 
-	-- Create Restrictions-Table
-	local bhud_restrictions = { minimap = false, hovername = false }
+	AddCSLuaFile( "bhud/client/sql.lua" )
+	AddCSLuaFile( "bhud/client/fonts.lua" )
+	AddCSLuaFile( "bhud/client/bhud.lua" )
+	AddCSLuaFile( "bhud/client/derma.lua" )
 
-	-- Pool Network Strings
-	util.AddNetworkString( "bhud_authed" )
-
-	-- Load Restrictions
-	if file.Exists( "bhud_server_settings.txt", "DATA" ) then
-
-		local cont = file.Read( "bhud_server_settings.txt", "DATA" )
-		if util.JSONToTable( cont ) != nil then
-			bhud_restrictions = util.JSONToTable( cont )
-		end
-
-	end
-
-	-- Change/Save Restrictions
-	concommand.Add( "bhud_restrict", function( ply, cmd, args )
-		
-		if args[2] != "true" and args[2] != "false" or bhud_restrictions[ args[1] ] == nil then
-
-			print( "Setting is wrong! Use 'minimap' or 'hovernames'! (e.g. bhud_restrict minimap true)" )
-
-		else
-
-			bhud_restrictions[ args[1] ] = tobool( args[2] )
-			file.Write( "bhud_server_settings.txt", util.TableToJSON( bhud_restrictions ) )
-			print( "Set " .. args[1] .. "-restriction to " .. args[2] .. "!" )
-			print( "Please restart the server when you are finish." )
-
-		end
-
-	end )
-
-	-- Send Restrictions
-	local function bhud_player_authed( ply, sid, uid )
-
-		net.Start( "bhud_authed" )
-			net.WriteTable( bhud_restrictions )
-		net.Send( ply )
-
-	end
-	hook.Add( "PlayerAuthed", "bhud_player_authed", bhud_player_authed )
-
-	-- Load Images
+	-- Force client to download bhud-images
 	resource.AddFile( "materials/bhud/player16.png" )
 	resource.AddFile( "materials/bhud/heart16.png" )
 	resource.AddFile( "materials/bhud/shield16.png" )
@@ -78,18 +40,10 @@ if SERVER then
 else
 
 	bhud = {
-		cl_drawhud = tobool( GetConVarNumber( "cl_drawhud" ) ),
-		me = nil,
-		jtime = os.time(),
-		cmenu = false,
-		popen = false,
+		cdraw = tobool( GetConVarNumber( "cl_drawhud" ) ),
 		defs = {},
-		res = {},
-		phud = {},
-		hhud = {},
-		thud = {},
-		mhud = {},
-		ply = {}
+		ply = {},
+		res = {}
 	}
 
 	include( "bhud/client/sql.lua" )

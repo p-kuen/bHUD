@@ -3,20 +3,26 @@
 ----------------------
 
 -- bHUD
-bhud.defs.drawhud = true
-bhud.defs.version = 1.3
+bhud.defs.draw = true
+bhud.defs.version = 1.5
+bhud.defs.cdes = 1
 
 -- HoverHUD
 bhud.defs.hhud = { draw = true }
 
 -- PlayerHUD
-bhud.defs.phud = { draw = true, design = 1, name = true }
+bhud.defs.phud = { draw = true, design = 1, name = true, x = 20, y = ScrH() - 90, w = 200, h = 70 }
+
+-- WeaponHUD
+bhud.defs.whud = { x = 230, y = ScrH() - 90, w = 200, h = 70 }
 
 -- TimeHUD
 bhud.defs.thud = { draw = true, day = false }
 
 -- MapHUD
-bhud.defs.mhud = { draw = true, npc = false, left = ScrW() - 103 - 10, top = ScrH() - 103 - 10, rad = 100, bor = 3, tol = 200 }
+bhud.defs.mhud = { draw = true, npc = false, x = ScrW() - 206 - 10, y = ScrH() - 206 - 10, rad = 100, bor = 3, tol = 200 }
+bhud.defs.mhud.w = bhud.defs.mhud.rad * 2 + bhud.defs.mhud.bor * 2
+bhud.defs.mhud.h = bhud.defs.mhud.w
 
 
 
@@ -81,7 +87,7 @@ function bhud.spanel()
 	local frm = bhud.addfrm( 250, 400, "Settings:" )
 
 	bhud.addlbl( frm, "General:", true )
-	bhud.addchk( frm, 230, "Enable bHUD", bhud.drawhud, function( c ) bhud.drawhud = c end )
+	bhud.addchk( frm, 230, "Enable bHUD", bhud.draw, function( c ) bhud.draw = c end )
 
 	bhud.addlbl( frm, "HUDs:", true, true )
 	bhud.addchk( frm, 230, "Draw PlayerHUD", bhud.phud.draw, function( c ) bhud.phud.draw = c end )
