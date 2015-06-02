@@ -68,7 +68,7 @@ hook.Add( "HUDShouldDraw", "bhud_blockVHUD", blockVHUD )
 net.Receive( "bhud_restrictions", function( len )
 
 	bhud.res = net.ReadTable()
-PrintTable( bhud.res )
+
 end )
 
 
