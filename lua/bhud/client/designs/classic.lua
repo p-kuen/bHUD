@@ -74,16 +74,16 @@ function bhud.des1.draw()
 	--  WEAPON  --
 	--------------
 
-	if bhud.ply.ammo2_max > 0 and bhud.whud.h != 100 then
+	if bhud.ply.ammo2 > 0 and bhud.whud.h != 100 then
 		bhud.whud.h = 100
 		bhud.whud.y = bhud.whud.y - 30
 	end
-	if bhud.ply.ammo2_max == 0 and bhud.whud.h != 70 then
+	if bhud.ply.ammo2 == 0 and bhud.whud.h != 70 then
 		bhud.whud.h = 70
 		bhud.whud.y = bhud.whud.y + 30
 	end
 
-	if !LocalPlayer():GetActiveWeapon():IsValid() or bhud.ply.ammo1 == 0 and bhud.ply.ammo1_max == 0 or bhud.ply.ammo1 == -1 and bhud.ply.ammo1_max <= 0 and !bhud.cmenu then return end
+	if !LocalPlayer():GetActiveWeapon():IsValid() or bhud.ply.clip1 == 0 and bhud.ply.ammo1 == 0 or bhud.ply.clip1 == -1 and bhud.ply.ammo1 <= 0 and !bhud.cmenu then return end
 
 	-- WEAPON-BACKGROUND
 	draw.RoundedBox( 4, bhud.whud.x, bhud.whud.y, bhud.whud.w, bhud.whud.h, Color( 0, 0, 0, 230 ) )
@@ -94,15 +94,15 @@ function bhud.des1.draw()
 
 	-- WEAPON-AMMO1
 	MakeImage( bhud.whud.x + 10, bhud.whud.y + 42, "ammo_116.png", Color( 255, 255, 255 ) )
-	if bhud.ply.ammo1 != -1 then
-		draw.SimpleText( tostring( bhud.ply.ammo1 ) .. " / " .. tostring( bhud.ply.ammo1_max ), bhud.font( "roboto", 20 ), bhud.whud.x + 40, bhud.whud.y + 41, Color( 255, 255, 255 ), 0, 0 )
+	if bhud.ply.clip1 != -1 then
+		draw.SimpleText( tostring( bhud.ply.clip1 ) .. " / " .. tostring( bhud.ply.ammo1 ), bhud.font( "roboto", 20 ), bhud.whud.x + 40, bhud.whud.y + 41, Color( 255, 255, 255 ), 0, 0 )
 	else
-		draw.SimpleText( tostring( bhud.ply.ammo1_max ), bhud.font( "roboto", 20 ), bhud.whud.x + 40, bhud.whud.y + 41, Color( 255, 255, 255 ), 0, 0 )
+		draw.SimpleText( tostring( bhud.ply.ammo1 ), bhud.font( "roboto", 20 ), bhud.whud.x + 40, bhud.whud.y + 41, Color( 255, 255, 255 ), 0, 0 )
 	end
 
 	-- WEAPON-AMMO2
-	if bhud.ply.ammo2_max == 0 then return end
+	if bhud.ply.ammo2 == 0 then return end
 	MakeImage( bhud.whud.x + 10, bhud.whud.y + 72, "ammo_216.png", Color( 255, 255, 255 ) )
-	draw.SimpleText( tostring( bhud.ply.ammo2_max ), bhud.font( "roboto", 20 ), bhud.whud.x + 40, bhud.whud.y + 71, Color( 255, 255, 255 ), 0, 0 )
+	draw.SimpleText( tostring( bhud.ply.ammo2 ), bhud.font( "roboto", 20 ), bhud.whud.x + 40, bhud.whud.y + 71, Color( 255, 255, 255 ), 0, 0 )
 
 end

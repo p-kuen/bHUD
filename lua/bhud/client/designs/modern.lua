@@ -12,11 +12,9 @@ local health = 100
 local armor = 0
 local clip1 = 0
 local clip2 = 0
-local clip_max_1 = {}
-local clip_max_2 = {}
 local lw = ScrW() - 242 - 20
 local saw = ScrH()
-local ammotext = ""
+local maxes = {}
 
 local function MakeTriangle( x, y, size, col )
 
@@ -104,41 +102,43 @@ function bhud.des2.draw()
 
 	-- Weapon
 	if !bhud.me:GetActiveWeapon():IsValid() then return end
-	if bhud.ply.ammo1 == -1 then
-		if bhud.ply.ammo1_max <= 0 and !bhud.cmenu then return end
-		bhud.ply.ammo1 = bhud.ply.ammo1_max
-		bhud.ply.ammo1_max = ""
-	end
-	if bhud.ply.ammo1 == 0 and bhud.ply.ammo1_max == 0 then return end
 
-	local sw = ScrH() - 20 - 42
-	if bhud.ply.ammo2_max > 0 then sw = sw - 42 - 20 end
-
-	saw = bhud.animate( saw, sw, 0.1 )
-
-	-- Ammo 1
-	if !clip_max_1[ bhud.ply.class ] or bhud.ply.ammo1 > clip_max_1[ bhud.ply.class ] then clip_max_1[ bhud.ply.class ] = bhud.ply.ammo1 end
-	clip1 = bhud.animate( clip1, bhud.ply.ammo1, 0.05 )
-	if bhud.ply.ammo1_max == "" then ammotext = tostring( bhud.ply.ammo1 ) else ammotext = tostring( bhud.ply.ammo1 ) .. " / " .. tostring( bhud.ply.ammo1_max ) end
-	MakeBox( bhud.whud.x, bhud.whud.y, ( 100 / clip_max_1[ bhud.ply.class ] ) * clip1, Color( 255, 150, 0 ), "ammo_132.png", nil, ammotext )
-
-	if bhud.ply.ammo2_max == 0 and w2 == true then
+	if bhud.ply.ammo2 == 0 and w2 == true then
 		bhud.whud.h = bhud.whud.h - 40 - 10
 		bhud.whud.y = bhud.whud.y + 40 + 10
 		w2 = false
-	elseif bhud.ply.ammo2_max > 0 and w2 == false then
+	elseif bhud.ply.ammo2 > 0 and w2 == false then
 		bhud.whud.h = bhud.whud.h + 40 + 10
 		bhud.whud.y = bhud.whud.y - 40 - 10
 		w2 = true
 	end
 
-	if bhud.ply.ammo2_max == 0 then return end
+	if bhud.ply.clip1 <= 0 and bhud.ply.ammo1 <= 0 then return end
+
+	local sw = ScrH() - 20 - 42
+	if bhud.ply.ammo2 > 0 then sw = sw - 42 - 20 end
+
+	saw = bhud.animate( saw, sw, 0.1 )
+
+	-- Ammo 1
+	if bhud.ply.clip1 <= 0 and bhud.ply.mclip1 <= 0 and bhud.ply.ammo1 > 0 then
+		if !maxes[bhud.ply.class] or bhud.ply.ammo1 > maxes[bhud.ply.class] then maxes[bhud.ply.class] = bhud.ply.ammo1 end
+		clip1 = bhud.animate( clip1, bhud.ply.ammo1, 0.05 )
+		MakeBox( bhud.whud.x, bhud.whud.y, ( 100 / maxes[bhud.ply.class] ) * clip1, Color( 255, 150, 0 ), "ammo_132.png", nil, tostring( bhud.ply.ammo1 ) )
+	else
+		clip1 = bhud.animate( clip1, bhud.ply.clip1, 0.05 )
+		MakeBox( bhud.whud.x, bhud.whud.y, ( 100 / bhud.ply.mclip1 ) * clip1, Color( 255, 150, 0 ), "ammo_132.png", nil, tostring( bhud.ply.clip1 ) .. "/" .. tostring( bhud.ply.ammo1 ) )
+	end
+
+
+
+	if bhud.ply.ammo2 == 0 then return end
 
 	-- Ammo 2
-	if !clip_max_2[ bhud.ply.class ] or bhud.ply.ammo2_max > clip_max_2[ bhud.ply.class ] then clip_max_2[ bhud.ply.class ] = bhud.ply.ammo2_max end
-	if bhud.ply.ammo2_max != 0 then
-		clip2 = bhud.animate( clip2, bhud.ply.ammo2_max, 0.05 )
-		MakeBox( bhud.whud.x, bhud.whud.y + 50, ( 100 / clip_max_2[ bhud.ply.class ] ) * clip2, Color( 255, 150, 0 ), "ammo_232.png", nil, tostring( bhud.ply.ammo2_max ) )
+	if bhud.ply.ammo2 != 0 then
+		if !maxes[bhud.ply.class] or bhud.ply.ammo2 > maxes[bhud.ply.class] then maxes[bhud.ply.class] = bhud.ply.ammo2 end
+		clip2 = bhud.animate( clip2, bhud.ply.ammo2, 0.05 )
+		MakeBox( bhud.whud.x, bhud.whud.y + 50, ( 100 / maxes[bhud.ply.class] ) * clip2, Color( 255, 150, 0 ), "ammo_232.png", nil, tostring( bhud.ply.ammo2 ) )
 	end
 
 end

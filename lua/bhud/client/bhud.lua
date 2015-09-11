@@ -196,9 +196,11 @@ local function drawHUD()
 	if bhud.me:GetActiveWeapon():IsValid() then
 		bhud.ply.weapon = bhud.me:GetActiveWeapon():GetPrintName()
 		bhud.ply.class = bhud.me:GetActiveWeapon():GetClass()
-		bhud.ply.ammo1 = bhud.me:GetActiveWeapon():Clip1()
-		bhud.ply.ammo1_max = bhud.me:GetAmmoCount( bhud.me:GetActiveWeapon():GetPrimaryAmmoType() )
-		bhud.ply.ammo2_max = bhud.me:GetAmmoCount( bhud.me:GetActiveWeapon():GetSecondaryAmmoType() )
+		bhud.ply.clip1 = bhud.me:GetActiveWeapon():Clip1()
+		bhud.ply.mclip1 = bhud.me:GetActiveWeapon():GetMaxClip1()
+		bhud.ply.mclip2 = bhud.me:GetActiveWeapon():GetMaxClip2()
+		bhud.ply.ammo1 = bhud.me:GetAmmoCount( bhud.me:GetActiveWeapon():GetPrimaryAmmoType() )
+		bhud.ply.ammo2 = bhud.me:GetAmmoCount( bhud.me:GetActiveWeapon():GetSecondaryAmmoType() )
 	end
 
 	-- PlayerHUD

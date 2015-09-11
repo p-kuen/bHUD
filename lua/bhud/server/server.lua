@@ -9,6 +9,7 @@ if file.Exists( "bhud_settings.txt", "DATA" ) then
 	bhud.restrictions = util.JSONToTable( file.Read( "bhud_settings.txt", "DATA" ) )
 else
 	file.Write( "bhud_settings.txt", util.TableToJSON( { minimap = false, hovernames = false } ) )
+	bhud.restrictions = { minimap = false, hovernames = false }
 end
 
 -- Send restrictions to clients
